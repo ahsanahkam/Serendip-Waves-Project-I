@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import bg from "./assets/bg.jpg";
+import Home from "./assets/Home.jpg";
 import DestinationsPage from "./DestinationsPage";
 
 // Hero Section
@@ -9,60 +9,80 @@ const Hero = ({ onBookingClick }) => {
       id="home"
       className="hero-section"
       style={{
-        position: "relative",
         width: "100vw",
-        height: "100vh",
-        background: `url(${bg}) center center / cover no-repeat`,
+        minHeight: "100vh",
+        background: `url(${Home}) center center / cover no-repeat`,
         backgroundSize: "cover",
         backgroundPosition: "center center",
         backgroundRepeat: "no-repeat",
-        padding: 0,
-        margin: 0,
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: "flex-start",
+        padding: 0,
+        margin: 0,
         marginTop: "-80px",
         paddingTop: "80px",
-        minWidth: "100vw",
-        minHeight: "100vh",
-        width: "100%"
+        boxSizing: "border-box",
+        position: "relative"
       }}
     >
-      <div
-        className="hero-overlay"
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          background: "rgba(0,0,0,0.18)",
-          zIndex: 1
-        }}
-      />
-      <div
-        className="hero-content"
-        style={{
-          position: "relative",
-          zIndex: 2,
-          width: "100%",
-          textAlign: "center",
-          color: "#fff",
-          padding: "0 20px"
-        }}
-      >
-        <h1 className="display-2 fw-bold mb-3" style={{ textShadow: "0 2px 12px rgba(0,0,0,0.25)", lineHeight: 1.1 }}>
-          Explore the World with <br /> Serendib Waves
+      {/* Overlay for contrast */}
+      <div style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        background: "rgba(16,24,32,0.55)",
+        zIndex: 1
+      }} />
+      <div style={{
+        position: "relative",
+        zIndex: 2,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        justifyContent: "center",
+        height: "100vh",
+        maxWidth: "700px",
+        paddingLeft: "7vw",
+        color: "#fff"
+      }}>
+        <h1 style={{
+          fontWeight: 900,
+          fontSize: "3.2rem",
+          lineHeight: 1.1,
+          marginBottom: "1.2rem",
+          letterSpacing: "-2px",
+          textShadow: "0 2px 12px rgba(0,0,0,0.25)"
+        }}>
+          EXPLORE THE<br />WORLD WITH<br />SERENDIP WAVES
         </h1>
-        <p className="lead mb-4 text-uppercase fw-semibold" style={{ letterSpacing: '0.08em', textShadow: "0 1px 6px rgba(0,0,0,0.18)", fontSize: '1.1rem' }}>
-          Where luxury meets the sea — every journey, a masterpiece.
+        <p style={{
+          fontSize: "1.1rem",
+          letterSpacing: "0.12em",
+          textTransform: "uppercase",
+          fontWeight: 400,
+          marginBottom: "2.2rem",
+          color: "#e0e0e0",
+          textShadow: "0 1px 6px rgba(0,0,0,0.18)"
+        }}>
+          WHERE LUXURY MEETS THE SEA<br />EVERY JOURNEY, A MASTERPIECE.
         </p>
         <button
-          className="btn btn-lg px-5 py-3 hero-cta-btn shadow mx-auto"
-          style={{ background: '#ffd600', color: '#222', fontWeight: 600, borderRadius: '2rem', fontSize: '1.25rem', border: 'none' }}
+          className="btn btn-lg px-5 py-3 hero-cta-btn shadow"
+          style={{
+            background: '#ffd600',
+            color: '#222',
+            fontWeight: 600,
+            borderRadius: '2rem',
+            fontSize: '1.25rem',
+            border: 'none',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.10)'
+          }}
           onClick={onBookingClick}
         >
-          Book now
+          Book Now
         </button>
       </div>
     </section>
