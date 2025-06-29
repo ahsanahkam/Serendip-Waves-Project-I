@@ -1,19 +1,110 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import HomePage from './HomePage';
 import DestinationsPage from './DestinationsPage';
-import LoginPage from './LoginPage';
-import SignupPage from './SignupPage';
-import UserDashboard from './UserDashboard';
+import BookingModal from './BookingModal';
+import SignupModal from './SignupModal';
+import Navbar from './Navbar';
+import LoginModal from './LoginModal';
 
 // Authentication Context
 const AuthContext = React.createContext();
+
+function SignupRouteHandler({ isAuthenticated, setIsSignupModalOpen }) {
+  const location = useLocation();
+  React.useEffect(() => {
+    setIsSignupModalOpen(true);
+  }, [setIsSignupModalOpen]);
+  if (isAuthenticated) return <Navigate to="/" />;
+  return null;
+}
+
+function LoginRouteHandler({ isAuthenticated, setIsLoginModalOpen }) {
+  const location = useLocation();
+  React.useEffect(() => {
+    setIsLoginModalOpen(true);
+  }, [setIsLoginModalOpen]);
+  if (isAuthenticated) return <Navigate to="/" />;
+  return null;
+}
+
+function AppRoutes(props) {
+  const navigate = useNavigate();
+  const {
+    isAuthenticated,
+    setIsLoginModalOpen,
+    setIsSignupModalOpen,
+    isLoginModalOpen,
+    isSignupModalOpen,
+    isBookingModalOpen,
+    setIsBookingModalOpen
+  } = props;
+  return (
+    <>
+      <Navbar
+        onSignupClick={() => setIsSignupModalOpen(true)}
+        onLoginClick={() => setIsLoginModalOpen(true)}
+      />
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => {
+          console.log("LoginModal close button clicked");
+          setIsLoginModalOpen(false);
+          if (window.location.pathname === "/login") {
+            navigate("/");
+          }
+        }}
+        onSignupClick={() => {
+          setIsLoginModalOpen(false);
+          setIsSignupModalOpen(true);
+          if (window.location.pathname === "/login") {
+            navigate("/signup");
+          }
+        }}
+      />
+      <SignupModal
+        isOpen={isSignupModalOpen}
+        onClose={() => {
+          setIsSignupModalOpen(false);
+          if (window.location.pathname === "/signup") {
+            navigate("/");
+          }
+        }}
+        openLoginModal={() => {
+          setIsSignupModalOpen(false);
+          setIsLoginModalOpen(true);
+          if (window.location.pathname === "/signup") {
+            navigate("/login");
+          }
+        }}
+      />
+      <BookingModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
+      />
+      <Routes>
+        <Route path="/" element={<HomePage onBookingClick={() => setIsBookingModalOpen(true)} />} />
+        <Route path="/destinations" element={<DestinationsPage />} />
+        <Route path="/booking" element={<Navigate to="/" replace />} />
+        <Route path="/login" element={
+          <LoginRouteHandler isAuthenticated={isAuthenticated} setIsLoginModalOpen={setIsLoginModalOpen} />
+        } />
+        <Route path="/signup" element={
+          <SignupRouteHandler isAuthenticated={isAuthenticated} setIsSignupModalOpen={setIsSignupModalOpen} />
+        } />
+      </Routes>
+    </>
+  );
+}
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   // Check for existing authentication on app load
   useEffect(() => {
@@ -56,6 +147,26 @@ const App = () => {
     setShowSignupModal(false);
   };
 
+  const handleSignup = async (formData) => {
+    const response = await fetch("http://localhost/Serendip_Waves-Backend/signup.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+    const data = await response.json();
+    // handle response (success/error)
+  };
+
+  const handleLogin = async (formData) => {
+    const response = await fetch("http://localhost/Serendip_Waves-Backend/login.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+    const data = await response.json();
+    // handle response (success/error)
+  };
+
   const authValue = {
     isAuthenticated,
     currentUser,
@@ -65,31 +176,23 @@ const App = () => {
     showLoginModal,
     setShowLoginModal,
     showSignupModal,
-    setShowSignupModal
+    setShowSignupModal,
+    isBookingModalOpen,
+    setIsBookingModalOpen
   };
 
   return (
     <AuthContext.Provider value={authValue}>
       <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/destinations" element={<DestinationsPage />} />
-          <Route path="/login" element={
-            isAuthenticated ? 
-              <Navigate to="/dashboard" /> : 
-              <LoginPage />
-          } />
-          <Route path="/signup" element={
-            isAuthenticated ? 
-              <Navigate to="/dashboard" /> : 
-              <SignupPage />
-          } />
-          <Route path="/dashboard" element={
-            isAuthenticated ? 
-              <UserDashboard /> : 
-              <Navigate to="/" />
-          } />
-        </Routes>
+        <AppRoutes
+          isAuthenticated={isAuthenticated}
+          setIsLoginModalOpen={setIsLoginModalOpen}
+          setIsSignupModalOpen={setIsSignupModalOpen}
+          isLoginModalOpen={isLoginModalOpen}
+          isSignupModalOpen={isSignupModalOpen}
+          isBookingModalOpen={isBookingModalOpen}
+          setIsBookingModalOpen={setIsBookingModalOpen}
+        />
       </Router>
     </AuthContext.Provider>
   );

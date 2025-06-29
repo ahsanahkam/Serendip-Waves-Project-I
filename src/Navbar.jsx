@@ -120,36 +120,10 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
 
         {/* Right Side - Login/Signup Buttons and Hamburger Menu */}
         <div className="d-flex align-items-center gap-3">
-          {/* Signup Button */}
-          <button 
-            onClick={handleSignupClick}
-            className="btn btn-warning btn-sm d-flex align-items-center gap-2"
-            style={{ 
-              borderRadius: '20px',
-              padding: '6px 12px',
-              fontSize: '0.9rem',
-              transition: 'all 0.3s ease',
-              background: '#ffd600',
-              color: '#000',
-              border: '1px solid #ffd600'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = '#ffd600';
-              e.target.style.borderColor = '#ffd600';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = '#ffd600';
-              e.target.style.borderColor = '#ffd600';
-            }}
-          >
-            <i className="bi bi-person-plus"></i>
-            <span className="d-none d-sm-inline">Sign Up</span>
-          </button>
-
           {/* Login Button */}
           <button 
             onClick={handleLoginClick}
-            className="btn btn-warning btn-sm d-flex align-items-center gap-2"
+            className="btn btn-warning btn-sm d-flex align-items-center gap-2 ms-2"
             style={{ 
               borderRadius: '20px',
               padding: '6px 12px',
@@ -157,7 +131,8 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
               transition: 'all 0.3s ease',
               background: '#ffd600',
               color: '#000',
-              border: '1px solid #ffd600'
+              border: '1px solid #ffd600',
+              marginLeft: '16px'
             }}
             onMouseEnter={(e) => {
               e.target.style.background = '#ffd600';

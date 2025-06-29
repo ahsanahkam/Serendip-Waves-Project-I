@@ -1,320 +1,73 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import bg from "./assets/bg.jpg";
-import Navbar from "./Navbar";
 import DestinationsPage from "./DestinationsPage";
-import SignupModal from "./SignupModal";
-
-// Login Modal Component
-const LoginModal = ({ isOpen, onClose }) => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle login logic here
-    console.log('Login attempt:', formData);
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div 
-      className="modal-overlay"
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: 'rgba(0, 0, 0, 0.5)',
-        backdropFilter: 'blur(5px)',
-        zIndex: 10000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px'
-      }}
-      onClick={onClose}
-    >
-      <div 
-        className="modal-content"
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          width: '100%',
-          maxWidth: '400px',
-          animation: 'modalSlideIn 0.3s ease-out'
-        }}
-      >
-        <div className="card border-0 shadow-lg" 
-             style={{ 
-               borderRadius: '20px',
-               background: 'rgba(255, 255, 255, 0.1)',
-               backdropFilter: 'blur(20px)',
-               border: '1px solid rgba(255, 255, 255, 0.2)',
-               color: '#fff'
-             }}>
-          <div className="card-body p-5">
-            {/* Close Button */}
-            <button 
-              onClick={onClose}
-              className="btn-close btn-close-white position-absolute"
-              style={{
-                top: '15px',
-                right: '15px',
-                zIndex: 1,
-                opacity: 0.8
-              }}
-            ></button>
-
-            {/* Logo */}
-            <div className="text-center mb-4">
-              <img 
-                src="/logo.png" 
-                alt="Serendip Waves Logo" 
-                width="140" 
-                height="140" 
-                className="mb-3"
-              />
-              <h2 className="fw-bold mb-0 text-white">Login to Serendip Waves</h2>
-            </div>
-
-            {/* Login Form */}
-            <form onSubmit={handleSubmit}>
-              {/* Email Field */}
-              <div className="mb-3">
-                <label 
-                  htmlFor="email" 
-                  className="form-label fw-semibold text-white"
-                >
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  className="form-control form-control-lg"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter your email"
-                  required
-                  aria-describedby="emailHelp"
-                  style={{ 
-                    borderRadius: '10px',
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    background: 'rgba(255,255,255,0.1)',
-                    color: '#fff',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                />
-                <div id="emailHelp" className="form-text" style={{ color: 'rgba(255,255,255,0.7)' }}>
-                  We'll never share your email with anyone else.
-                </div>
-              </div>
-
-              {/* Password Field */}
-              <div className="mb-4">
-                <label 
-                  htmlFor="password" 
-                  className="form-label fw-semibold text-white"
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  className="form-control form-control-lg"
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Enter your password"
-                  required
-                  aria-describedby="passwordHelp"
-                  style={{ 
-                    borderRadius: '10px',
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    background: 'rgba(255,255,255,0.1)',
-                    color: '#fff',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                />
-                <div id="passwordHelp" className="form-text" style={{ color: 'rgba(255,255,255,0.7)' }}>
-                  Your password must be at least 8 characters long.
-                </div>
-              </div>
-
-              {/* Login Button */}
-              <div className="d-grid mb-4">
-                <button 
-                  type="submit" 
-                  className="btn btn-warning btn-lg fw-bold"
-                  style={{ 
-                    borderRadius: '10px',
-                    fontSize: '1.1rem',
-                    padding: '12px',
-                    background: 'rgba(255, 193, 7, 0.9)',
-                    border: '1px solid rgba(255, 193, 7, 0.3)',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                >
-                  Login
-                </button>
-              </div>
-
-              {/* Sign Up Link */}
-              <div className="text-center">
-                <p className="mb-0" style={{ color: 'rgba(255,255,255,0.8)' }}>
-                  Don't have an account?{' '}
-                  <a 
-                    href="#signup" 
-                    className="text-decoration-none fw-semibold"
-                    style={{ color: '#ffd600' }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onClose();
-                      openSignupModal();
-                    }}
-                  >
-                    Sign up
-                  </a>
-                </p>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      {/* Custom Styles for Glass Effect */}
-      <style>{`
-        @keyframes modalSlideIn {
-          from {
-            opacity: 0;
-            transform: translateY(-50px) scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-        
-        .form-control:focus {
-          background: rgba(255,255,255,0.2) !important;
-          border-color: #ffd600 !important;
-          box-shadow: 0 0 0 0.2rem rgba(255, 214, 0, 0.25) !important;
-          color: #fff !important;
-          backdrop-filter: blur(15px) !important;
-        }
-        
-        .form-control::placeholder {
-          color: rgba(255,255,255,0.6) !important;
-        }
-        
-        .btn-warning:hover {
-          background: rgba(255, 193, 7, 1) !important;
-          border-color: rgba(255, 193, 7, 1) !important;
-          transform: translateY(-2px);
-          transition: all 0.3s ease;
-          box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
-        }
-        
-        .card {
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important;
-        }
-        
-        /* Glass morphism effect */
-        .card::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          border-radius: 20px;
-          padding: 1px;
-          background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          mask-composite: exclude;
-          pointer-events: none;
-        }
-      `}</style>
-    </div>
-  );
-};
 
 // Hero Section
-const Hero = () => (
-  <section
-    id="home"
-    className="hero-section"
-    style={{
-      position: "relative",
-      width: "100vw",
-      height: "100vh",
-      background: `url(${bg}) center center / cover no-repeat`,
-      backgroundSize: "cover",
-      backgroundPosition: "center center",
-      backgroundRepeat: "no-repeat",
-      padding: 0,
-      margin: 0,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      marginTop: "-80px",
-      paddingTop: "80px",
-      minWidth: "100vw",
-      minHeight: "100vh",
-      width: "100%"
-    }}
-  >
-    <div
-      className="hero-overlay"
-      style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        background: "rgba(0,0,0,0.18)",
-        zIndex: 1
-      }}
-    />
-    <div
-      className="hero-content"
+const Hero = ({ onBookingClick }) => {
+  return (
+    <section
+      id="home"
+      className="hero-section"
       style={{
         position: "relative",
-        zIndex: 2,
-        width: "100%",
-        textAlign: "center",
-        color: "#fff",
-        padding: "0 20px"
+        width: "100vw",
+        height: "100vh",
+        background: `url(${bg}) center center / cover no-repeat`,
+        backgroundSize: "cover",
+        backgroundPosition: "center center",
+        backgroundRepeat: "no-repeat",
+        padding: 0,
+        margin: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: "-80px",
+        paddingTop: "80px",
+        minWidth: "100vw",
+        minHeight: "100vh",
+        width: "100%"
       }}
     >
-      <h1 className="display-2 fw-bold mb-3" style={{ textShadow: "0 2px 12px rgba(0,0,0,0.25)", lineHeight: 1.1 }}>
-        Explore the World with <br /> Serendib Waves
-      </h1>
-      <p className="lead mb-4 text-uppercase fw-semibold" style={{ letterSpacing: '0.08em', textShadow: "0 1px 6px rgba(0,0,0,0.18)", fontSize: '1.1rem' }}>
-        Where luxury meets the sea — every journey, a masterpiece.
-      </p>
-      <a href="#destinations" className="btn btn-lg px-5 py-3 hero-cta-btn shadow mx-auto" style={{ background: '#ffd600', color: '#222', fontWeight: 600, borderRadius: '2rem', fontSize: '1.25rem', border: 'none' }}>Book now</a>
-    </div>
-  </section>
-);
+      <div
+        className="hero-overlay"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          background: "rgba(0,0,0,0.18)",
+          zIndex: 1
+        }}
+      />
+      <div
+        className="hero-content"
+        style={{
+          position: "relative",
+          zIndex: 2,
+          width: "100%",
+          textAlign: "center",
+          color: "#fff",
+          padding: "0 20px"
+        }}
+      >
+        <h1 className="display-2 fw-bold mb-3" style={{ textShadow: "0 2px 12px rgba(0,0,0,0.25)", lineHeight: 1.1 }}>
+          Explore the World with <br /> Serendib Waves
+        </h1>
+        <p className="lead mb-4 text-uppercase fw-semibold" style={{ letterSpacing: '0.08em', textShadow: "0 1px 6px rgba(0,0,0,0.18)", fontSize: '1.1rem' }}>
+          Where luxury meets the sea — every journey, a masterpiece.
+        </p>
+        <button
+          className="btn btn-lg px-5 py-3 hero-cta-btn shadow mx-auto"
+          style={{ background: '#ffd600', color: '#222', fontWeight: 600, borderRadius: '2rem', fontSize: '1.25rem', border: 'none' }}
+          onClick={onBookingClick}
+        >
+          Book now
+        </button>
+      </div>
+    </section>
+  );
+};
 
 // About Section
 const AboutSection = () => (
@@ -592,63 +345,26 @@ const Footer = () => (
   </footer>
 );
 
-const HomePage = () => {
+const HomePage = ({ onBookingClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
-  const openLoginModal = () => {
-    setIsLoginModalOpen(true);
-  };
-
-  const closeLoginModal = () => {
-    setIsLoginModalOpen(false);
-  };
-
-  const openSignupModal = () => {
-    setIsSignupModalOpen(true);
-  };
-
-  const closeSignupModal = () => {
-    setIsSignupModalOpen(false);
-  };
-
-  // When signup is successful, close signup modal and open login modal
-  const handleSignupSuccess = () => {
-    setIsSignupModalOpen(false);
-    setIsLoginModalOpen(true);
-  };
-
   return (
     <div style={{ width: '100%', overflow: 'hidden' }}>
-      <Navbar 
-        isScrolled={isScrolled} 
-        onLoginClick={openLoginModal} 
-        onSignupClick={openSignupModal} 
-      />
-      <Hero />
+      <Hero onBookingClick={onBookingClick} />
       <DestinationsPage />
       <AboutSection />
       <ContactSection />
       <Footer />
-      
-      {/* Login Modal */}
-      <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} />
-      
-      {/* Signup Modal */}
-      <SignupModal isOpen={isSignupModalOpen} onClose={closeSignupModal} onSignupSuccess={handleSignupSuccess} />
-      
       <style>{`
         body, html, #root {
           margin: 0 !important;

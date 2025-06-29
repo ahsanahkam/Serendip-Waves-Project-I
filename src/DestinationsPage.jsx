@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import Navbar from "./Navbar";
-import SignupModal from "./SignupModal";
+import { Link } from "react-router-dom";
 
 // All destination data in this file
 const destinations = [
@@ -61,262 +59,8 @@ const destinations = [
   }
 ];
 
-// Login Modal Component
-const LoginModal = ({ isOpen, onClose, openSignupModal }) => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle login logic here
-    console.log('Login attempt:', formData);
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div 
-      className="modal-overlay"
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: 'rgba(0, 0, 0, 0.5)',
-        backdropFilter: 'blur(5px)',
-        zIndex: 10000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px'
-      }}
-      onClick={onClose}
-    >
-      <div 
-        className="modal-content"
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          width: '100%',
-          maxWidth: '400px',
-          animation: 'modalSlideIn 0.3s ease-out'
-        }}
-      >
-        <div className="card border-0 shadow-lg" 
-             style={{ 
-               borderRadius: '20px',
-               background: 'rgba(255, 255, 255, 0.1)',
-               backdropFilter: 'blur(20px)',
-               border: '1px solid rgba(255, 255, 255, 0.2)',
-               color: '#fff'
-             }}>
-          <div className="card-body p-5">
-            {/* Close Button */}
-            <button 
-              onClick={onClose}
-              className="btn-close btn-close-white position-absolute"
-              style={{
-                top: '15px',
-                right: '15px',
-                zIndex: 1,
-                opacity: 0.8
-              }}
-            ></button>
-
-            {/* Logo */}
-            <div className="text-center mb-4">
-              <img 
-                src="/logo.png" 
-                alt="Serendip Waves Logo" 
-                width="140" 
-                height="140" 
-                className="mb-3"
-              />
-              <h2 className="fw-bold mb-0 text-white">Login to Serendip Waves</h2>
-            </div>
-
-            {/* Login Form */}
-            <form onSubmit={handleSubmit}>
-              {/* Email Field */}
-              <div className="mb-3">
-                <label 
-                  htmlFor="email" 
-                  className="form-label fw-semibold text-white"
-                >
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  className="form-control form-control-lg"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter your email"
-                  required
-                  aria-describedby="emailHelp"
-                  style={{ 
-                    borderRadius: '10px',
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    background: 'rgba(255,255,255,0.1)',
-                    color: '#fff',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                />
-                <div id="emailHelp" className="form-text" style={{ color: 'rgba(255,255,255,0.7)' }}>
-                  We'll never share your email with anyone else.
-                </div>
-              </div>
-
-              {/* Password Field */}
-              <div className="mb-4">
-                <label 
-                  htmlFor="password" 
-                  className="form-label fw-semibold text-white"
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  className="form-control form-control-lg"
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Enter your password"
-                  required
-                  aria-describedby="passwordHelp"
-                  style={{ 
-                    borderRadius: '10px',
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    background: 'rgba(255,255,255,0.1)',
-                    color: '#fff',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                />
-                <div id="passwordHelp" className="form-text" style={{ color: 'rgba(255,255,255,0.7)' }}>
-                  Your password must be at least 8 characters long.
-                </div>
-              </div>
-
-              {/* Login Button */}
-              <div className="d-grid mb-4">
-                <button 
-                  type="submit" 
-                  className="btn btn-warning btn-lg fw-bold"
-                  style={{ 
-                    borderRadius: '10px',
-                    fontSize: '1.1rem',
-                    padding: '12px',
-                    background: 'rgba(255, 193, 7, 0.9)',
-                    border: '1px solid rgba(255, 193, 7, 0.3)',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                >
-                  Login
-                </button>
-              </div>
-
-              {/* Sign Up Link */}
-              <div className="text-center">
-                <p className="mb-0" style={{ color: 'rgba(255,255,255,0.8)' }}>
-                  Don't have an account?{' '}
-                  <a 
-                    href="#signup" 
-                    className="text-decoration-none fw-semibold"
-                    style={{ color: '#ffd600' }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onClose();
-                      openSignupModal();
-                    }}
-                  >
-                    Sign up
-                  </a>
-                </p>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      {/* Custom Styles for Glass Effect */}
-      <style>{`
-        @keyframes modalSlideIn {
-          from {
-            opacity: 0;
-            transform: translateY(-50px) scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-        
-        .form-control:focus {
-          background: rgba(255,255,255,0.2) !important;
-          border-color: #ffd600 !important;
-          box-shadow: 0 0 0 0.2rem rgba(255, 214, 0, 0.25) !important;
-          color: #fff !important;
-          backdrop-filter: blur(15px) !important;
-        }
-        
-        .form-control::placeholder {
-          color: rgba(255,255,255,0.6) !important;
-        }
-        
-        .btn-warning:hover {
-          background: rgba(255, 193, 7, 1) !important;
-          border-color: rgba(255, 193, 7, 1) !important;
-          transform: translateY(-2px);
-          transition: all 0.3s ease;
-          box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
-        }
-        
-        .card {
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important;
-        }
-        
-        /* Glass morphism effect */
-        .card::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          border-radius: 20px;
-          padding: 1px;
-          background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          mask-composite: exclude;
-          pointer-events: none;
-        }
-      `}</style>
-    </div>
-  );
-};
-
 const DestinationsPage = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const totalSlides = Math.ceil(destinations.length / 3);
 
@@ -328,28 +72,6 @@ const DestinationsPage = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const openLoginModal = () => {
-    setIsLoginModalOpen(true);
-  };
-
-  const closeLoginModal = () => {
-    setIsLoginModalOpen(false);
-  };
-
-  const openSignupModal = () => {
-    setIsSignupModalOpen(true);
-  };
-
-  const closeSignupModal = () => {
-    setIsSignupModalOpen(false);
-  };
-
-  // When signup is successful, close signup modal and open login modal
-  const handleSignupSuccess = () => {
-    setIsSignupModalOpen(false);
-    setIsLoginModalOpen(true);
-  };
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % totalSlides);
@@ -377,8 +99,6 @@ const DestinationsPage = () => {
 
   return (
     <div style={{ minHeight: '100vh', background: '#fff' }}>
-      <Navbar isScrolled={isScrolled} onLoginClick={openLoginModal} onSignupClick={openSignupModal} />
-      
       <section
         id="destinations"
         style={{
@@ -471,11 +191,6 @@ const DestinationsPage = () => {
           ))}
         </div>
       </section>
-
-      {/* Login Modal */}
-      <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} openSignupModal={openSignupModal} />
-      {/* Signup Modal */}
-      <SignupModal isOpen={isSignupModalOpen} onClose={closeSignupModal} onSignupSuccess={handleSignupSuccess} />
     </div>
   );
 };
