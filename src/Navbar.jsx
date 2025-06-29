@@ -64,7 +64,8 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
           right: 0,
           width: '100%',
           padding: '6px 0',
-          minHeight: '50px',
+          minHeight: '60px',
+          maxHeight: '80px',
           borderBottom: '1px solid #eee'
         }}
       >
@@ -77,8 +78,8 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
               textDecoration: 'none',
               transition: 'color 0.3s ease'
             }}>
-              <img src="/logo.png" alt="Serendip Waves Logo" width="50" height="50" className="me-2" />
-              <span style={{ fontWeight: 600, fontSize: '1.2rem', letterSpacing: '0.04em', color: '#1a237e' }}>serendip<br/>waves</span>
+              <img src="/logo.png" alt="Serendip Waves Logo" width="90" height="90" className="me-2" style={{ maxHeight: '70px', width: 'auto', objectFit: 'contain', verticalAlign: 'middle' }} />
+              <span style={{ fontWeight: 700, fontSize: '2.1rem', letterSpacing: '0.04em', color: '#1a237e', lineHeight: 1.1 }}>serendip<br/>waves</span>
             </Link>
           </div>
           {/* Centered Nav Links */}
