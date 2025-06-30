@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 992);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleResize = () => {
@@ -37,6 +39,24 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
       onSignupClick();
     } else {
       console.log('onSignupClick prop is missing');
+    }
+  };
+
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleNavClick = (e, sectionId) => {
+    e.preventDefault();
+    setIsMenuOpen(false);
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => scrollToSection(sectionId), 100);
+    } else {
+      scrollToSection(sectionId);
     }
   };
 
@@ -85,33 +105,39 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
           {/* Centered Nav Links */}
           {isLargeScreen && (
             <div className="d-flex align-items-center gap-4 mx-auto" style={{ flex: 1, justifyContent: 'center' }}>
-              <a href="#home" className="nav-link fw-semibold" style={{ 
+              <a href="#home" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'home')} style={{ 
                 color: '#222', 
                 textDecoration: 'none',
                 fontSize: '1.05rem',
                 padding: '6px 18px',
                 fontWeight: 500
               }}>Home</a>
-              <a href="#destinations" className="nav-link fw-semibold" style={{ 
+              <a href="#destinations" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'destinations')} style={{ 
                 color: '#222', 
                 textDecoration: 'none',
                 fontSize: '1.05rem',
                 padding: '6px 18px',
                 fontWeight: 500
               }}>Destination</a>
-              <a href="#cruises" className="nav-link fw-semibold" style={{ 
+              <Link to="/cruise-ships" className="nav-link fw-semibold" style={{ 
                 color: '#222',
                 textDecoration: 'none',
                 fontSize: '1.05rem',
                 padding: '6px 18px',
                 fontWeight: 500
-              }}>Cruises</a>
-              <a href="#about" className="nav-link fw-semibold" style={{ 
+              }}>Cruises</Link>
+              <a href="#about" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'about')} style={{ 
                 color: '#222',
                 fontSize: '1.05rem',
                 padding: '6px 18px',
                 fontWeight: 500
               }}>About Us</a>
+              <a href="#contact" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'contact')} style={{ 
+                color: '#222',
+                fontSize: '1.05rem',
+                padding: '6px 18px',
+                fontWeight: 500
+              }}>Contact</a>
             </div>
           )}
           {/* Login Button */}
@@ -140,7 +166,7 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
           <div className="collapse navbar-collapse show d-lg-none" id="navbarNav">
             <ul className="navbar-nav">
               <li className="nav-item">
-                <a href="#home" className="nav-link fw-semibold" onClick={handleNavLinkClick} style={{ 
+                <a href="#home" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'home')} style={{ 
                   color: '#fff', 
                   textDecoration: 'none',
                   transition: 'color 0.3s ease',
@@ -152,7 +178,7 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                 </a>
               </li>
               <li className="nav-item">
-                <a href="#destinations" className="nav-link fw-semibold" onClick={handleNavLinkClick} style={{ 
+                <a href="#destinations" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'destinations')} style={{ 
                   color: '#fff', 
                   textDecoration: 'none',
                   transition: 'color 0.3s ease',
@@ -164,7 +190,7 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                 </a>
               </li>
               <li className="nav-item">
-                <a href="#cruises" className="nav-link fw-semibold" onClick={handleNavLinkClick} style={{ 
+                <Link to="/cruise-ships" className="nav-link fw-semibold" onClick={handleNavLinkClick} style={{ 
                   color: '#fff',
                   textDecoration: 'none',
                   transition: 'color 0.3s ease',
@@ -173,10 +199,10 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                   borderBottom: '1px solid rgba(255,255,255,0.1)'
                 }}>
                   Cruises
-                </a>
+                </Link>
               </li>
               <li className="nav-item">
-                <a href="#about" className="nav-link fw-semibold" onClick={handleNavLinkClick} style={{ 
+                <a href="#about" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'about')} style={{ 
                   color: '#fff',
                   transition: 'color 0.3s ease',
                   fontSize: '1rem',
@@ -187,7 +213,7 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                 </a>
               </li>
               <li className="nav-item">
-                <a href="#contact" className="nav-link fw-semibold" onClick={handleNavLinkClick} style={{ 
+                <a href="#contact" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'contact')} style={{ 
                   color: '#fff',
                   transition: 'color 0.3s ease',
                   fontSize: '1rem',

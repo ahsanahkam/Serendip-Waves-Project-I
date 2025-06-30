@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Home from "./assets/Home.jpg";
 import DestinationsPage from "./DestinationsPage";
+import { Link } from "react-router-dom";
 
 // Hero Section
 const Hero = ({ onBookingClick }) => {
@@ -365,6 +366,36 @@ const Footer = () => (
   </footer>
 );
 
+// After Destinations section, before About section
+const FleetSection = () => (
+  <section id="fleet" style={{
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    overflow: 'hidden',
+    color: 'white',
+    padding: 0,
+    margin: 0
+  }}>
+    <div className="container text-center text-white">
+      <h1 className="display-3 fw-bold mb-4">
+        Our Fleet
+      </h1>
+      <p className="lead mb-5">
+        Discover our magnificent fleet of luxury cruise ships, each designed to provide unforgettable experiences across the world's most beautiful waters.
+      </p>
+      <div className="mt-5">
+        <Link to="/cruise-ships" className="btn btn-warning btn-lg">
+          View All Ships
+        </Link>
+      </div>
+    </div>
+  </section>
+);
+
 const HomePage = ({ onBookingClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -382,6 +413,7 @@ const HomePage = ({ onBookingClick }) => {
     <div style={{ width: '100%', overflow: 'hidden' }}>
       <Hero onBookingClick={onBookingClick} />
       <DestinationsPage />
+      <FleetSection />
       <AboutSection />
       <ContactSection />
       <Footer />
@@ -423,8 +455,8 @@ const HomePage = ({ onBookingClick }) => {
           min-height: 100vh;
           display: flex;
           flex-direction: column;
-          align-items: center;
-          justify-content: center;
+          alignItems: center;
+          justifyContent: center;
           padding: 0 20px;
         }
         .hero-cta-btn {
