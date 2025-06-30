@@ -34,7 +34,7 @@ const SignupModal = ({ isOpen, onClose, openLoginModal }) => {
 
   const sendOTP = async () => {
     try {
-      const res = await axios.post("http://localhost/Serendip%20Waves/Backend/Serendip-Waves-Backend/emailValidationOTP.php", { 
+      const res = await axios.post("http://localhost/Project-I/backend/emailValidationOTP.php", { 
         email: form.email 
       });
       if (res.data.success) {
@@ -97,7 +97,7 @@ const SignupModal = ({ isOpen, onClose, openLoginModal }) => {
     }
 
     try {
-      const res = await axios.post("http://localhost/Serendip%20Waves/Backend/Serendip-Waves-Backend/customersignup.php", formData, {
+      const res = await axios.post("http://localhost/Project-I/backend/customersignup.php", formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
