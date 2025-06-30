@@ -138,6 +138,7 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                 padding: '6px 18px',
                 fontWeight: 500
               }}>Contact</a>
+              <Link to="/super-admin" className="nav-link fw-semibold">Super Admin Dashboard</Link>
             </div>
           )}
           {/* Login Button */}
@@ -222,6 +223,9 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                 }}>
                   Contact
                 </a>
+              </li>
+              <li className="nav-item">
+                <Link to="/super-admin" className="nav-link fw-semibold">Super Admin Dashboard</Link>
               </li>
               <li className="nav-item">
                 <button 

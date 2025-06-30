@@ -7,6 +7,8 @@ import SignupModal from './SignupModal';
 import Navbar from './Navbar';
 import LoginModal from './LoginModal';
 import CruiseShipsPage from './CruiseShipsPage';
+import BookingOverviewPage from './BookingOverviewPage';
+import SuperAdminDashboard from './SuperAdminDashboard';
 
 // Authentication Context
 const AuthContext = React.createContext();
@@ -87,12 +89,14 @@ function AppRoutes(props) {
         <Route path="/" element={<HomePage onBookingClick={() => setIsBookingModalOpen(true)} />} />
         <Route path="/cruise-ships" element={<CruiseShipsPage />} />
         <Route path="/booking" element={<Navigate to="/" replace />} />
+        <Route path="/booking-overview" element={<BookingOverviewPage />} />
         <Route path="/login" element={
           <LoginRouteHandler isAuthenticated={isAuthenticated} setIsLoginModalOpen={setIsLoginModalOpen} />
         } />
         <Route path="/signup" element={
           <SignupRouteHandler isAuthenticated={isAuthenticated} setIsSignupModalOpen={setIsSignupModalOpen} />
         } />
+        <Route path="/super-admin" element={<SuperAdminDashboard />} />
       </Routes>
     </>
   );

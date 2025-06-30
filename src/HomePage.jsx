@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Home from "./assets/Home.jpg";
 import DestinationsPage from "./DestinationsPage";
 import { Link } from "react-router-dom";
+import AboutSection from './AboutSection';
 
 // Hero Section
 const Hero = ({ onBookingClick }) => {
@@ -89,83 +90,6 @@ const Hero = ({ onBookingClick }) => {
     </section>
   );
 };
-
-// About Section
-const AboutSection = () => (
-  <section id="about" className="py-5" style={{ background: '#f8f9fa' }}>
-    <div className="container">
-      {/* About Content */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <h2 className="display-5 fw-bold mb-4">About Serendip Waves</h2>
-          <p className="lead mb-4">
-            We are passionate about creating unforgettable cruise experiences that combine luxury, adventure, and discovery.
-          </p>
-          <p className="mb-4">
-            With over 20 years of experience in the cruise industry, we've helped thousands of travelers explore the world's most beautiful destinations. Our commitment to excellence and attention to detail ensures every journey is extraordinary.
-          </p>
-          <div className="row text-center">
-            <div className="col-4">
-              <h3 className="fw-bold text-primary">500+</h3>
-              <p className="text-muted">Happy Cruises</p>
-            </div>
-            <div className="col-4">
-              <h3 className="fw-bold text-primary">50+</h3>
-              <p className="text-muted">Destinations</p>
-            </div>
-            <div className="col-4">
-              <h3 className="fw-bold text-primary">10K+</h3>
-              <p className="text-muted">Happy Customers</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* About Image */}
-      <div className="row mb-5">
-        <div className="col-12 d-flex justify-content-center">
-          <img 
-            src="About us.jpg" 
-            alt="About Us" 
-            className="img-fluid rounded shadow"
-            style={{ borderRadius: '20px', maxWidth: '1000px', width: '100%',height:'500px',objectFit:'cover' }}
-          />
-        </div>
-      </div>
-      {/* Mission Section */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="card border-0 shadow-lg h-100 mb-4" style={{ borderRadius: '20px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-            <div className="card-body p-5 text-white">
-              <div className="text-center mb-4">
-                <i className="fas fa-bullseye fa-3x mb-3" style={{ color: '#ffd600' }}></i>
-                <h3 className="fw-bold mb-3">Our Mission</h3>
-              </div>
-              <p className="lead mb-0" style={{ lineHeight: '1.8' }}>
-                Our mission is to revolutionize cruise ship management by delivering an intelligent, secure, and integrated digital platform. We aim to simplify operations, reduce manual inefficiencies, and enhance coordination between staff and passengers, while ensuring industry compliance and superior service quality for a modern maritime experience.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Vision Section */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="card border-0 shadow-lg h-100" style={{ borderRadius: '20px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-            <div className="card-body p-5 text-white">
-              <div className="text-center mb-4">
-                <i className="fas fa-eye fa-3x mb-3" style={{ color: '#ffd600' }}></i>
-                <h3 className="fw-bold mb-3">Our Vision</h3>
-              </div>
-              <p className="lead mb-0" style={{ lineHeight: '1.8' }}>
-                We envision Serendib Waves as a leading digital solution in the cruise industry, empowering operators through technology-driven efficiency. By embracing smart automation and real-time analytics, we strive to support sustainable growth, elevate passenger satisfaction, and become a benchmark for future-ready, scalable cruise management systems worldwide.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-);
 
 // Contact Section
 const ContactSection = () => (
