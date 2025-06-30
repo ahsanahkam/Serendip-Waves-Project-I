@@ -388,7 +388,7 @@ const FleetSection = () => (
         Discover our magnificent fleet of luxury cruise ships, each designed to provide unforgettable experiences across the world's most beautiful waters.
       </p>
       <div className="mt-5">
-        <Link to="/cruise-ships" className="btn btn-warning btn-lg">
+        <Link to="/cruise-ships" className="btn view-all-ships-btn btn-lg">
           View All Ships
         </Link>
       </div>
@@ -512,6 +512,20 @@ const HomePage = ({ onBookingClick }) => {
         }
         body {
           scroll-behavior: smooth;
+        }
+        .view-all-ships-btn {
+          background: #102347;
+          color: #fff;
+          border: none;
+          font-weight: 700;
+          letter-spacing: 0.03em;
+          box-shadow: 0 4px 18px rgba(16,35,71,0.12);
+          transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        }
+        .view-all-ships-btn:hover, .view-all-ships-btn:focus {
+          background: #1a237e;
+          color: #fff;
+          box-shadow: 0 6px 24px rgba(16,35,71,0.18);
         }
       `}</style>
       {/* Bootstrap Icons CDN for search icon */}

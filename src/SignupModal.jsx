@@ -314,6 +314,17 @@ const SignupModal = ({ isOpen, onClose, openLoginModal }) => {
             mask-composite: exclude;
             pointer-events: none;
           }
+          @media (max-width: 600px) {
+            .card-body {
+              max-height: 70vh;
+              overflow-y: auto;
+              scrollbar-width: none; /* Firefox */
+              -ms-overflow-style: none; /* IE 10+ */
+            }
+            .card-body::-webkit-scrollbar {
+              display: none; /* Chrome, Safari, Opera */
+            }
+          }
         `}</style>
       </div>
 
