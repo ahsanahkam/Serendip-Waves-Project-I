@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const cabinTypes = ["Interior", "Ocean view", "Balcony", "Suite"];
 const dietaryOptions = ["None", "Vegetarian", "Vegan", "Gluten-Free", "Kosher", "Halal"];
@@ -11,7 +11,7 @@ const addOns = [
 
 const steps = ["Add details", "Passenger details", "Payment"];
 
-const BookingModal = ({ isOpen, onClose }) => {
+const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     adults: 1,
@@ -20,6 +20,7 @@ const BookingModal = ({ isOpen, onClose }) => {
     fullName: "",
     gender: "",
     citizenship: "",
+    destination: "",
     email: "",
     age: "",
     cardType: "Visa",
@@ -29,8 +30,17 @@ const BookingModal = ({ isOpen, onClose }) => {
   });
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [guestCountError, setGuestCountError] = useState("");
 
   const totalAmount = 375; // Example static amount
+
+  // Set default country when modal opens
+  useEffect(() => {
+    if (isOpen && defaultCountry && !form.destination) {
+      setForm(prev => ({ ...prev, destination: defaultCountry }));
+    }
+    // eslint-disable-next-line
+  }, [isOpen, defaultCountry]);
 
   const handleChange = e => {
     const { name, value, type, checked } = e.target;
@@ -40,17 +50,26 @@ const BookingModal = ({ isOpen, onClose }) => {
     }));
   };
 
-  const handleNumberChange = (name, value) => {
-    let newValue = Number(value);
-    if (name === "adults") {
-      if (newValue < 1) newValue = 1;
-      if (newValue + form.children > 4) newValue = 4 - form.children;
+  const handleAdultsChange = (e) => {
+    const adults = Number(e.target.value);
+    const maxChildren = 4 - adults;
+    setForm(prev => ({
+      ...prev,
+      adults,
+      children: Math.min(prev.children, maxChildren)
+    }));
+    setGuestCountError("");
+  };
+
+  const handleChildrenChange = (e) => {
+    const children = Number(e.target.value);
+    const total = (Number(form.adults) || 0) + children;
+    if (total > 4) {
+      setGuestCountError("Total guests (adults + children) cannot exceed 4.");
+      return;
     }
-    if (name === "children") {
-      if (newValue < 0) newValue = 0;
-      if (form.adults + newValue > 4) newValue = 4 - form.adults;
-    }
-    setForm(prev => ({ ...prev, [name]: newValue }));
+    setForm(prev => ({ ...prev, children }));
+    setGuestCountError("");
   };
 
   const handleNext = () => setStep(step + 1);
@@ -58,7 +77,7 @@ const BookingModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    if (!form.cabinType || !form.adults || !form.fullName || !form.email || !form.cardNumber || !form.expiry || !form.cvv) {
+    if (!form.cabinType || !form.adults || form.children === undefined || !form.fullName || !form.email || !form.cardNumber || !form.expiry || !form.cvv) {
       setError("Please fill in all required fields.");
       setSuccess("");
       return;
@@ -76,6 +95,7 @@ const BookingModal = ({ isOpen, onClose }) => {
         fullName: "",
         gender: "",
         citizenship: "",
+        destination: "",
         email: "",
         age: "",
         cardType: "Visa",
@@ -225,16 +245,19 @@ const BookingModal = ({ isOpen, onClose }) => {
           height: 18px;
           margin-right: 4px;
         }
+        /* Hide scrollbar for all browsers */
+        div[style*='overflowY']::-webkit-scrollbar { display: none; }
+        div[style*='overflowY'] { scrollbar-width: none; -ms-overflow-style: none; }
       `}</style>
       <div
         style={{
           background: "rgba(255, 255, 255, 0.95)",
           backdropFilter: "blur(20px)",
           borderRadius: "20px",
-          padding: "44px 38px 38px 38px",
-          maxWidth: "480px",
-          width: "95%",
-          maxHeight: "98vh",
+          padding: "28px 20px 20px 20px",
+          maxWidth: "420px",
+          width: "98%",
+          maxHeight: "90vh",
           overflowY: "auto",
           border: "1px solid rgba(255, 255, 255, 0.2)",
           boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
@@ -273,29 +296,35 @@ const BookingModal = ({ isOpen, onClose }) => {
           <form onSubmit={e => { e.preventDefault(); handleNext(); }}>
             <h3 style={{ textAlign: "center", marginBottom: 24, color: '#7c4dff', fontWeight: 700 }}>Add details</h3>
             <div style={{ marginBottom: 18 }}>
-              <label style={{ fontWeight: 600 }}>Guest count</label>
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
-                <span>Adult</span>
-                <input
-                  type="number"
-                  min={1}
-                  max={4}
-                  value={form.adults}
-                  onChange={e => handleNumberChange("adults", e.target.value)}
-                  className="booking-modal-input"
-                  style={{ width: 50, borderRadius: 6, border: '1px solid #ccc', padding: 4 }}
-                />
-                <span>Children</span>
-                <input
-                  type="number"
-                  min={0}
-                  max={4}
-                  value={form.children}
-                  onChange={e => handleNumberChange("children", e.target.value)}
-                  className="booking-modal-input"
-                  style={{ width: 50, borderRadius: 6, border: '1px solid #ccc', padding: 4 }}
-                />
-              </div>
+              <label style={{ fontWeight: 600 }}>Adults</label>
+              <select
+                name="adults"
+                value={form.adults}
+                onChange={handleAdultsChange}
+                className="booking-modal-select"
+                style={{ width: 90, borderRadius: 6, border: '1px solid #ccc', padding: 6, marginTop: 8, marginRight: 12 }}
+                required
+              >
+                {[1,2,3,4].map(n => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+              <label style={{ fontWeight: 600, marginLeft: 10 }}>Children</label>
+              <select
+                name="children"
+                value={form.children}
+                onChange={handleChildrenChange}
+                className="booking-modal-select"
+                style={{ width: 90, borderRadius: 6, border: '1px solid #ccc', padding: 6, marginTop: 8 }}
+                required
+              >
+                {Array.from({length: 4 - form.adults + 1}, (_, i) => i).map(n => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+              {guestCountError && (
+                <div style={{ color: 'red', fontSize: 13, marginTop: 4 }}>{guestCountError}</div>
+              )}
             </div>
             <div style={{ marginBottom: 18 }}>
               <label style={{ fontWeight: 600 }}>Cabin type</label>
@@ -348,6 +377,26 @@ const BookingModal = ({ isOpen, onClose }) => {
               </select>
             </div>
             <div style={{ marginBottom: 8 }}>
+              <label>Destination</label>
+              <select
+                name="destination"
+                value={form.destination}
+                onChange={handleChange}
+                className="booking-modal-select"
+                style={{ width: '100%', borderRadius: 6, border: '1px solid #ccc', padding: 6, marginTop: 2 }}
+                required
+              >
+                <option value="">Select destination</option>
+                <option value="Sri Lanka">Sri Lanka</option>
+                <option value="Australia">Australia</option>
+                <option value="Norway">Norway</option>
+                <option value="Greece">Greece</option>
+                <option value="Japan">Japan</option>
+                <option value="Caribbean">Caribbean</option>
+                <option value="Alaska">Alaska</option>
+              </select>
+            </div>
+            <div style={{ marginBottom: 8 }}>
               <label>Citizenship</label>
               <select
                 name="citizenship"
@@ -363,8 +412,12 @@ const BookingModal = ({ isOpen, onClose }) => {
                 <option value="Norway">Norway</option>
                 <option value="Greece">Greece</option>
                 <option value="Japan">Japan</option>
-                <option value="Creebean">Creebean</option>
+                <option value="Caribbean">Caribbean</option>
                 <option value="Alaska">Alaska</option>
+                <option value="United States">United States</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="India">India</option>
+                <option value="Other">Other</option>
               </select>
             </div>
             <div style={{ marginBottom: 8 }}>
