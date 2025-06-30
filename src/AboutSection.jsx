@@ -33,7 +33,7 @@ const AboutSection = () => {
 
   return (
     <>
-      <section id="about" className="about-luxury-section position-relative">
+      <section id="about" className="about-luxury-section position-relative" style={{ paddingBottom: '2.5rem' }}>
         <div className="about-wave-bg"></div>
         <div className="container py-5">
           <div className="row align-items-center g-5 flex-column-reverse flex-lg-row">
@@ -102,9 +102,8 @@ const AboutSection = () => {
           </div>
         </div>
       </section>
-      <div style={{ marginBottom: '3.5rem' }}></div>
     </>
   );
 };
 
-export default AboutSection; 
+export default AboutSection;
