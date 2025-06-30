@@ -6,6 +6,7 @@ import BookingModal from './BookingModal';
 import SignupModal from './SignupModal';
 import Navbar from './Navbar';
 import LoginModal from './LoginModal';
+import CruiseShipsPage from './CruiseShipsPage';
 
 // Authentication Context
 const AuthContext = React.createContext();
@@ -84,7 +85,7 @@ function AppRoutes(props) {
       />
       <Routes>
         <Route path="/" element={<HomePage onBookingClick={() => setIsBookingModalOpen(true)} />} />
-        <Route path="/destinations" element={<DestinationsPage />} />
+        <Route path="/cruise-ships" element={<CruiseShipsPage />} />
         <Route path="/booking" element={<Navigate to="/" replace />} />
         <Route path="/login" element={
           <LoginRouteHandler isAuthenticated={isAuthenticated} setIsLoginModalOpen={setIsLoginModalOpen} />
