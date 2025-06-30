@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -12,6 +13,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
   const [passwordError, setPasswordError] = useState("");
   const [step, setStep] = useState("login"); // 'login', 'forgot', 'otp', 'newPassword'
   const dummyOtp = '123456';
+  const navigate = useNavigate();
 
   if (!isOpen) return null;
 
@@ -53,7 +55,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
     }, 1000);
   };
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
@@ -116,7 +118,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
           <h2 className="fw-bold mb-0 text-white">Login to Serendip Waves</h2>
         </div>
         {error && <div className="alert alert-danger text-center">{error}</div>}
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="form-label fw-semibold text-white">Email Address</label>
             <input type="email" className="form-control form-control-lg" name="email" value={form.email} onChange={handleChange} placeholder="Enter your email" style={inputStyle} />
