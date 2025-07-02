@@ -166,6 +166,17 @@ const Footer = () => (
             </li>
             <li className="mb-2">
               <a 
+                href="/cruise-ships"
+                className="text-decoration-none text-light"
+                style={{ transition: 'color 0.3s ease' }}
+                onMouseEnter={(e) => e.target.style.color = '#ffd600'}
+                onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
+              >
+                <i className="bi bi-ship me-2 text-white"></i>Cruises
+              </a>
+            </li>
+            <li className="mb-2">
+              <a 
                 href="#destinations" 
                 className="text-decoration-none text-light"
                 style={{ transition: 'color 0.3s ease' }}
@@ -321,18 +332,6 @@ const FleetSection = () => (
 );
 
 const HomePage = ({ onBookingClick }) => {
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
   return (
     <div style={{ width: '100%', overflow: 'hidden' }}>
       <Hero onBookingClick={onBookingClick} />
@@ -452,8 +451,6 @@ const HomePage = ({ onBookingClick }) => {
           box-shadow: 0 6px 24px rgba(16,35,71,0.18);
         }
       `}</style>
-      {/* Bootstrap Icons CDN for search icon */}
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
     </div>
   );
 };
