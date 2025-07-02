@@ -9,12 +9,12 @@ import LoginModal from './LoginModal';
 import CruiseShipsPage from './CruiseShipsPage';
 import BookingOverviewPage from './BookingOverviewPage';
 import SuperAdminDashboard from './SuperAdminDashboard';
+import CustomerDashboard from './CustomerDashboard';
 
 // Authentication Context
 const AuthContext = React.createContext();
 
 function SignupRouteHandler({ isAuthenticated, setIsSignupModalOpen }) {
-  const location = useLocation();
   React.useEffect(() => {
     setIsSignupModalOpen(true);
   }, [setIsSignupModalOpen]);
@@ -23,7 +23,6 @@ function SignupRouteHandler({ isAuthenticated, setIsSignupModalOpen }) {
 }
 
 function LoginRouteHandler({ isAuthenticated, setIsLoginModalOpen }) {
-  const location = useLocation();
   React.useEffect(() => {
     setIsLoginModalOpen(true);
   }, [setIsLoginModalOpen]);
@@ -97,6 +96,7 @@ function AppRoutes(props) {
           <SignupRouteHandler isAuthenticated={isAuthenticated} setIsSignupModalOpen={setIsSignupModalOpen} />
         } />
         <Route path="/super-admin" element={<SuperAdminDashboard />} />
+        <Route path="/customer-dashboard" element={<CustomerDashboard />} />
       </Routes>
     </>
   );
@@ -105,8 +105,6 @@ function AppRoutes(props) {
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showSignupModal, setShowSignupModal] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
@@ -125,7 +123,7 @@ const App = () => {
   const login = (userData) => {
     setCurrentUser(userData);
     setIsAuthenticated(true);
-    setShowLoginModal(false);
+    setIsLoginModalOpen(false);
     
     localStorage.setItem('currentUser', JSON.stringify(userData));
     localStorage.setItem('isAuthenticated', 'true');
@@ -149,27 +147,7 @@ const App = () => {
     // Auto-login after signup
     const { password, confirmPassword, ...userWithoutPassword } = newUser;
     login(userWithoutPassword);
-    setShowSignupModal(false);
-  };
-
-  const handleSignup = async (formData) => {
-    const response = await fetch("http://localhost/Serendip_Waves-Backend/signup.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-    const data = await response.json();
-    // handle response (success/error)
-  };
-
-  const handleLogin = async (formData) => {
-    const response = await fetch("http://localhost/Serendip_Waves-Backend/login.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-    const data = await response.json();
-    // handle response (success/error)
+    setIsSignupModalOpen(false);
   };
 
   const authValue = {
@@ -178,10 +156,10 @@ const App = () => {
     login,
     logout,
     signup,
-    showLoginModal,
-    setShowLoginModal,
-    showSignupModal,
-    setShowSignupModal,
+    isLoginModalOpen,
+    setIsLoginModalOpen,
+    isSignupModalOpen,
+    setIsSignupModalOpen,
     isBookingModalOpen,
     setIsBookingModalOpen
   };

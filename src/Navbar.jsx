@@ -126,6 +126,13 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                 padding: '6px 18px',
                 fontWeight: 500
               }}>Cruises</Link>
+              <Link to="/customer-dashboard" className="nav-link fw-semibold" style={{ 
+                color: '#222',
+                textDecoration: 'none',
+                fontSize: '1.05rem',
+                padding: '6px 18px',
+                fontWeight: 500
+              }}>Customer Dashboard</Link>
               <a href="#about" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'about')} style={{ 
                 color: '#222',
                 fontSize: '1.05rem',
@@ -200,6 +207,18 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                   borderBottom: '1px solid rgba(255,255,255,0.1)'
                 }}>
                   Cruises
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/customer-dashboard" className="nav-link fw-semibold" onClick={handleNavLinkClick} style={{ 
+                  color: '#fff',
+                  textDecoration: 'none',
+                  transition: 'color 0.3s ease',
+                  fontSize: '1rem',
+                  padding: '10px 15px',
+                  borderBottom: '1px solid rgba(255,255,255,0.1)'
+                }}>
+                  Customer Dashboard
                 </Link>
               </li>
               <li className="nav-item">
