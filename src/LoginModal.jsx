@@ -70,7 +70,9 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError(""); // Clear previous error
     if (!form.email || !form.password) {
+      setError("Please fill in all fields.");
       toast.error("Please fill in all fields.");
       return;
     }
@@ -108,15 +110,19 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
           }
         }, 2000);
       } else {
-        toast.error(response.data.message);
+        setError(response.data.message || "Invalid username or password.");
+        toast.error(response.data.message || "Invalid username or password.");
       }
     } catch (error) {
       if (error.response && error.response.data) {
-        toast.error(error.response.data.message);
+        setError(error.response.data.message || "Login failed.");
+        toast.error(error.response.data.message || "Login failed.");
       } else if (error.message) {
+        setError("Login failed: " + error.message);
         toast.error("Login failed: " + error.message);
       } else {
-        toast.error("Login failed. Try again..");
+        setError("Login failed. Try again.");
+        toast.error("Login failed. Try again.");
       }
     }
   };
