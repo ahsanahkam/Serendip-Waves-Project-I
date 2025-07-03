@@ -1,8 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import './CustomerDashboard.css';
+import { AuthContext } from './App';
+import avatarPlaceholder from './assets/logo2.png'; // Use logo2.png as a placeholder avatar
+import { FaCrown, FaShip } from 'react-icons/fa'; // For luxury icons (if react-icons is installed)
 
 const CustomerDashboard = () => {
   const [user, setUser] = useState(null);
+  const { setIsBookingModalOpen } = useContext(AuthContext);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('currentUser');
@@ -12,28 +16,35 @@ const CustomerDashboard = () => {
   }, []);
 
   return (
-    <div className="customer-dashboard-bg">
-      <div className="customer-dashboard-container">
-        <h2 className="customer-dashboard-title">Customer Dashboard</h2>
-        {user ? (
-          <>
-            <div className="customer-dashboard-userinfo">
-              <h5>Welcome, <span>{user.fullName || user.name}</span>!</h5>
-              <div><strong>Email:</strong> {user.email}</div>
-              {user.phone && <div><strong>Phone:</strong> {user.phone}</div>}
-              {user.dob && <div><strong>Date of Birth:</strong> {user.dob}</div>}
-              {user.gender && <div><strong>Gender:</strong> {user.gender}</div>}
-              {user.passport && <div><strong>Passport Number:</strong> {user.passport}</div>}
-            </div>
-            <hr />
-            <div>
-              <h5 className="customer-dashboard-section-title">My Booking</h5>
-              <div className="customer-dashboard-booking alert alert-info">You have no bookings yet. Book your first cruise now!</div>
-            </div>
-          </>
-        ) : (
-          <div className="alert alert-warning">No user details found. Please log in.</div>
-        )}
+    <div className="customer-dashboard-bg luxury-bg">
+      <div className="customer-dashboard-container luxury-glass">
+        {/* Profile Section */}
+        <div className="customer-dashboard-profile luxury-profile">
+          <img
+            src={user?.profileImage || avatarPlaceholder}
+            alt="Profile"
+            className="customer-dashboard-avatar luxury-avatar"
+          />
+          <div className="luxury-profile-info">
+            <h1 className="customer-dashboard-welcome-title luxury-title">
+              <FaCrown className="luxury-crown" />
+              Welcome <span className="customer-dashboard-fullname luxury-highlight">{user?.fullName || user?.name}</span>
+            </h1>
+            <p className="customer-dashboard-welcome-sub luxury-sub">We're glad to have you onboard. Start your journey with us!</p>
+          </div>
+        </div>
+        {/* Booking Section */}
+        <div className="customer-dashboard-booking-card luxury-card">
+          <h2 className="customer-dashboard-section-title luxury-section-title">
+            <FaShip className="luxury-ship" /> My Booking
+          </h2>
+          <div className="customer-dashboard-booking-placeholder luxury-booking-placeholder">
+            You have no bookings yet.<br />
+            <button className="customer-dashboard-book-btn luxury-btn" onClick={() => setIsBookingModalOpen(true)}>
+              Book Now
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

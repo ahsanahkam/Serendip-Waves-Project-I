@@ -1,29 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
-  useNavigate,
-} from "react-router-dom";
-import HomePage from "./HomePage";
-import DestinationsPage from "./DestinationsPage";
-import BookingModal from "./BookingModal";
-import SignupModal from "./SignupModal";
-import Navbar from "./Navbar";
-import LoginModal from "./LoginModal";
-import CruiseShipsPage from "./CruiseShipsPage";
-import BookingOverviewPage from "./BookingOverviewPage";
-import SuperAdminDashboard from "./SuperAdminDashboard";
-import CustomerDashboard from "./CustomerDashboard";
-import CabinAdminDashboard from "./CabinAdminDashboard";
-import "./App.css";
+  useNavigate
+} from 'react-router-dom';
+import HomePage from './HomePage';
+import DestinationsPage from './DestinationsPage';
+import BookingModal from './BookingModal';
+import SignupModal from './SignupModal';
+import Navbar from './Navbar';
+import LoginModal from './LoginModal';
+import CruiseShipsPage from './CruiseShipsPage';
+import BookingOverviewPage from './BookingOverviewPage';
+import SuperAdminDashboard from './SuperAdminDashboard';
+import CustomerDashboard from './CustomerDashboard';
 
-// Authentication Context
-const AuthContext = React.createContext();
+export const AuthContext = React.createContext();
 
 function SignupRouteHandler({ isAuthenticated, setIsSignupModalOpen }) {
-  useEffect(() => {
+  React.useEffect(() => {
     setIsSignupModalOpen(true);
   }, [setIsSignupModalOpen]);
   if (isAuthenticated) return <Navigate to="/" />;
@@ -31,12 +28,19 @@ function SignupRouteHandler({ isAuthenticated, setIsSignupModalOpen }) {
 }
 
 function LoginRouteHandler({ isAuthenticated, setIsLoginModalOpen }) {
-  useEffect(() => {
+  React.useEffect(() => {
     setIsLoginModalOpen(true);
   }, [setIsLoginModalOpen]);
   if (isAuthenticated) return <Navigate to="/" />;
   return null;
 }
+
+const ProtectedRoute = ({ allowedRoles, children }) => {
+  const { isAuthenticated, currentUser } = useContext(AuthContext);
+  if (!isAuthenticated) return <Navigate to="/login" />;
+  if (allowedRoles && !allowedRoles.includes(currentUser?.role)) return <Navigate to="/" />;
+  return children;
+};
 
 function AppRoutes(props) {
   const navigate = useNavigate();
@@ -47,7 +51,7 @@ function AppRoutes(props) {
     isLoginModalOpen,
     isSignupModalOpen,
     isBookingModalOpen,
-    setIsBookingModalOpen,
+    setIsBookingModalOpen
   } = props;
   return (
     <>
@@ -59,32 +63,24 @@ function AppRoutes(props) {
         isOpen={isLoginModalOpen}
         onClose={() => {
           setIsLoginModalOpen(false);
-          if (window.location.pathname === "/login") {
-            navigate("/");
-          }
+          if (window.location.pathname === "/login") navigate("/");
         }}
         onSignupClick={() => {
           setIsLoginModalOpen(false);
           setIsSignupModalOpen(true);
-          if (window.location.pathname === "/login") {
-            navigate("/signup");
-          }
+          if (window.location.pathname === "/login") navigate("/signup");
         }}
       />
       <SignupModal
         isOpen={isSignupModalOpen}
         onClose={() => {
           setIsSignupModalOpen(false);
-          if (window.location.pathname === "/signup") {
-            navigate("/");
-          }
+          if (window.location.pathname === "/signup") navigate("/");
         }}
         openLoginModal={() => {
           setIsSignupModalOpen(false);
           setIsLoginModalOpen(true);
-          if (window.location.pathname === "/signup") {
-            navigate("/login");
-          }
+          if (window.location.pathname === "/signup") navigate("/login");
         }}
       />
       <BookingModal
@@ -92,36 +88,14 @@ function AppRoutes(props) {
         onClose={() => setIsBookingModalOpen(false)}
       />
       <Routes>
-        <Route
-          path="/"
-          element={
-            <HomePage onBookingClick={() => setIsBookingModalOpen(true)} />
-          }
-        />
+        <Route path="/" element={<HomePage onBookingClick={() => setIsBookingModalOpen(true)} />} />
         <Route path="/cruise-ships" element={<CruiseShipsPage />} />
         <Route path="/booking" element={<Navigate to="/" replace />} />
         <Route path="/booking-overview" element={<BookingOverviewPage />} />
-        <Route
-          path="/login"
-          element={
-            <LoginRouteHandler
-              isAuthenticated={isAuthenticated}
-              setIsLoginModalOpen={setIsLoginModalOpen}
-            />
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <SignupRouteHandler
-              isAuthenticated={isAuthenticated}
-              setIsSignupModalOpen={setIsSignupModalOpen}
-            />
-          }
-        />
+        <Route path="/login" element={<LoginRouteHandler isAuthenticated={isAuthenticated} setIsLoginModalOpen={setIsLoginModalOpen} />} />
+        <Route path="/signup" element={<SignupRouteHandler isAuthenticated={isAuthenticated} setIsSignupModalOpen={setIsSignupModalOpen} />} />
         <Route path="/super-admin" element={<SuperAdminDashboard />} />
         <Route path="/customer-dashboard" element={<CustomerDashboard />} />
-        <Route path="/cabin-admin" element={<CabinAdminDashboard />} />
       </Routes>
     </>
   );
@@ -134,12 +108,10 @@ const App = () => {
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
-  // Check for existing authentication on app load
   useEffect(() => {
-    const savedUser = localStorage.getItem("currentUser");
-    const savedAuth = localStorage.getItem("isAuthenticated");
-
-    if (savedUser && savedAuth === "true") {
+    const savedUser = localStorage.getItem('currentUser');
+    const savedAuth = localStorage.getItem('isAuthenticated');
+    if (savedUser && savedAuth === 'true') {
       setCurrentUser(JSON.parse(savedUser));
       setIsAuthenticated(true);
     }
@@ -149,27 +121,22 @@ const App = () => {
     setCurrentUser(userData);
     setIsAuthenticated(true);
     setIsLoginModalOpen(false);
-
-    localStorage.setItem("currentUser", JSON.stringify(userData));
-    localStorage.setItem("isAuthenticated", "true");
+    localStorage.setItem('currentUser', JSON.stringify(userData));
+    localStorage.setItem('isAuthenticated', 'true');
   };
 
   const logout = () => {
     setCurrentUser(null);
     setIsAuthenticated(false);
-
-    localStorage.removeItem("currentUser");
-    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('isAuthenticated');
   };
 
   const signup = (userData) => {
-    // Store user data in localStorage (simulating database)
-    const existingUsers = JSON.parse(localStorage.getItem("users") || "[]");
+    const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
     const newUser = { ...userData, id: Date.now() };
     existingUsers.push(newUser);
-    localStorage.setItem("users", JSON.stringify(existingUsers));
-
-    // Auto-login after signup
+    localStorage.setItem('users', JSON.stringify(existingUsers));
     const { password, confirmPassword, ...userWithoutPassword } = newUser;
     login(userWithoutPassword);
     setIsSignupModalOpen(false);
@@ -186,7 +153,7 @@ const App = () => {
     isSignupModalOpen,
     setIsSignupModalOpen,
     isBookingModalOpen,
-    setIsBookingModalOpen,
+    setIsBookingModalOpen
   };
 
   return (
