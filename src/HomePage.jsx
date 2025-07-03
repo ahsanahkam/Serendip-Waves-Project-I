@@ -1,397 +1,95 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import bg from "./assets/bg.jpg";
-import Navbar from "./Navbar";
+import Home from "./assets/Home.jpg";
 import DestinationsPage from "./DestinationsPage";
-import SignupModal from "./SignupModal";
-
-// Login Modal Component
-const LoginModal = ({ isOpen, onClose }) => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle login logic here
-    console.log('Login attempt:', formData);
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div 
-      className="modal-overlay"
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: 'rgba(0, 0, 0, 0.5)',
-        backdropFilter: 'blur(5px)',
-        zIndex: 10000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px'
-      }}
-      onClick={onClose}
-    >
-      <div 
-        className="modal-content"
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          width: '100%',
-          maxWidth: '400px',
-          animation: 'modalSlideIn 0.3s ease-out'
-        }}
-      >
-        <div className="card border-0 shadow-lg" 
-             style={{ 
-               borderRadius: '20px',
-               background: 'rgba(255, 255, 255, 0.1)',
-               backdropFilter: 'blur(20px)',
-               border: '1px solid rgba(255, 255, 255, 0.2)',
-               color: '#fff'
-             }}>
-          <div className="card-body p-5">
-            {/* Close Button */}
-            <button 
-              onClick={onClose}
-              className="btn-close btn-close-white position-absolute"
-              style={{
-                top: '15px',
-                right: '15px',
-                zIndex: 1,
-                opacity: 0.8
-              }}
-            ></button>
-
-            {/* Logo */}
-            <div className="text-center mb-4">
-              <img 
-                src="/logo.png" 
-                alt="Serendip Waves Logo" 
-                width="140" 
-                height="140" 
-                className="mb-3"
-              />
-              <h2 className="fw-bold mb-0 text-white">Login to Serendip Waves</h2>
-            </div>
-
-            {/* Login Form */}
-            <form onSubmit={handleSubmit}>
-              {/* Email Field */}
-              <div className="mb-3">
-                <label 
-                  htmlFor="email" 
-                  className="form-label fw-semibold text-white"
-                >
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  className="form-control form-control-lg"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter your email"
-                  required
-                  aria-describedby="emailHelp"
-                  style={{ 
-                    borderRadius: '10px',
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    background: 'rgba(255,255,255,0.1)',
-                    color: '#fff',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                />
-                <div id="emailHelp" className="form-text" style={{ color: 'rgba(255,255,255,0.7)' }}>
-                  We'll never share your email with anyone else.
-                </div>
-              </div>
-
-              {/* Password Field */}
-              <div className="mb-4">
-                <label 
-                  htmlFor="password" 
-                  className="form-label fw-semibold text-white"
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  className="form-control form-control-lg"
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Enter your password"
-                  required
-                  aria-describedby="passwordHelp"
-                  style={{ 
-                    borderRadius: '10px',
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    background: 'rgba(255,255,255,0.1)',
-                    color: '#fff',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                />
-                <div id="passwordHelp" className="form-text" style={{ color: 'rgba(255,255,255,0.7)' }}>
-                  Your password must be at least 8 characters long.
-                </div>
-              </div>
-
-              {/* Login Button */}
-              <div className="d-grid mb-4">
-                <button 
-                  type="submit" 
-                  className="btn btn-warning btn-lg fw-bold"
-                  style={{ 
-                    borderRadius: '10px',
-                    fontSize: '1.1rem',
-                    padding: '12px',
-                    background: 'rgba(255, 193, 7, 0.9)',
-                    border: '1px solid rgba(255, 193, 7, 0.3)',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                >
-                  Login
-                </button>
-              </div>
-
-              {/* Sign Up Link */}
-              <div className="text-center">
-                <p className="mb-0" style={{ color: 'rgba(255,255,255,0.8)' }}>
-                  Don't have an account?{' '}
-                  <a 
-                    href="#signup" 
-                    className="text-decoration-none fw-semibold"
-                    style={{ color: '#ffd600' }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onClose();
-                      openSignupModal();
-                    }}
-                  >
-                    Sign up
-                  </a>
-                </p>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      {/* Custom Styles for Glass Effect */}
-      <style>{`
-        @keyframes modalSlideIn {
-          from {
-            opacity: 0;
-            transform: translateY(-50px) scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-        
-        .form-control:focus {
-          background: rgba(255,255,255,0.2) !important;
-          border-color: #ffd600 !important;
-          box-shadow: 0 0 0 0.2rem rgba(255, 214, 0, 0.25) !important;
-          color: #fff !important;
-          backdrop-filter: blur(15px) !important;
-        }
-        
-        .form-control::placeholder {
-          color: rgba(255,255,255,0.6) !important;
-        }
-        
-        .btn-warning:hover {
-          background: rgba(255, 193, 7, 1) !important;
-          border-color: rgba(255, 193, 7, 1) !important;
-          transform: translateY(-2px);
-          transition: all 0.3s ease;
-          box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
-        }
-        
-        .card {
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important;
-        }
-        
-        /* Glass morphism effect */
-        .card::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          border-radius: 20px;
-          padding: 1px;
-          background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          mask-composite: exclude;
-          pointer-events: none;
-        }
-      `}</style>
-    </div>
-  );
-};
+import { Link } from "react-router-dom";
+import AboutSection from './AboutSection';
 
 // Hero Section
-const Hero = () => (
-  <section
-    id="home"
-    className="hero-section"
-    style={{
-      position: "relative",
-      width: "100vw",
-      height: "100vh",
-      background: `url(${bg}) center center / cover no-repeat`,
-      backgroundSize: "cover",
-      backgroundPosition: "center center",
-      backgroundRepeat: "no-repeat",
-      padding: 0,
-      margin: 0,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      marginTop: "-80px",
-      paddingTop: "80px",
-      minWidth: "100vw",
-      minHeight: "100vh",
-      width: "100%"
-    }}
-  >
-    <div
-      className="hero-overlay"
+const Hero = ({ onBookingClick }) => {
+  return (
+    <section
+      id="home"
+      className="hero-section"
       style={{
+        width: "100vw",
+        minHeight: "100vh",
+        background: `url(${Home}) center center / cover no-repeat`,
+        backgroundSize: "cover",
+        backgroundPosition: "center center",
+        backgroundRepeat: "no-repeat",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        padding: 0,
+        margin: 0,
+        marginTop: "-80px",
+        paddingTop: "80px",
+        boxSizing: "border-box",
+        position: "relative"
+      }}
+    >
+      {/* Overlay for contrast */}
+      <div style={{
         position: "absolute",
         top: 0,
         left: 0,
         width: "100%",
         height: "100%",
-        background: "rgba(0,0,0,0.18)",
+        background: "rgba(16,24,32,0.55)",
         zIndex: 1
-      }}
-    />
-    <div
-      className="hero-content"
-      style={{
+      }} />
+      <div style={{
         position: "relative",
         zIndex: 2,
-        width: "100%",
-        textAlign: "center",
-        color: "#fff",
-        padding: "0 20px"
-      }}
-    >
-      <h1 className="display-2 fw-bold mb-3" style={{ textShadow: "0 2px 12px rgba(0,0,0,0.25)", lineHeight: 1.1 }}>
-        Explore the World with <br /> Serendib Waves
-      </h1>
-      <p className="lead mb-4 text-uppercase fw-semibold" style={{ letterSpacing: '0.08em', textShadow: "0 1px 6px rgba(0,0,0,0.18)", fontSize: '1.1rem' }}>
-        Where luxury meets the sea — every journey, a masterpiece.
-      </p>
-      <a href="#destinations" className="btn btn-lg px-5 py-3 hero-cta-btn shadow mx-auto" style={{ background: '#ffd600', color: '#222', fontWeight: 600, borderRadius: '2rem', fontSize: '1.25rem', border: 'none' }}>Book now</a>
-    </div>
-  </section>
-);
-
-// About Section
-const AboutSection = () => (
-  <section id="about" className="py-5" style={{ background: '#f8f9fa' }}>
-    <div className="container">
-      {/* About Content */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <h2 className="display-5 fw-bold mb-4">About Serendip Waves</h2>
-          <p className="lead mb-4">
-            We are passionate about creating unforgettable cruise experiences that combine luxury, adventure, and discovery.
-          </p>
-          <p className="mb-4">
-            With over 20 years of experience in the cruise industry, we've helped thousands of travelers explore the world's most beautiful destinations. Our commitment to excellence and attention to detail ensures every journey is extraordinary.
-          </p>
-          <div className="row text-center">
-            <div className="col-4">
-              <h3 className="fw-bold text-primary">500+</h3>
-              <p className="text-muted">Happy Cruises</p>
-            </div>
-            <div className="col-4">
-              <h3 className="fw-bold text-primary">50+</h3>
-              <p className="text-muted">Destinations</p>
-            </div>
-            <div className="col-4">
-              <h3 className="fw-bold text-primary">10K+</h3>
-              <p className="text-muted">Happy Customers</p>
-            </div>
-          </div>
-        </div>
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        justifyContent: "center",
+        height: "100vh",
+        maxWidth: "700px",
+        paddingLeft: "7vw",
+        color: "#fff"
+      }}>
+        <h1 style={{
+          fontWeight: 900,
+          fontSize: "3.2rem",
+          lineHeight: 1.1,
+          marginBottom: "1.2rem",
+          letterSpacing: "-2px",
+          textShadow: "0 2px 12px rgba(0,0,0,0.25)"
+        }}>
+          EXPLORE THE<br />WORLD WITH<br />SERENDIP WAVES
+        </h1>
+        <p style={{
+          fontSize: "1.1rem",
+          letterSpacing: "0.12em",
+          textTransform: "uppercase",
+          fontWeight: 400,
+          marginBottom: "2.2rem",
+          color: "#e0e0e0",
+          textShadow: "0 1px 6px rgba(0,0,0,0.18)"
+        }}>
+          WHERE LUXURY MEETS THE SEA<br />EVERY JOURNEY, A MASTERPIECE.
+        </p>
+        <button
+          className="btn btn-lg px-5 py-3 hero-cta-btn shadow"
+          style={{
+            background: '#ffd600',
+            color: '#222',
+            fontWeight: 600,
+            borderRadius: '2rem',
+            fontSize: '1.25rem',
+            border: 'none',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.10)'
+          }}
+          onClick={onBookingClick}
+        >
+          Book Now
+        </button>
       </div>
-      {/* About Image */}
-      <div className="row mb-5">
-        <div className="col-12 d-flex justify-content-center">
-          <img 
-            src="About us.jpg" 
-            alt="About Us" 
-            className="img-fluid rounded shadow"
-            style={{ borderRadius: '20px', maxWidth: '1000px', width: '100%',height:'500px',objectFit:'cover' }}
-          />
-        </div>
-      </div>
-      {/* Mission Section */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="card border-0 shadow-lg h-100 mb-4" style={{ borderRadius: '20px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-            <div className="card-body p-5 text-white">
-              <div className="text-center mb-4">
-                <i className="fas fa-bullseye fa-3x mb-3" style={{ color: '#ffd600' }}></i>
-                <h3 className="fw-bold mb-3">Our Mission</h3>
-              </div>
-              <p className="lead mb-0" style={{ lineHeight: '1.8' }}>
-                Our mission is to revolutionize cruise ship management by delivering an intelligent, secure, and integrated digital platform. We aim to simplify operations, reduce manual inefficiencies, and enhance coordination between staff and passengers, while ensuring industry compliance and superior service quality for a modern maritime experience.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Vision Section */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="card border-0 shadow-lg h-100" style={{ borderRadius: '20px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-            <div className="card-body p-5 text-white">
-              <div className="text-center mb-4">
-                <i className="fas fa-eye fa-3x mb-3" style={{ color: '#ffd600' }}></i>
-                <h3 className="fw-bold mb-3">Our Vision</h3>
-              </div>
-              <p className="lead mb-0" style={{ lineHeight: '1.8' }}>
-                We envision Serendib Waves as a leading digital solution in the cruise industry, empowering operators through technology-driven efficiency. By embracing smart automation and real-time analytics, we strive to support sustainable growth, elevate passenger satisfaction, and become a benchmark for future-ready, scalable cruise management systems worldwide.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 // Contact Section
 const ContactSection = () => (
@@ -464,6 +162,17 @@ const Footer = () => (
                 onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
               >
                 <i className="bi bi-house me-2 text-white"></i>Home
+              </a>
+            </li>
+            <li className="mb-2">
+              <a 
+                href="/cruise-ships"
+                className="text-decoration-none text-light"
+                style={{ transition: 'color 0.3s ease' }}
+                onMouseEnter={(e) => e.target.style.color = '#ffd600'}
+                onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
+              >
+                <i className="bi bi-ship me-2 text-white"></i>Cruises
               </a>
             </li>
             <li className="mb-2">
@@ -592,63 +301,45 @@ const Footer = () => (
   </footer>
 );
 
-const HomePage = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+// After Destinations section, before About section
+const FleetSection = () => (
+  <section id="fleet" style={{
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    overflow: 'hidden',
+    color: 'white',
+    padding: 0,
+    margin: 0
+  }}>
+    <div className="container text-center text-white">
+      <h1 className="display-3 fw-bold mb-4">
+        Our Fleet
+      </h1>
+      <p className="lead mb-5">
+        Discover our magnificent fleet of luxury cruise ships, each designed to provide unforgettable experiences across the world's most beautiful waters.
+      </p>
+      <div className="mt-5">
+        <Link to="/cruise-ships" className="btn view-all-ships-btn btn-lg">
+          View All Ships
+        </Link>
+      </div>
+    </div>
+  </section>
+);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
-  const openLoginModal = () => {
-    setIsLoginModalOpen(true);
-  };
-
-  const closeLoginModal = () => {
-    setIsLoginModalOpen(false);
-  };
-
-  const openSignupModal = () => {
-    setIsSignupModalOpen(true);
-  };
-
-  const closeSignupModal = () => {
-    setIsSignupModalOpen(false);
-  };
-
-  // When signup is successful, close signup modal and open login modal
-  const handleSignupSuccess = () => {
-    setIsSignupModalOpen(false);
-    setIsLoginModalOpen(true);
-  };
-
+const HomePage = ({ onBookingClick }) => {
   return (
     <div style={{ width: '100%', overflow: 'hidden' }}>
-      <Navbar 
-        isScrolled={isScrolled} 
-        onLoginClick={openLoginModal} 
-        onSignupClick={openSignupModal} 
-      />
-      <Hero />
+      <Hero onBookingClick={onBookingClick} />
       <DestinationsPage />
+      <FleetSection />
       <AboutSection />
       <ContactSection />
       <Footer />
-      
-      {/* Login Modal */}
-      <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} />
-      
-      {/* Signup Modal */}
-      <SignupModal isOpen={isSignupModalOpen} onClose={closeSignupModal} onSignupSuccess={handleSignupSuccess} />
-      
       <style>{`
         body, html, #root {
           margin: 0 !important;
@@ -687,8 +378,8 @@ const HomePage = () => {
           min-height: 100vh;
           display: flex;
           flex-direction: column;
-          align-items: center;
-          justify-content: center;
+          alignItems: center;
+          justifyContent: center;
           padding: 0 20px;
         }
         .hero-cta-btn {
@@ -745,9 +436,21 @@ const HomePage = () => {
         body {
           scroll-behavior: smooth;
         }
+        .view-all-ships-btn {
+          background: #102347;
+          color: #fff;
+          border: none;
+          font-weight: 700;
+          letter-spacing: 0.03em;
+          box-shadow: 0 4px 18px rgba(16,35,71,0.12);
+          transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        }
+        .view-all-ships-btn:hover, .view-all-ships-btn:focus {
+          background: #1a237e;
+          color: #fff;
+          box-shadow: 0 6px 24px rgba(16,35,71,0.18);
+        }
       `}</style>
-      {/* Bootstrap Icons CDN for search icon */}
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
     </div>
   );
 };

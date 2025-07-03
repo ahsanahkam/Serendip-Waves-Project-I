@@ -1,13 +1,21 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
-  FaUserCircle,
+  FaUser,
   FaSearch,
   FaTimes,
   FaEdit,
   FaTrash,
+  FaBed,
+  FaHashtag,
+  FaShip,
+  FaDoorOpen,
+  FaCheckCircle,
+  FaPlus,
+  FaUsers,
+  FaCalendarAlt,
+  FaDollarSign,
 } from "react-icons/fa";
-import logo from "./assets/logo.png";
 
 const cruiseNames = [
   "Serendip Dream",
@@ -25,8 +33,12 @@ const initialCabins = [
     passenger: "Alice Johnson",
     contact: "+1 202-555-0173",
     cruise: "Serendip Dream",
-    type: "Interior",
-    id: "INT-001",
+    type: "Suite",
+    id: "SUI-101",
+    number: "101",
+    guests: 2,
+    date: "2024-07-01",
+    price: 2500,
     status: "Booked",
   },
   {
@@ -34,7 +46,11 @@ const initialCabins = [
     contact: "+91 98765 43210",
     cruise: "Serendip Majesty",
     type: "Ocean View",
-    id: "OCV-001",
+    id: "OCV-102",
+    number: "102",
+    guests: 3,
+    date: "2024-07-02",
+    price: 1800,
     status: "Available",
   },
   {
@@ -42,7 +58,11 @@ const initialCabins = [
     contact: "+34 612 345 678",
     cruise: "Serendip Explorer",
     type: "Balcony",
-    id: "BAL-001",
+    id: "BAL-103",
+    number: "103",
+    guests: 4,
+    date: "2024-07-03",
+    price: 3200,
     status: "Maintenance",
   },
   {
@@ -50,7 +70,11 @@ const initialCabins = [
     contact: "+353 85 123 4567",
     cruise: "Serendip Serenade",
     type: "Suite",
-    id: "SUI-001",
+    id: "SUI-104",
+    number: "104",
+    guests: 2,
+    date: "2024-07-04",
+    price: 2700,
     status: "Booked",
   },
   {
@@ -58,7 +82,11 @@ const initialCabins = [
     contact: "+33 6 12 34 56 78",
     cruise: "Serendip Adventurer",
     type: "Interior",
-    id: "INT-002",
+    id: "INT-105",
+    number: "105",
+    guests: 1,
+    date: "2024-07-05",
+    price: 1200,
     status: "Available",
   },
   {
@@ -66,7 +94,11 @@ const initialCabins = [
     contact: "+86 138 0013 8000",
     cruise: "Serendip Harmony",
     type: "Balcony",
-    id: "BAL-002",
+    id: "BAL-106",
+    number: "106",
+    guests: 2,
+    date: "2024-07-06",
+    price: 2100,
     status: "Booked",
   },
 ];
@@ -90,7 +122,7 @@ function CabinAdminDashboard() {
   const filteredCabins = cabins.filter((cabin) => {
     const matchesSearch =
       search === "" ||
-      [cabin.passenger, cabin.contact, cabin.id, cabin.cruise]
+      [cabin.passenger, cabin.contact, cabin.id, cabin.cruise, cabin.number]
         .join(" ")
         .toLowerCase()
         .includes(search.toLowerCase());
@@ -117,45 +149,55 @@ function CabinAdminDashboard() {
   };
 
   return (
-    <div className="dashboard-bg py-4 px-2 min-vh-100">
-      <div className="container" style={{ maxWidth: 900 }}>
-        {/* Header Card */}
-        <div className="card dashboard-card mb-4 p-3 d-flex flex-row align-items-center justify-content-between flex-wrap">
-          <div className="d-flex align-items-center mb-2 mb-md-0">
-            <img src={logo} alt="Logo" className="dashboard-logo me-3" />
-            <span className="dashboard-title">Cabin Management Dashboard</span>
-          </div>
-          <div className="d-flex align-items-center">
-            <span className="admin-label me-2">Admin</span>
-            <FaUserCircle size={32} color="#2563eb" />
+    <div className="dashboard-bg min-vh-100">
+      {/* Gradient Header */}
+      <div className="booking-header-gradient py-5 mb-4">
+        <div className="container">
+          <div className="d-flex flex-column align-items-center justify-content-center">
+            <div
+              className="d-flex align-items-center justify-content-center mb-2"
+              style={{ fontSize: "2.7rem" }}
+            >
+              <FaBed
+                className="me-3 text-white"
+                style={{ fontSize: "2.7rem" }}
+              />
+              <span
+                className="fw-bold text-white"
+                style={{ fontSize: "2.7rem", lineHeight: 1 }}
+              >
+                Cabin Management
+              </span>
+            </div>
+            <div className="text-white fs-5" style={{ fontWeight: 400 }}>
+              Monitor and manage all cabins with powerful filters and quick
+              actions.
+            </div>
           </div>
         </div>
-        {/* Filter Section Heading */}
-        <div className="dashboard-section-heading mb-3 mt-2">
-          <span className="dashboard-section-bar me-2"></span>
-          Filter Cabins
-        </div>
+      </div>
+      <div className="container" style={{ maxWidth: 1200 }}>
         {/* Filter Card */}
-        <div className="card dashboard-card mb-4 p-3">
-          <div className="row g-3">
+        <div className="card booking-filter-card mb-4 p-4 shadow-sm">
+          <div className="row g-3 align-items-end">
             <div className="col-12 col-md-3">
-              <label className="form-label fw-semibold">Search</label>
-              <div className="input-group">
-                <span className="input-group-text search-icon">
-                  <FaSearch color="#2563eb" />
-                </span>
-                <input
-                  type="text"
-                  className="form-control search-input border-primary rounded-pill"
-                  placeholder="Search cabins..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  style={{ borderLeft: "none" }}
-                />
-              </div>
+              <label className="form-label fw-semibold">
+                <FaSearch className="me-2 text-primary" />
+                Search
+              </label>
+              <input
+                type="text"
+                className="form-control search-input border-primary rounded-pill"
+                placeholder="Passenger Name, Cabin No, Cruise..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
             </div>
             <div className="col-12 col-md-3">
-              <label className="form-label fw-semibold">Cruise Name</label>
+              <label className="form-label fw-semibold">
+                <FaShip className="me-2 text-primary" />
+                Cruise Name
+              </label>
               <select
                 className="form-select rounded-pill border-primary"
                 value={cruise}
@@ -167,8 +209,11 @@ function CabinAdminDashboard() {
                 ))}
               </select>
             </div>
-            <div className="col-12 col-md-3">
-              <label className="form-label fw-semibold">Cabin Type</label>
+            <div className="col-12 col-md-2">
+              <label className="form-label fw-semibold">
+                <FaDoorOpen className="me-2 text-primary" />
+                Cabin Type
+              </label>
               <select
                 className="form-select rounded-pill border-primary"
                 value={type}
@@ -180,8 +225,11 @@ function CabinAdminDashboard() {
                 ))}
               </select>
             </div>
-            <div className="col-12 col-md-3">
-              <label className="form-label fw-semibold">Status</label>
+            <div className="col-12 col-md-2">
+              <label className="form-label fw-semibold">
+                <FaCheckCircle className="me-2 text-primary" />
+                Status
+              </label>
               <select
                 className="form-select rounded-pill border-primary"
                 value={status}
@@ -193,23 +241,26 @@ function CabinAdminDashboard() {
                 ))}
               </select>
             </div>
+            <div className="col-12 col-md-2 d-flex align-items-end gap-2">
+              <button
+                className="btn btn-secondary rounded-pill px-3 d-flex align-items-center gap-2 w-100"
+                onClick={handleClear}
+              >
+                <FaTimes />
+                Clear
+              </button>
+              <button
+                className="btn btn-primary rounded-pill px-4 py-2 d-flex flex-column align-items-center justify-content-center w-100"
+                style={{ fontSize: "1rem", lineHeight: 1.1 }}
+              >
+                <span style={{ fontSize: "1.3rem", lineHeight: 1 }}>
+                  <FaPlus />
+                </span>
+                <span style={{ fontWeight: 600 }}>Add</span>
+                <span style={{ fontWeight: 600 }}>Cabin</span>
+              </button>
+            </div>
           </div>
-          <div className="d-flex justify-content-end mt-3">
-            <button
-              className="btn btn-primary rounded-pill px-4 d-flex align-items-center gap-2"
-              onClick={handleClear}
-            >
-              <FaTimes />
-              Clear Filters
-            </button>
-          </div>
-        </div>
-        {/* Divider for desktop */}
-        <div className="dashboard-divider d-none d-lg-block" />
-        {/* Cabins Section Heading */}
-        <div className="dashboard-section-heading mb-3 mt-2">
-          <span className="dashboard-section-bar me-2"></span>
-          Cabins
         </div>
         {/* Table Card */}
         <div className="card dashboard-card mb-4 p-3">
@@ -217,11 +268,38 @@ function CabinAdminDashboard() {
             <table className="table align-middle mb-0">
               <thead>
                 <tr>
-                  <th>Passenger Name</th>
-                  <th>Contact No</th>
-                  <th>Cruise Name</th>
-                  <th>Cabin Type</th>
-                  <th>Cabin ID</th>
+                  <th>
+                    <FaHashtag className="me-2 text-primary" />
+                    Cabin ID
+                  </th>
+                  <th>
+                    <FaUser className="me-2 text-primary" />
+                    Passenger Name
+                  </th>
+                  <th>
+                    <FaShip className="me-2 text-primary" />
+                    Cruise Name
+                  </th>
+                  <th>
+                    <FaBed className="me-2 text-primary" />
+                    Cabin Type
+                  </th>
+                  <th>
+                    <FaDoorOpen className="me-2 text-primary" />
+                    Cabin No
+                  </th>
+                  <th>
+                    <FaUsers className="me-2 text-primary" />
+                    Guests
+                  </th>
+                  <th>
+                    <FaCalendarAlt className="me-2 text-primary" />
+                    Booking Date
+                  </th>
+                  <th>
+                    <FaDollarSign className="me-2 text-primary" />
+                    Total Price
+                  </th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -229,22 +307,25 @@ function CabinAdminDashboard() {
               <tbody>
                 {filteredCabins.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center text-muted">
+                    <td colSpan={10} className="text-center text-muted">
                       No cabins found.
                     </td>
                   </tr>
                 ) : (
                   filteredCabins.map((cabin, idx) => (
                     <tr key={cabin.id}>
+                      <td>{cabin.id}</td>
                       <td>{cabin.passenger}</td>
-                      <td>{cabin.contact}</td>
                       <td>{cabin.cruise}</td>
                       <td>
                         <span className="badge bg-primary bg-opacity-75 rounded-pill">
                           {cabin.type}
                         </span>
                       </td>
-                      <td>{cabin.id}</td>
+                      <td>{cabin.number}</td>
+                      <td>{cabin.guests}</td>
+                      <td>{cabin.date}</td>
+                      <td>${cabin.price.toLocaleString()}</td>
                       <td>
                         <span
                           className={
