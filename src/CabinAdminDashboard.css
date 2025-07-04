@@ -1,0 +1,44 @@
+/* Cabin Management Dashboard Styles */
+.booking-header-gradient {
+  background: linear-gradient(135deg, #4f46e5, #6366f1); /* Indigo shades */
+  color: white;
+}
+
+.cabin-dashboard-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+  padding: 20px 0;
+}
+
+.cabin-table-wrapper {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(246, 244, 244, 0.1);
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 1200px;
+}
+
+.cabin-table {
+  width: 100%;
+  margin: 0;
+}
+
+.cabin-table th {
+  background: #f8f9fa;
+  color: #333;
+  font-weight: 600;
+  padding: 15px 12px;
+  border-bottom: 2px solid #dee2e6;
+  text-align: left;
+}
+
+.cabin-table td {
+  padding: 15px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+
+.cabin-table tbody tr:hover {
+  background-color: #f8f9fa;
+} 
