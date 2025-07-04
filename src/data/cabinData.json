@@ -1,0 +1,23 @@
+[
+  {
+    "cabinId": "CAB001",
+    "shipName": "Serendip Dream",
+    "type": "Deluxe",
+    "status": "Occupied",
+    "passengerName": "John Doe"
+  },
+  {
+    "cabinId": "CAB002",
+    "shipName": "Serendip Majesty",
+    "type": "Standard",
+    "status": "Available",
+    "passengerName": ""
+  },
+  {
+    "cabinId": "CAB003",
+    "shipName": "Serendip Explorer",
+    "type": "Suite",
+    "status": "Occupied",
+    "passengerName": "Jane Smith"
+  }
+] 

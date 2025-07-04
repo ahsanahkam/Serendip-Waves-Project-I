@@ -16,6 +16,10 @@ import CruiseShipsPage from './CruiseShipsPage';
 import BookingOverviewPage from './BookingOverviewPage';
 import SuperAdminDashboard from './SuperAdminDashboard';
 import CustomerDashboard from './CustomerDashboard';
+import FoodInventoryDashboard from './FoodInventoryDashboard';
+import ItineraryDashboard from './ItineraryDashboard';
+import CabinAdminDashboard from './CabinAdminDashboard';
+import PassengerDashboard from './PassengerDashboard';
 
 export const AuthContext = React.createContext();
 
@@ -97,6 +101,10 @@ function AppRoutes(props) {
         <Route path="/signup" element={<SignupRouteHandler isAuthenticated={isAuthenticated} setIsSignupModalOpen={setIsSignupModalOpen} />} />
         <Route path="/super-admin" element={<SuperAdminDashboard />} />
         <Route path="/customer-dashboard" element={<CustomerDashboard />} />
+        <Route path="/food-inventory-management" element={<FoodInventoryDashboard />} />
+        <Route path="/itinerary-management" element={<ItineraryDashboard />} />
+        <Route path="/cabin-admin" element={<CabinAdminDashboard />} />
+        <Route path="/passenger-management" element={<PassengerDashboard />} />
       </Routes>
     </>
   );

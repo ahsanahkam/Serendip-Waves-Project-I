@@ -1,0 +1,22 @@
+[
+  {
+    "bookingId": "BK001",
+    "passengerName": "John Doe",
+    "email": "john.doe@example.com",
+    "phone": "+1234567890",
+    "nic": "1234567890123",
+    "shipName": "Serendip Dream",
+    "route": "Colombo to Galle",
+    "cabinId": "CAB001"
+  },
+  {
+    "bookingId": "BK002",
+    "passengerName": "Jane Smith",
+    "email": "jane.smith@example.com",
+    "phone": "+1234567891",
+    "nic": "1234567890124",
+    "shipName": "Serendip Explorer",
+    "route": "Galle to Maldives",
+    "cabinId": "CAB003"
+  }
+] 
