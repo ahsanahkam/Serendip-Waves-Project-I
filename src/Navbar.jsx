@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "./App";
 
 const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 992);
   const location = useLocation();
   const navigate = useNavigate();
+  const { currentUser, isAuthenticated, logout } = useContext(AuthContext);
 
   useEffect(() => {
     const handleResize = () => {
@@ -145,28 +147,53 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                 padding: '6px 18px',
                 fontWeight: 500
               }}>Contact</a>
-              <Link to="/super-admin" className="nav-link fw-semibold">Super Admin Dashboard</Link>
+              {isAuthenticated && currentUser && currentUser.role === "Admin" && (
+                <Link to="/admin-dashboard" className="nav-link fw-semibold">Admin Dashboard</Link>
+              )}
+              {isAuthenticated && currentUser && currentUser.email === "sadmin@gmail.com" && (
+                <Link to="/super-admin" className="nav-link fw-semibold">Super Admin Dashboard</Link>
+              )}
             </div>
           )}
-          {/* Login Button */}
+          {/* Login/Logout Button */}
           <div className="d-flex align-items-center gap-3">
-            <button 
-              onClick={handleLoginClick}
-              className="btn btn-outline-dark btn-sm d-flex align-items-center gap-2 ms-2 btn-login"
-              style={{ 
-                borderRadius: '22px',
-                padding: '7px 24px',
-                fontSize: '1.05rem',
-                fontWeight: 500,
-                border: '1.5px solid #222',
-                background: '#fff',
-                color: '#222',
-                boxShadow: 'none',
-                transition: 'all 0.2s',
-              }}
-            >
-              Login
-            </button>
+            {isAuthenticated ? (
+              <button
+                onClick={logout}
+                className="btn btn-outline-dark btn-sm d-flex align-items-center gap-2 ms-2 btn-login"
+                style={{
+                  borderRadius: '22px',
+                  padding: '7px 24px',
+                  fontSize: '1.05rem',
+                  fontWeight: 500,
+                  border: '1.5px solid #222',
+                  background: '#fff',
+                  color: '#222',
+                  boxShadow: 'none',
+                  transition: 'all 0.2s',
+                }}
+              >
+                Logout
+              </button>
+            ) : (
+              <button 
+                onClick={handleLoginClick}
+                className="btn btn-outline-dark btn-sm d-flex align-items-center gap-2 ms-2 btn-login"
+                style={{ 
+                  borderRadius: '22px',
+                  padding: '7px 24px',
+                  fontSize: '1.05rem',
+                  fontWeight: 500,
+                  border: '1.5px solid #222',
+                  background: '#fff',
+                  color: '#222',
+                  boxShadow: 'none',
+                  transition: 'all 0.2s',
+                }}
+              >
+                Login
+              </button>
+            )}
           </div>
         </div>
         {/* Collapsible Navigation Menu for Small Screens */}

@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from "react-toastify";
 import { Toaster } from 'react-hot-toast';
+import { AuthContext } from "./App";
 
 const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -16,6 +17,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
   const [passwordError, setPasswordError] = useState("");
   const [step, setStep] = useState("login"); // 'login', 'forgot', 'otp', 'newPassword'
   const navigate = useNavigate();
+  const { isAuthenticated, logout, currentUser, setIsAuthenticated } = useContext(AuthContext);
 
   if (!isOpen) return null;
 
@@ -99,16 +101,17 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
           // Redirection logic
           if (user.email === "sadmin@gmail.com") {
             navigate("/super-admin");
-          } else if (user.email === "admin2@gmail.com") {
-            navigate("/management"); // Page with links to Itinerary, Cabin, Passenger, Booking Overview
-          } else if (user.email === "admin3@gmail.com") {
-            navigate("/pantry-management");
-          } else if (role === "Customer") {
-            navigate("/customer-dashboard");
+          } else if (user.email === "admin2@gmail.com" && form.password === "admin123") {
+            window.location.href = "/food-inventory-management";
+          } else if (user.email === "admin3@gmail.com"  && form.password === "dadmin123") {
+            navigate("/admin-dashboard");
+          
           } else {
             navigate("/customer-dashboard");
           }
         }, 2000);
+
+        setIsAuthenticated(true);
       } else {
         setError(response.data.message || "Invalid username or password.");
         toast.error(response.data.message || "Invalid username or password.");
