@@ -13,8 +13,8 @@ const dashboardButtons = [
   {
     label: "Pantry",
     icon: <FaUtensils size={28} />,
-    route: "#",
-    active: false,
+    route: "/food-inventory-management",
+    active: true,
   },
   {
     label: "Cabin Management",
@@ -25,14 +25,14 @@ const dashboardButtons = [
   {
     label: "Itinerary Management",
     icon: <FaRoute size={28} />,
-    route: "#",
-    active: false,
+    route: "/itinerary-management",
+    active: true,
   },
   {
     label: "Passenger Management",
     icon: <FaUsers size={28} />,
-    route: "#",
-    active: false,
+    route: "/passenger-management",
+    active: true,
   },
 ];
 

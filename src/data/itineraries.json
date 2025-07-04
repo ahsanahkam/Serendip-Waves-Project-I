@@ -1,0 +1,11 @@
+[
+  {
+    "id": "IT001",
+    "shipName": "Serendip Dream",
+    "arrivalCountry": "Sri Lanka",
+    "startDate": "2024-07-01",
+    "endDate": "2024-07-10",
+    "departurePort": "Colombo",
+    "arrivalPort": "Galle"
+  }
+] 
