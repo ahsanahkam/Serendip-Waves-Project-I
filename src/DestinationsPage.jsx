@@ -115,12 +115,13 @@ const DestinationsPage = () => {
         id="destinations"
         style={{
           background: "#fff",
-          padding: "3rem 0",
+          padding: "3rem 0 3rem 0",
           minHeight: "100vh",
           width: "100vw",
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
+          paddingTop: '110px',
         }}
       >
         <h2 className="text-center mb-2 fw-bold" style={{ fontSize: "2.5rem" }}>
@@ -206,81 +207,67 @@ const DestinationsPage = () => {
           </button>
           {/* Slide Wrapper */}
           <div
-          style={{
-              overflow: 'hidden',
-            width: '100%',
+            ref={slideRef}
+            style={{
+              display: 'flex',
+              transition: animating ? 'transform 0.3s cubic-bezier(.77,0,.18,1)' : 'none',
+              transform: `translateX(${-currentSlide * slideWidth * 1}px)`,
+              gap: '2rem',
+              padding: '2rem 1rem',
               minHeight: 350,
-              borderRadius: 32,
-              position: 'relative',
-            background: 'rgba(255,255,255,0.25)',
-            boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
-            border: '1px solid rgba(255,255,255,0.18)',
-              margin: '0 auto',
             }}
           >
-            <div
-              ref={slideRef}
-              style={{
-                display: 'flex',
-                transition: animating ? 'transform 0.3s cubic-bezier(.77,0,.18,1)' : 'none',
-                transform: `translateX(${-currentSlide * slideWidth * 1}px)`,
-                gap: '2rem',
-                padding: '2rem 1rem',
-                minHeight: 350,
-          }}
-        >
-              {destinations.map((destination, idx) => (
-            <div
-              key={destination.country}
-              style={{
-                display: "inline-block",
-                width: 350,
-                minWidth: 300,
-                maxWidth: 350,
-                background: "rgba(255,255,255,0.7)",
-                boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.15)",
-                backdropFilter: "blur(8px)",
-                borderRadius: "20px",
-                border: "1px solid rgba(255,255,255,0.18)",
-                marginRight: "1rem",
-                overflow: "hidden",
-              }}
-            >
-              <img
-                src={destination.image}
-                alt={destination.country}
+            {getCurrentDestinations().map((destination, idx) => (
+              <div
+                key={destination.country}
                 style={{
-                  width: "100%",
-                  height: "180px",
-                  objectFit: "cover",
-                  borderTopLeftRadius: "20px",
-                  borderTopRightRadius: "20px",
+                  display: "inline-block",
+                  width: 350,
+                  minWidth: 300,
+                  maxWidth: 350,
+                  background: "rgba(255,255,255,0.7)",
+                  boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.15)",
+                  backdropFilter: "blur(8px)",
+                  borderRadius: "20px",
+                  border: "1px solid rgba(255,255,255,0.18)",
+                  marginRight: "1rem",
+                  overflow: "hidden",
                 }}
-              />
-              <div style={{ padding: "1.5rem", textAlign: "left" }}>
-                <h4 style={{ fontWeight: "bold", marginBottom: "0.5rem", textAlign: "left" }}>{destination.country}</h4>
-                <div style={{
-                  fontSize: "0.98rem",
-                  color: "#444",
-                  marginBottom: "1rem",
-                  textAlign: "left",
-                  whiteSpace: "normal",
-                  wordBreak: "break-word",
-                }}>
-                  {destination.description}
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
-                  <div style={{ fontWeight: "bold", color: "#222", fontSize: "1.1rem", textAlign: "left" }}>
-                    {destination.nights}
+              >
+                <img
+                  src={destination.image}
+                  alt={destination.country}
+                  style={{
+                    width: "100%",
+                    height: "180px",
+                    objectFit: "cover",
+                    borderTopLeftRadius: "20px",
+                    borderTopRightRadius: "20px",
+                  }}
+                />
+                <div style={{ padding: "1.5rem", textAlign: "left" }}>
+                  <h4 style={{ fontWeight: "bold", marginBottom: "0.5rem", textAlign: "left" }}>{destination.country}</h4>
+                  <div style={{
+                    fontSize: "0.98rem",
+                    color: "#444",
+                    marginBottom: "1rem",
+                    textAlign: "left",
+                    whiteSpace: "normal",
+                    wordBreak: "break-word",
+                  }}>
+                    {destination.description}
                   </div>
-                  <div style={{ fontWeight: "bold", color: "#007bff", fontSize: "1.05rem", textAlign: "right" }}>
-                    {destination.price}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
+                    <div style={{ fontWeight: "bold", color: "#222", fontSize: "1.1rem", textAlign: "left" }}>
+                      {destination.nights}
+                    </div>
+                    <div style={{ fontWeight: "bold", color: "#007bff", fontSize: "1.05rem", textAlign: "right" }}>
+                      {destination.price}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-            </div>
+            ))}
           </div>
         </div>
       </section>

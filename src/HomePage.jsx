@@ -304,7 +304,7 @@ const Footer = () => (
 // After Destinations section, before About section
 const FleetSection = () => (
   <section id="fleet" style={{
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    background: `linear-gradient(135deg, #667eea99 0%, #764ba299 100%), url('/ShipBalcony.jpg') center center / cover no-repeat`,
     minHeight: '100vh',
     display: 'flex',
     alignItems: 'center',
@@ -333,7 +333,7 @@ const FleetSection = () => (
 
 const DestinationsSection = () => (
   <section id="destinations-section" style={{
-    background: 'linear-gradient(135deg, #43cea2 0%, #185a9d 100%)',
+    background: `linear-gradient(135deg, #43cea299 0%, #185a9d99 100%), url('/destination.jpg') center center / cover no-repeat`,
     minHeight: '100vh',
     height: '100vh',
     display: 'flex',
