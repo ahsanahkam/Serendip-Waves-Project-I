@@ -112,13 +112,13 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                 padding: '6px 18px',
                 fontWeight: 500
               }}>Home</a>
-              <a href="#destinations" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'destinations')} style={{ 
+              <Link to="/destinations" className="nav-link fw-semibold" style={{ 
                 color: '#222', 
                 textDecoration: 'none',
                 fontSize: '1.05rem',
                 padding: '6px 18px',
                 fontWeight: 500
-              }}>Destination</a>
+              }}>Destination</Link>
               <Link to="/cruise-ships" className="nav-link fw-semibold" style={{ 
                 color: '#222',
                 textDecoration: 'none',
@@ -186,7 +186,7 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                 </a>
               </li>
               <li className="nav-item">
-                <a href="#destinations" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'destinations')} style={{ 
+                <Link to="/destinations" className="nav-link fw-semibold" style={{ 
                   color: '#fff', 
                   textDecoration: 'none',
                   transition: 'color 0.3s ease',
@@ -195,7 +195,7 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                   borderBottom: '1px solid rgba(255,255,255,0.1)'
                 }}>
                   Destination
-                </a>
+                </Link>
               </li>
               <li className="nav-item">
                 <Link to="/cruise-ships" className="nav-link fw-semibold" onClick={handleNavLinkClick} style={{ 

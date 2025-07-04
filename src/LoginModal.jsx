@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from "react-toastify";
+import { Toaster } from 'react-hot-toast';
 
 const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -12,7 +15,6 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [step, setStep] = useState("login"); // 'login', 'forgot', 'otp', 'newPassword'
-  const dummyOtp = '123456';
   const navigate = useNavigate();
 
   if (!isOpen) return null;
@@ -38,7 +40,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
   };
 
   const handleForgotPassword = async (e) => {
-    e.preventDefault();
+    e && e.preventDefault && e.preventDefault();
     setError("");
     setSuccess("");
     setIsLoading(true);
@@ -47,65 +49,143 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
       setIsLoading(false);
       return;
     }
-    setTimeout(() => {
-      setSuccess("OTP has been sent to your email address.");
-      alert(`Your demo OTP is: ${dummyOtp}`);
-      setIsLoading(false);
-      setStep("otp");
-    }, 1000);
+    try {
+      const response = await fetch("http://localhost/Project-I/backend/generateOTP.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotEmail }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setSuccess("OTP has been sent to your email address.");
+        setStep("otp");
+      } else {
+        setError(data.message || "Failed to send OTP.");
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+    }
+    setIsLoading(false);
   };
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError(""); // Clear previous error
+    if (!form.email || !form.password) {
+      setError("Please fill in all fields.");
+      toast.error("Please fill in all fields.");
+      return;
+    }
+    try {
+      const response = await axios.post(
+        "http://localhost/Project-I/backend/login.php",
+        {
+          email: form.email,
+          password: form.password,
+        }
+      );
+      if (response.data.success) {
+        const { role, user } = response.data;
+        toast.success(response.data.message, { autoClose: 2000 });
+
+        // Save user info for dashboard
+        localStorage.setItem("currentUser", JSON.stringify(user));
+        localStorage.setItem("role", role);
+
+        setTimeout(() => {
+          toast.dismiss();
+          onClose();
+
+          // Redirection logic
+          if (user.email === "sadmin@gmail.com") {
+            navigate("/super-admin");
+          } else if (user.email === "admin2@gmail.com") {
+            navigate("/management"); // Page with links to Itinerary, Cabin, Passenger, Booking Overview
+          } else if (user.email === "admin3@gmail.com") {
+            navigate("/pantry-management");
+          } else if (role === "Customer") {
+            navigate("/customer-dashboard");
+          } else {
+            navigate("/customer-dashboard");
+          }
+        }, 2000);
+      } else {
+        setError(response.data.message || "Invalid username or password.");
+        toast.error(response.data.message || "Invalid username or password.");
+      }
+    } catch (error) {
+      if (error.response && error.response.data) {
+        setError(error.response.data.message || "Login failed.");
+        toast.error(error.response.data.message || "Login failed.");
+      } else if (error.message) {
+        setError("Login failed: " + error.message);
+        toast.error("Login failed: " + error.message);
+      } else {
+        setError("Login failed. Try again.");
+        toast.error("Login failed. Try again.");
+      }
+    }
+  };
+
+  const handleOtpSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-    if (!form.email || !form.password) {
-      setError("Please fill in all fields.");
-      setIsLoading(false);
-      return;
+    try {
+      const response = await fetch("http://localhost/Project-I/backend/emailValidationOTP.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotEmail, otp }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setStep("newPassword");
+      } else {
+        setError(data.message || "Invalid OTP. Please try again.");
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
     }
-    if (form.password.length < 6) {
-      setError("Password must be at least 6 characters.");
-      setIsLoading(false);
-      return;
-    }
-    // Simulate login (replace with backend call if needed)
-    setTimeout(() => {
-      setIsLoading(false);
-      alert("Login successful! Welcome back!");
-      resetAll();
-      onClose();
-      window.location.reload();
-    }, 1000);
+    setIsLoading(false);
   };
 
-  const handleOtpSubmit = (e) => {
-    e.preventDefault();
-    if (otp === dummyOtp) {
-      setStep("newPassword");
-    } else {
-      setError("Invalid OTP. Please try again.");
-    }
-  };
-
-  const handleNewPasswordSubmit = (e) => {
+  const handleNewPasswordSubmit = async (e) => {
     e.preventDefault();
     setPasswordError("");
+    setIsLoading(true);
     if (!newPassword || !confirmPassword) {
       setPasswordError("Please fill in both fields.");
+      setIsLoading(false);
       return;
     }
     if (newPassword.length < 6) {
       setPasswordError("Password must be at least 6 characters.");
+      setIsLoading(false);
       return;
     }
     if (newPassword !== confirmPassword) {
       setPasswordError("Passwords do not match.");
+      setIsLoading(false);
       return;
     }
-    alert('Password reset successful! You can now log in with your new password.');
-    resetAll();
-    onClose();
+    try {
+      const response = await fetch("http://localhost/Project-I/backend/changePassword.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotEmail, newpassword: newPassword }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('Password reset successful! You can now log in with your new password.');
+        resetAll();
+        onClose();
+      } else {
+        setPasswordError(data.message || "Failed to reset password.");
+      }
+    } catch (err) {
+      setPasswordError("An error occurred. Please try again.");
+    }
+    setIsLoading(false);
   };
 
   // Modal content by step
@@ -118,14 +198,32 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
           <h2 className="fw-bold mb-0 text-white">Login to Serendip Waves</h2>
         </div>
         {error && <div className="alert alert-danger text-center">{error}</div>}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleLogin}>
           <div className="mb-3">
             <label className="form-label fw-semibold text-white">Email Address</label>
-            <input type="email" className="form-control form-control-lg" name="email" value={form.email} onChange={handleChange} placeholder="Enter your email" style={inputStyle} />
+            <input
+              type="email"
+              className="form-control form-control-lg"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
+              style={inputStyle}
+              autoComplete="username"
+            />
           </div>
           <div className="mb-3">
             <label className="form-label fw-semibold text-white">Password</label>
-            <input type="password" className="form-control form-control-lg" name="password" value={form.password} onChange={handleChange} placeholder="Enter your password" style={inputStyle} />
+            <input
+              type="password"
+              className="form-control form-control-lg"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              placeholder="Enter your password"
+              style={inputStyle}
+              autoComplete="current-password"
+            />
             <div className="form-text" style={{ color: 'rgba(255,255,255,0.7)' }}>
               Your password must be at least 6 characters long.
             </div>
@@ -368,6 +466,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
           pointer-events: none;
         }
       `}</style>
+      <Toaster />
     </div>
   );
 };
