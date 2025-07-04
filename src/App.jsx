@@ -141,22 +141,11 @@ const App = () => {
     localStorage.removeItem('isAuthenticated');
   };
 
-  const signup = (userData) => {
-    const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
-    const newUser = { ...userData, id: Date.now() };
-    existingUsers.push(newUser);
-    localStorage.setItem('users', JSON.stringify(existingUsers));
-    const { password, confirmPassword, ...userWithoutPassword } = newUser;
-    login(userWithoutPassword);
-    setIsSignupModalOpen(false);
-  };
-
   const authValue = {
     isAuthenticated,
     currentUser,
     login,
     logout,
-    signup,
     isLoginModalOpen,
     setIsLoginModalOpen,
     isSignupModalOpen,
