@@ -166,28 +166,6 @@ const Footer = () => (
             </li>
             <li className="mb-2">
               <a 
-                href="/cruise-ships"
-                className="text-decoration-none text-light"
-                style={{ transition: 'color 0.3s ease' }}
-                onMouseEnter={(e) => e.target.style.color = '#ffd600'}
-                onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
-              >
-                <i className="bi bi-ship me-2 text-white"></i>Cruises
-              </a>
-            </li>
-            <li className="mb-2">
-              <a 
-                href="#destinations" 
-                className="text-decoration-none text-light"
-                style={{ transition: 'color 0.3s ease' }}
-                onMouseEnter={(e) => e.target.style.color = '#ffd600'}
-                onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
-              >
-                <i className="bi bi-geo-alt me-2 text-white"></i>Destinations
-              </a>
-            </li>
-            <li className="mb-2">
-              <a 
                 href="#about" 
                 className="text-decoration-none text-light"
                 style={{ transition: 'color 0.3s ease' }}
@@ -206,6 +184,28 @@ const Footer = () => (
                 onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
               >
                 <i className="bi bi-envelope me-2 text-white"></i>Contact
+              </a>
+            </li>
+            <li className="mb-2">
+              <a 
+                href="#destinations" 
+                className="text-decoration-none text-light"
+                style={{ transition: 'color 0.3s ease' }}
+                onMouseEnter={(e) => e.target.style.color = '#ffd600'}
+                onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
+              >
+                <i className="bi bi-geo-alt me-2 text-white"></i>Destinations
+              </a>
+            </li>
+            <li className="mb-2">
+              <a 
+                href="/cruise-ships" 
+                className="text-decoration-none text-light"
+                style={{ transition: 'color 0.3s ease' }}
+                onMouseEnter={(e) => e.target.style.color = '#ffd600'}
+                onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
+              >
+                <i className="bi bi-ship me-2 text-white"></i>Cruises
               </a>
             </li>
           </ul>
@@ -331,11 +331,41 @@ const FleetSection = () => (
   </section>
 );
 
+const DestinationsSection = () => (
+  <section id="destinations-section" style={{
+    background: 'linear-gradient(135deg, #43cea2 0%, #185a9d 100%)',
+    minHeight: '100vh',
+    height: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    overflow: 'hidden',
+    color: 'white',
+    padding: 0,
+    margin: 0
+  }}>
+    <div className="container text-center text-white">
+      <h1 className="display-3 fw-bold mb-4">
+        Destinations
+      </h1>
+      <p className="lead mb-5">
+        Explore breathtaking destinations around the world with our premium cruise experiences.
+      </p>
+      <div className="mt-5">
+        <Link to="/destinations" className="btn view-all-destinations-btn btn-lg">
+          View All Destinations
+        </Link>
+      </div>
+    </div>
+  </section>
+);
+
 const HomePage = ({ onBookingClick }) => {
   return (
     <div style={{ width: '100%', overflow: 'hidden' }}>
       <Hero onBookingClick={onBookingClick} />
-      <DestinationsPage />
+      <DestinationsSection />
       <FleetSection />
       <AboutSection />
       <ContactSection />
@@ -449,6 +479,20 @@ const HomePage = ({ onBookingClick }) => {
           background: #1a237e;
           color: #fff;
           box-shadow: 0 6px 24px rgba(16,35,71,0.18);
+        }
+        .view-all-destinations-btn {
+          background: #185a9d;
+          color: #fff;
+          border: none;
+          font-weight: 700;
+          letter-spacing: 0.03em;
+          box-shadow: 0 4px 18px rgba(24,90,157,0.12);
+          transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        }
+        .view-all-destinations-btn:hover, .view-all-destinations-btn:focus {
+          background: #43cea2;
+          color: #fff;
+          box-shadow: 0 6px 24px rgba(24,90,157,0.18);
         }
       `}</style>
     </div>

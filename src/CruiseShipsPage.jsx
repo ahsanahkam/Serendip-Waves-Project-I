@@ -203,9 +203,9 @@ const CruiseShipsPage = () => {
             <Link to="/" className="btn btn-outline-light btn-lg me-3">
               ← Back to Home
             </Link>
-            <a href="#destinations" className="btn btn-warning btn-lg" onClick={handleViewDestinations}>
+            <Link to="/destinations" className="btn btn-warning btn-lg">
               View Destinations
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -357,9 +357,9 @@ const CruiseShipsPage = () => {
 
                   {/* CTA Button */}
                   <div className="text-center">
-                    <a href="#destinations" className="btn btn-warning btn-lg px-5 py-3 fw-bold" style={{ borderRadius: '25px' }} onClick={handleViewDestinations}>
+                    <Link to="/destinations" className="btn btn-warning btn-lg px-5 py-3 fw-bold" style={{ borderRadius: '25px' }}>
                       View Destinations
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -383,9 +383,9 @@ const CruiseShipsPage = () => {
             <Link to="/" className="btn btn-outline-light btn-lg">
               Back to Home
             </Link>
-            <a href="#destinations" className="btn btn-warning btn-lg" onClick={handleViewDestinations}>
+            <Link to="/destinations" className="btn btn-warning btn-lg">
               View Destinations
-            </a>
+            </Link>
           </div>
         </div>
       </section>

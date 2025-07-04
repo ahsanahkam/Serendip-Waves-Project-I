@@ -90,6 +90,7 @@ function AppRoutes(props) {
       <Routes>
         <Route path="/" element={<HomePage onBookingClick={() => setIsBookingModalOpen(true)} />} />
         <Route path="/cruise-ships" element={<CruiseShipsPage />} />
+        <Route path="/destinations" element={<DestinationsPage />} />
         <Route path="/booking" element={<Navigate to="/" replace />} />
         <Route path="/booking-overview" element={<BookingOverviewPage />} />
         <Route path="/login" element={<LoginRouteHandler isAuthenticated={isAuthenticated} setIsLoginModalOpen={setIsLoginModalOpen} />} />
