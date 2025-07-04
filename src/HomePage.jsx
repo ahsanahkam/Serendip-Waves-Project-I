@@ -3,93 +3,112 @@ import Home from "./assets/Home.jpg";
 import DestinationsPage from "./DestinationsPage";
 import { Link } from "react-router-dom";
 import AboutSection from './AboutSection';
+import heroVideo from './assets/hero.mp4';
 
-// Hero Section
-const Hero = ({ onBookingClick }) => {
-  return (
-    <section
-      id="home"
-      className="hero-section"
+// Optimized Hero Section as a component
+const Hero = ({ onBookingClick }) => (
+  <section
+    id="home"
+    className="hero-section"
+    style={{
+      width: "100vw",
+      minHeight: "100vh",
+      position: "relative",
+      overflow: "hidden",
+      marginTop: "-80px",
+      paddingTop: "80px",
+    }}
+  >
+    {/* Video background */}
+    <video
+      autoPlay
+      loop
+      muted
+      playsInline
+      className="hero-video"
       style={{
-        width: "100vw",
-        minHeight: "100vh",
-        background: `url(${Home}) center center / cover no-repeat`,
-        backgroundSize: "cover",
-        backgroundPosition: "center center",
-        backgroundRepeat: "no-repeat",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        padding: 0,
-        margin: 0,
-        marginTop: "-80px",
-        paddingTop: "80px",
-        boxSizing: "border-box",
-        position: "relative"
-      }}
-    >
-      {/* Overlay for contrast */}
-      <div style={{
         position: "absolute",
         top: 0,
         left: 0,
         width: "100%",
         height: "100%",
-        background: "rgba(16,24,32,0.55)",
-        zIndex: 1
-      }} />
-      <div style={{
+        objectFit: "cover",
+        zIndex: 0,
+      }}
+    >
+      <source src={heroVideo} type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+
+    {/* Overlay */}
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        background: "rgba(16,24,32,0.25)",
+        zIndex: 1,
+      }}
+    />
+
+    {/* Hero Content */}
+    <div
+      style={{
         position: "relative",
         zIndex: 2,
         display: "flex",
         flexDirection: "column",
-        alignItems: "flex-start",
+        alignItems: "flex-end",
         justifyContent: "center",
         height: "100vh",
         maxWidth: "700px",
-        paddingLeft: "7vw",
-        color: "#fff"
+        margin: "0 0 0 auto",
+        color: "#fff",
+        textAlign: "right",
+        padding: "0 7vw 0 2vw"
+      }}
+    >
+      <h1 style={{
+        fontWeight: 900,
+        fontSize: "3.2rem",
+        lineHeight: 1.1,
+        marginBottom: "1.2rem",
+        letterSpacing: "-2px",
+        textShadow: "0 2px 12px rgba(0,0,0,0.25)"
       }}>
-        <h1 style={{
-          fontWeight: 900,
-          fontSize: "3.2rem",
-          lineHeight: 1.1,
-          marginBottom: "1.2rem",
-          letterSpacing: "-2px",
-          textShadow: "0 2px 12px rgba(0,0,0,0.25)"
-        }}>
-          EXPLORE THE<br />WORLD WITH<br />SERENDIP WAVES
-        </h1>
-        <p style={{
-          fontSize: "1.1rem",
-          letterSpacing: "0.12em",
-          textTransform: "uppercase",
-          fontWeight: 400,
-          marginBottom: "2.2rem",
-          color: "#e0e0e0",
-          textShadow: "0 1px 6px rgba(0,0,0,0.18)"
-        }}>
-          WHERE LUXURY MEETS THE SEA<br />EVERY JOURNEY, A MASTERPIECE.
-        </p>
-        <button
-          className="btn btn-lg px-5 py-3 hero-cta-btn shadow"
-          style={{
-            background: '#ffd600',
-            color: '#222',
-            fontWeight: 600,
-            borderRadius: '2rem',
-            fontSize: '1.25rem',
-            border: 'none',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.10)'
-          }}
-          onClick={onBookingClick}
-        >
-          Book Now
-        </button>
-      </div>
-    </section>
-  );
-};
+        EXPLORE THE<br />WORLD WITH<br />SERENDIP WAVES
+      </h1>
+      <p style={{
+        fontSize: "1.1rem",
+        letterSpacing: "0.12em",
+        textTransform: "uppercase",
+        fontWeight: 400,
+        marginBottom: "2.2rem",
+        color: "#e0e0e0",
+        textShadow: "0 1px 6px rgba(0,0,0,0.18)"
+      }}>
+        WHERE LUXURY MEETS THE SEA<br />EVERY JOURNEY, A MASTERPIECE.
+      </p>
+      <button
+        className="btn btn-lg px-5 py-3 hero-cta-btn shadow"
+        style={{
+          background: '#ffd600',
+          color: '#222',
+          fontWeight: 600,
+          borderRadius: '2rem',
+          fontSize: '1.25rem',
+          border: 'none',
+          boxShadow: '0 2px 12px rgba(0,0,0,0.10)'
+        }}
+        onClick={onBookingClick}
+      >
+        Book Now
+      </button>
+    </div>
+  </section>
+);
 
 // Contact Section
 const ContactSection = () => (
