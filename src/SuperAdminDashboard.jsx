@@ -23,9 +23,6 @@ const dashboardButtons = [
     active: true,
   },
   {
-<<<<<<< HEAD
-    label: 'Passenger Management',
-=======
     label: "Itinerary Management",
     icon: <FaRoute size={28} />,
     route: "#",
@@ -33,7 +30,6 @@ const dashboardButtons = [
   },
   {
     label: "Passenger Management",
->>>>>>> 7b48560c010884e4aa8c7d0f15d58e65e9d21344
     icon: <FaUsers size={28} />,
     route: "#",
     active: false,
