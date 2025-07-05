@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "./App";
+import GreeceImg from './assets/Greece.jpg';
 
 const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 992);
   const location = useLocation();
   const navigate = useNavigate();
+  const { currentUser, isAuthenticated, logout } = useContext(AuthContext);
 
   useEffect(() => {
     const handleResize = () => {
@@ -71,6 +74,14 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
           border-color: #ffd600 !important;
           color: #222 !important;
         }
+        .navbar .nav-link, .navbar-nav .nav-link {
+          transition: background 0.2s, color 0.2s;
+          border-radius: 10px;
+        }
+        .navbar .nav-link:hover, .navbar-nav .nav-link:hover {
+          background: #e0e7ff !important;
+          color: #1a237e !important;
+        }
       `}</style>
       <nav 
         className="navbar navbar-expand-lg position-fixed w-100 top-0 start-0 px-2"
@@ -92,13 +103,26 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
         <div className="container-fluid px-0 d-flex justify-content-between align-items-center">
           {/* Logo and Brand */}
           <div className="d-flex align-items-center">
-            <Link to="/" className="navbar-brand d-flex align-items-center fw-bold fs-5 me-4" style={{ 
-              color: '#1a237e', 
-              fontFamily: 'Montserrat, Arial, sans-serif', 
-              textDecoration: 'none',
-              transition: 'color 0.3s ease'
-            }}>
-              <img src="/logo.png" alt="Serendip Waves Logo" width="90" height="90" className="me-2" style={{ maxHeight: '70px', width: 'auto', objectFit: 'contain', verticalAlign: 'middle' }} />
+            <Link
+              to="/"
+              className="navbar-brand d-flex align-items-center fw-bold fs-5 me-4"
+              style={{
+                color: '#1a237e',
+                fontFamily: 'Montserrat, Arial, sans-serif',
+                textDecoration: 'none',
+                transition: 'color 0.3s ease'
+              }}
+              onClick={e => {
+                e.preventDefault();
+                if (location.pathname === '/') {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                  navigate('/');
+                  setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                }
+              }}
+            >
+              <img src="/logo.png" alt="Serendip Waves Logo" width="120" height="120" className="me-2" style={{ maxHeight: '100px', width: 'auto', objectFit: 'contain', verticalAlign: 'middle' }} />
               <span style={{ fontWeight: 700, fontSize: '2.1rem', letterSpacing: '0.04em', color: '#1a237e', lineHeight: 1.1 }}>serendip<br/>waves</span>
             </Link>
           </div>
@@ -145,28 +169,53 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                 padding: '6px 18px',
                 fontWeight: 500
               }}>Contact</a>
-              <Link to="/super-admin" className="nav-link fw-semibold">Super Admin Dashboard</Link>
+              {isAuthenticated && currentUser && currentUser.role === "Admin" && (
+                <Link to="/admin-dashboard" className="nav-link fw-semibold">Admin Dashboard</Link>
+              )}
+              {isAuthenticated && currentUser && currentUser.email === "sadmin@gmail.com" && (
+                <Link to="/super-admin" className="nav-link fw-semibold">Super Admin Dashboard</Link>
+              )}
             </div>
           )}
-          {/* Login Button */}
+          {/* Login/Logout Button */}
           <div className="d-flex align-items-center gap-3">
-            <button 
-              onClick={handleLoginClick}
-              className="btn btn-outline-dark btn-sm d-flex align-items-center gap-2 ms-2 btn-login"
-              style={{ 
-                borderRadius: '22px',
-                padding: '7px 24px',
-                fontSize: '1.05rem',
-                fontWeight: 500,
-                border: '1.5px solid #222',
-                background: '#fff',
-                color: '#222',
-                boxShadow: 'none',
-                transition: 'all 0.2s',
-              }}
-            >
-              Login
-            </button>
+            {isAuthenticated ? (
+              <button
+                onClick={logout}
+                className="btn btn-outline-dark btn-sm d-flex align-items-center gap-2 ms-2 btn-login"
+                style={{
+                  borderRadius: '22px',
+                  padding: '7px 24px',
+                  fontSize: '1.05rem',
+                  fontWeight: 500,
+                  border: '1.5px solid #222',
+                  background: '#fff',
+                  color: '#222',
+                  boxShadow: 'none',
+                  transition: 'all 0.2s',
+                }}
+              >
+                Logout
+              </button>
+            ) : (
+              <button 
+                onClick={handleLoginClick}
+                className="btn btn-outline-dark btn-sm d-flex align-items-center gap-2 ms-2 btn-login"
+                style={{ 
+                  borderRadius: '22px',
+                  padding: '7px 24px',
+                  fontSize: '1.05rem',
+                  fontWeight: 500,
+                  border: '1.5px solid #222',
+                  background: '#fff',
+                  color: '#222',
+                  boxShadow: 'none',
+                  transition: 'all 0.2s',
+                }}
+              >
+                Login
+              </button>
+            )}
           </div>
         </div>
         {/* Collapsible Navigation Menu for Small Screens */}
@@ -285,5 +334,5 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
     </>
   );
 };
-
-export default Navbar;
+     
+export default Navbar;                       

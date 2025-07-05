@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 // All destination data in this file
@@ -56,58 +56,69 @@ const destinations = [
     flag: "🇦🇺",
     image: "Australia.jpg",
     description: "Explore the world's largest coral reef system."
-  }
+  },
+  {
+    country: "Italy",
+    shipName: "Roman Holiday",
+    nights: "8 Nights",
+    price: "$2,900",
+    flag: "🇮🇹",
+    image: "italy.jpg",
+    description: "Sail the Mediterranean and explore the historic cities of Italy, from Rome to Venice."
+  },
+  {
+    country: "Spain",
+    shipName: "Iberian Explorer",
+    nights: "7 Nights",
+    price: "$2,700",
+    flag: "🇪🇸",
+    image: "spain.jpg",
+    description: "Experience the vibrant culture, cuisine, and beaches of Spain on this unforgettable cruise."
+  },
+  {
+    country: "Egypt",
+    shipName: "Nile Majesty",
+    nights: "6 Nights",
+    price: "$2,400",
+    flag: "🇪🇬",
+    image: "egypt.jpg",
+    description: "Cruise the Nile and discover the ancient wonders of Egypt, including the pyramids and temples."
+  },
+  {
+    country: "France",
+    shipName: "Parisian Dream",
+    nights: "9 Nights",
+    price: "$3,300",
+    flag: "🇫🇷",
+    image: "france.jpg",
+    description: "Enjoy the romance of France, from the Riviera to Paris, with gourmet dining and fine wine."
+  },
+  {
+    country: "Brazil",
+    shipName: "Amazon Adventure",
+    nights: "10 Nights",
+    price: "$3,500",
+    flag: "🇧🇷",
+    image: "brazil.jpg",
+    description: "Journey through the heart of the Amazon rainforest and experience Brazil's natural beauty."
+  },
 ];
 
 const DestinationsPage = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [direction, setDirection] = useState(0); // -1 for left, 1 for right
-  const [animating, setAnimating] = useState(false);
-  const [buttonActive, setButtonActive] = useState(null); // 'left' or 'right' for click feedback
-  const totalSlides = Math.ceil(destinations.length / 3);
-  const slideRef = useRef();
+  const [search, setSearch] = useState("");
+  const [filtered, setFiltered] = useState(destinations);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const nextSlide = () => {
-    if (animating) return;
-    setDirection(1);
-    setButtonActive('right');
-    setAnimating(true);
-    setTimeout(() => {
-    setCurrentSlide((prev) => (prev + 1) % totalSlides);
-      setAnimating(false);
-      setButtonActive(null);
-    }, 300);
+  const handleSearch = () => {
+    const term = search.trim().toLowerCase();
+    if (!term) {
+      setFiltered(destinations);
+      return;
+    }
+    setFiltered(destinations.filter(dest =>
+      dest.country.toLowerCase().includes(term) ||
+      dest.shipName.toLowerCase().includes(term)
+    ));
   };
-
-  const prevSlide = () => {
-    if (animating) return;
-    setDirection(-1);
-    setButtonActive('left');
-    setAnimating(true);
-    setTimeout(() => {
-    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
-      setAnimating(false);
-      setButtonActive(null);
-    }, 300);
-  };
-
-  const getCurrentDestinations = () => {
-    const startIndex = currentSlide * 3;
-    return destinations.slice(startIndex, startIndex + 3);
-  };
-
-  // For sliding effect
-  const slideWidth = 370; // card width + gap
-  const translateX = -currentSlide * slideWidth * 3;
 
   return (
     <div style={{ minHeight: '100vh', background: '#fff' }}>
@@ -130,145 +141,98 @@ const DestinationsPage = () => {
         <p className="lead text-muted text-center mb-5" style={{ fontSize: "1.2rem", maxWidth: 600, margin: "0 auto" }}>
           Discover breathtaking destinations around the world with our premium cruise experiences
         </p>
-        <div style={{ position: 'relative', width: '100%', maxWidth: 1200, margin: '0 auto', minHeight: 350 }}>
-          {/* Left Scroll Button */}
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2.5rem', alignItems: 'center' }}>
+          <input
+            type="text"
+            placeholder="Search by country or ship name..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{
+              padding: '0.5rem 1rem',
+              borderRadius: 8,
+              border: '1px solid #ccc',
+              fontSize: '1rem',
+              minWidth: 220,
+              background: '#1e3a8a',
+              color: '#fff',
+            }}
+            onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
+          />
           <button
-            onClick={prevSlide}
-            aria-label="Scroll Left"
-            tabIndex={0}
-            disabled={animating}
+            onClick={handleSearch}
             style={{
-              position: 'absolute',
-              left: 10,
-              top: '50%',
-              transform: `translateY(-50%) scale(${buttonActive === 'left' ? 0.92 : 1})`,
-              zIndex: 2,
-              background: '#fff',
+              padding: '0.5rem 1.2rem',
+              borderRadius: 8,
               border: 'none',
-              borderRadius: '50%',
-              width: 64,
-              height: 64,
-              boxShadow: buttonActive === 'left' ? '0 0 0 6px #1976d222, 0 8px 32px #1976d244' : '0 4px 16px rgba(25, 118, 210, 0.10)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: animating ? 'not-allowed' : 'pointer',
-              transition: 'box-shadow 0.2s, background 0.2s, transform 0.12s',
-              outline: 'none',
-              opacity: animating ? 0.7 : 1,
+              background: '#1e3a8a',
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: '1rem',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(30,58,138,0.08)'
             }}
-            onMouseOver={e => e.currentTarget.style.boxShadow = '0 0 0 6px #1976d222, 0 8px 24px #1976d244'}
-            onMouseOut={e => e.currentTarget.style.boxShadow = buttonActive === 'left' ? '0 0 0 6px #1976d222, 0 8px 32px #1976d244' : '0 4px 16px rgba(25, 118, 210, 0.10)'}
-            onMouseDown={() => setButtonActive('left')}
-            onMouseUp={() => setButtonActive(null)}
-            onBlur={() => setButtonActive(null)}
           >
-            {/* Blue left arrow SVG, larger and bolder */}
-            <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M24 31L14 19L24 7" stroke="#1976d2" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            Search
           </button>
-          {/* Right Scroll Button */}
-          <button
-            onClick={nextSlide}
-            aria-label="Scroll Right"
-            tabIndex={0}
-            disabled={animating}
-            style={{
-              position: 'absolute',
-              right: 10,
-              top: '50%',
-              transform: `translateY(-50%) scale(${buttonActive === 'right' ? 0.92 : 1})`,
-              zIndex: 2,
-              background: '#fff',
-              border: 'none',
-              borderRadius: '50%',
-              width: 64,
-              height: 64,
-              boxShadow: buttonActive === 'right' ? '0 0 0 6px #1976d222, 0 8px 32px #1976d244' : '0 4px 16px rgba(25, 118, 210, 0.10)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: animating ? 'not-allowed' : 'pointer',
-              transition: 'box-shadow 0.2s, background 0.2s, transform 0.12s',
-              outline: 'none',
-              opacity: animating ? 0.7 : 1,
-            }}
-            onMouseOver={e => e.currentTarget.style.boxShadow = '0 0 0 6px #1976d222, 0 8px 24px #1976d244'}
-            onMouseOut={e => e.currentTarget.style.boxShadow = buttonActive === 'right' ? '0 0 0 6px #1976d222, 0 8px 32px #1976d244' : '0 4px 16px rgba(25, 118, 210, 0.10)'}
-            onMouseDown={() => setButtonActive('right')}
-            onMouseUp={() => setButtonActive(null)}
-            onBlur={() => setButtonActive(null)}
-          >
-            {/* Blue right arrow SVG, larger and bolder */}
-            <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M14 7L24 19L14 31" stroke="#1976d2" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-          {/* Slide Wrapper */}
-          <div
-            ref={slideRef}
-            style={{
-              display: 'flex',
-              transition: animating ? 'transform 0.3s cubic-bezier(.77,0,.18,1)' : 'none',
-              transform: `translateX(${-currentSlide * slideWidth * 1}px)`,
-              gap: '2rem',
-              padding: '2rem 1rem',
-              minHeight: 350,
-            }}
-          >
-            {getCurrentDestinations().map((destination, idx) => (
-              <div
-                key={destination.country}
-                style={{
-                  display: "inline-block",
-                  width: 350,
-                  minWidth: 300,
-                  maxWidth: 350,
-                  background: "rgba(255,255,255,0.7)",
-                  boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.15)",
-                  backdropFilter: "blur(8px)",
-                  borderRadius: "20px",
-                  border: "1px solid rgba(255,255,255,0.18)",
-                  marginRight: "1rem",
-                  overflow: "hidden",
-                }}
-              >
-                <img
-                  src={destination.image}
-                  alt={destination.country}
-                  style={{
-                    width: "100%",
-                    height: "180px",
-                    objectFit: "cover",
-                    borderTopLeftRadius: "20px",
-                    borderTopRightRadius: "20px",
-                  }}
-                />
-                <div style={{ padding: "1.5rem", textAlign: "left" }}>
-                  <h4 style={{ fontWeight: "bold", marginBottom: "0.5rem", textAlign: "left" }}>{destination.country}</h4>
-                  <div style={{
-                    fontSize: "0.98rem",
-                    color: "#444",
-                    marginBottom: "1rem",
-                    textAlign: "left",
-                    whiteSpace: "normal",
-                    wordBreak: "break-word",
-                  }}>
-                    {destination.description}
+        </div>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '2.5rem',
+          width: '100%',
+          maxWidth: 1200,
+          margin: '0 auto',
+        }}>
+          {filtered.map((dest, idx) => (
+            <Link
+              key={idx}
+              to={`/destination/${dest.country.toLowerCase()}`}
+              state={{ destination: dest }}
+              style={{ textDecoration: 'none' }}
+            >
+              <div style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                background: '#fff',
+                borderRadius: 24,
+                boxShadow: '0 4px 24px 0 rgba(30,58,138,0.08)',
+                padding: '2.5rem 2rem',
+                minHeight: 340,
+                gap: '2.5rem',
+                marginBottom: '1.5rem',
+                transition: 'box-shadow 0.2s',
+                cursor: 'pointer',
+              }}>
+                {/* Image on the left */}
+                <div style={{ flex: '0 0 340px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <img
+                    src={`/assets/${dest.image}`}
+                    alt={dest.country}
+                    style={{ width: 320, height: 220, objectFit: 'cover', borderRadius: 18, boxShadow: '0 2px 12px rgba(30,58,138,0.10)' }}
+                  />
+                </div>
+                {/* Details on the right */}
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '1.2rem' }}>
+                  <div style={{ fontSize: '1.1rem', color: '#222', fontWeight: 500, marginBottom: 2 }}>
+                    <span style={{ fontWeight: 700, fontSize: '1.3rem', color: '#1e3a8a', marginRight: 8 }}>{dest.flag}</span>
+                    {dest.country} <span style={{ color: '#7c3aed', fontWeight: 700, fontSize: '2rem', marginLeft: 8 }}>{dest.shipName}</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
-                    <div style={{ fontWeight: "bold", color: "#222", fontSize: "1.1rem", textAlign: "left" }}>
-                      {destination.nights}
+                  <div style={{ color: '#666', fontSize: '1.08rem', marginBottom: 8 }}>{dest.description}</div>
+                  <div style={{ display: 'flex', gap: '2.5rem', marginTop: 8 }}>
+                    <div style={{ background: '#f5f7ff', borderRadius: 16, padding: '1rem 2rem', minWidth: 120, textAlign: 'center', boxShadow: '0 2px 8px rgba(30,58,138,0.04)' }}>
+                      <div style={{ color: '#4f46e5', fontWeight: 700, fontSize: '1.3rem' }}>{dest.nights}</div>
+                      <div style={{ color: '#888', fontSize: '1rem', marginTop: 2 }}>Nights</div>
                     </div>
-                    <div style={{ fontWeight: "bold", color: "#007bff", fontSize: "1.05rem", textAlign: "right" }}>
-                      {destination.price}
+                    <div style={{ background: '#f5f7ff', borderRadius: 16, padding: '1rem 2rem', minWidth: 120, textAlign: 'center', boxShadow: '0 2px 8px rgba(30,58,138,0.04)' }}>
+                      <div style={{ color: '#4f46e5', fontWeight: 700, fontSize: '1.3rem' }}>{dest.price}</div>
+                      <div style={{ color: '#888', fontSize: '1rem', marginTop: 2 }}>Price</div>
                     </div>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+            </Link>
+          ))}
         </div>
       </section>
     </div>

@@ -178,7 +178,7 @@ function CabinAdminDashboard() {
       </div>
       <div className="container" style={{ maxWidth: 1200 }}>
         {/* Filter Card */}
-        <div className="card booking-filter-card mb-4 p-4 shadow-sm">
+        <div className="cabin-card mb-4">
           <div className="row g-3 align-items-end">
             <div className="col-12 col-md-3">
               <label className="form-label fw-semibold">
@@ -262,8 +262,7 @@ function CabinAdminDashboard() {
             </div>
           </div>
         </div>
-        {/* Table Card */}
-        <div className="card dashboard-card mb-4 p-3">
+        <div className="cabin-card">
           <div className="table-responsive">
             <table className="table align-middle mb-0">
               <thead>
