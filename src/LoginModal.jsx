@@ -17,7 +17,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
   const [passwordError, setPasswordError] = useState("");
   const [step, setStep] = useState("login"); // 'login', 'forgot', 'otp', 'newPassword'
   const navigate = useNavigate();
-  const { isAuthenticated, logout, currentUser, setIsAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, logout, currentUser } = useContext(AuthContext);
 
   if (!isOpen) return null;
 
@@ -94,6 +94,9 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
         localStorage.setItem("currentUser", JSON.stringify(user));
         localStorage.setItem("role", role);
 
+
+       
+
         setTimeout(() => {
           toast.dismiss();
           onClose();
@@ -110,8 +113,6 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
             navigate("/customer-dashboard");
           }
         }, 2000);
-
-        setIsAuthenticated(true);
       } else {
         setError(response.data.message || "Invalid username or password.");
         toast.error(response.data.message || "Invalid username or password.");

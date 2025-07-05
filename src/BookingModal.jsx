@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { AuthContext } from "./App";
 
 const cabinTypes = ["Interior", "Ocean view", "Balcony", "Suite"];
 const dietaryOptions = ["None", "Vegetarian", "Vegan", "Gluten-Free", "Kosher", "Halal"];
@@ -12,16 +13,17 @@ const addOns = [
 const steps = ["Add details", "Passenger details", "Payment"];
 
 const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
+  const { currentUser } = useContext(AuthContext);
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     adults: 1,
     children: 0,
     cabinType: "",
-    fullName: "",
-    gender: "",
+    fullName: currentUser?.full_name || "",
+    gender: currentUser?.gender || "",
     citizenship: "",
     destination: "",
-    email: "",
+    email: currentUser?.email || "",
     age: "",
     cardType: "Visa",
     cardNumber: "",
@@ -31,6 +33,10 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [guestCountError, setGuestCountError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [bookingId, setBookingId] = useState("");
+  const [cabinNumber, setCabinNumber] = useState("");
 
   const totalAmount = 375; // Example static amount
 
@@ -75,36 +81,90 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
   const handleNext = () => setStep(step + 1);
   const handleBack = () => setStep(step - 1);
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!form.cabinType || !form.adults || form.children === undefined || !form.fullName || !form.email || !form.cardNumber || !form.expiry || !form.cvv) {
       setError("Please fill in all required fields.");
       setSuccess("");
       return;
     }
+
+    if (!currentUser?.id) {
+      setError("Please log in to make a booking.");
+      return;
+    }
+
     setError("");
-    setSuccess("Booking successful! Thank you for booking with Serendip Waves.");
-    // Here you would send the booking data to your backend
-    setTimeout(() => {
-      onClose();
-      setStep(1);
-      setForm({
-        adults: 1,
-        children: 0,
-        cabinType: "",
-        fullName: "",
-        gender: "",
-        citizenship: "",
-        destination: "",
-        email: "",
-        age: "",
-        cardType: "Visa",
-        cardNumber: "",
-        expiry: "",
-        cvv: ""
+    setLoading(true);
+
+    try {
+      // Calculate dates (example: departure in 30 days, return in 37 days)
+      const today = new Date();
+      const departureDate = new Date(today.getTime() + (30 * 24 * 60 * 60 * 1000));
+      const returnDate = new Date(today.getTime() + (37 * 24 * 60 * 60 * 1000));
+
+      const response = await fetch('http://localhost/Project-I/backend/login.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'create_booking',
+          user_id: currentUser.id,
+          full_name: form.fullName,
+          email: form.email,
+          cruise_title: form.destination || "Serendip Dream",
+          cabin_type: form.cabinType,
+          adults: parseInt(form.adults),
+          children: parseInt(form.children),
+          booking_date: today.toISOString().split('T')[0],
+          departure_date: departureDate.toISOString().split('T')[0],
+          return_date: returnDate.toISOString().split('T')[0],
+          total_price: totalAmount,
+          special_requests: ""
+        })
       });
-      setSuccess("");
-    }, 2000);
+
+      const data = await response.json();
+
+      if (data.success) {
+        setBookingSuccess(true);
+        setBookingId(data.booking_id);
+        setCabinNumber(data.cabin_number);
+        setSuccess("Booking successful! Thank you for booking with Serendip Waves.");
+        setTimeout(() => {
+          onClose();
+          setStep(1);
+          setForm({
+            adults: 1,
+            children: 0,
+            cabinType: "Interior",
+            fullName: currentUser?.full_name || "",
+            gender: currentUser?.gender || "",
+            citizenship: "",
+            destination: "",
+            email: currentUser?.email || "",
+            age: "",
+            cardType: "Visa",
+            cardNumber: "",
+            expiry: "",
+            cvv: ""
+          });
+          setSuccess("");
+          // Trigger refresh of bookings in parent component
+          if (onBookingCreated) {
+            onBookingCreated();
+          }
+        }, 2000);
+      } else {
+        setError(data.message || "Failed to create booking");
+      }
+    } catch (error) {
+      setError("An error occurred. Please try again.");
+      console.error('Booking error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isOpen) return null;
