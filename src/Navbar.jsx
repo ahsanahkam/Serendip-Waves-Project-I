@@ -312,5 +312,5 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
     </>
   );
 };
-
-export default Navbar;
+     
+export default Navbar;                       
