@@ -205,6 +205,7 @@ const App = () => {
   const authValue = {
     isAuthenticated,
     currentUser,
+    setCurrentUser,
     login,
     logout,
     isLoginModalOpen,
