@@ -20,6 +20,7 @@ import FoodInventoryDashboard from './FoodInventoryDashboard';
 import ItineraryDashboard from './ItineraryDashboard';
 import CabinAdminDashboard from './CabinAdminDashboard';
 import PassengerDashboard from './PassengerDashboard';
+import AdminDashboard from './AdminDashboard';
 
 export const AuthContext = React.createContext();
 
@@ -105,6 +106,7 @@ function AppRoutes(props) {
         <Route path="/itinerary-management" element={<ItineraryDashboard />} />
         <Route path="/cabin-admin" element={<CabinAdminDashboard />} />
         <Route path="/passenger-management" element={<PassengerDashboard />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
       </Routes>
     </>
   );
@@ -141,22 +143,11 @@ const App = () => {
     localStorage.removeItem('isAuthenticated');
   };
 
-  const signup = (userData) => {
-    const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
-    const newUser = { ...userData, id: Date.now() };
-    existingUsers.push(newUser);
-    localStorage.setItem('users', JSON.stringify(existingUsers));
-    const { password, confirmPassword, ...userWithoutPassword } = newUser;
-    login(userWithoutPassword);
-    setIsSignupModalOpen(false);
-  };
-
   const authValue = {
     isAuthenticated,
     currentUser,
     login,
     logout,
-    signup,
     isLoginModalOpen,
     setIsLoginModalOpen,
     isSignupModalOpen,
