@@ -22,6 +22,7 @@ import ItineraryDashboard from './ItineraryDashboard';
 import CabinAdminDashboard from './CabinAdminDashboard';
 import PassengerDashboard from './PassengerDashboard';
 import AdminDashboard from './AdminDashboard';
+import DestinationDetails from './DestinationDetails';
 
 
 export const AuthContext = createContext();
@@ -47,7 +48,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, setCurrentUser, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated: !!currentUser, currentUser, setCurrentUser, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -155,6 +156,7 @@ function AppRoutes(props) {
         <Route path="/cabin-admin" element={<CabinAdminDashboard />} />
         <Route path="/passenger-management" element={<PassengerDashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/destination/:country" element={<DestinationDetails />} />
       </Routes>
     </>
   );
