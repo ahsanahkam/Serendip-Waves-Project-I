@@ -17,7 +17,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
   const [passwordError, setPasswordError] = useState("");
   const [step, setStep] = useState("login"); // 'login', 'forgot', 'otp', 'newPassword'
   const navigate = useNavigate();
-  const { isAuthenticated, logout, currentUser } = useContext(AuthContext);
+  const { isAuthenticated, logout, currentUser, setCurrentUser } = useContext(AuthContext);
 
   if (!isOpen) return null;
 
@@ -93,9 +93,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
         // Save user info for dashboard
         localStorage.setItem("currentUser", JSON.stringify(user));
         localStorage.setItem("role", role);
-
-
-       
+        setCurrentUser(user);
 
         setTimeout(() => {
           toast.dismiss();
