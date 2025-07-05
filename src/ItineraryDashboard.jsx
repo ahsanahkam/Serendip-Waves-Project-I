@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Modal, Button, Form, Table, Badge } from 'react-bootstrap';
 import { FaPlus, FaEdit, FaTrash, FaSearch, FaTimes, FaRoute } from 'react-icons/fa';
-import itinerariesData from './data/itineraries.json';
 import './itinerary.css';
+import axios from 'axios';
 
 // Ship names from existing data
 const shipNames = [
@@ -69,10 +69,25 @@ function ItineraryDashboard() {
     arrivalCountry: ''
   });
 
-  // Load data on component mount
+  // Fetch itineraries from backend
+  const fetchItineraries = async () => {
+    try {
+      const response = await axios.get("http://localhost/Project-I/backend/getItineraries.php");
+      const data = response.data;
+      setItineraries(data);
+      setFilteredItineraries(data);
+      // Extract ship names and countries dynamically
+      const ships = [...new Set(data.map(item => item.ship_name))];
+      const countries = [...new Set(data.map(item => item.route))];
+      setAvailableShipNames(ships);
+      setAvailableCountries(countries);
+    } catch (error) {
+      console.error("Failed to fetch itineraries:", error);
+    }
+  };
+
   useEffect(() => {
-    setItineraries(itinerariesData);
-    setFilteredItineraries(itinerariesData);
+    fetchItineraries();
   }, []);
 
   // Apply filters when filters change
@@ -81,25 +96,25 @@ function ItineraryDashboard() {
 
     if (filters.shipName) {
       filtered = filtered.filter(item => 
-        item.shipName.toLowerCase().includes(filters.shipName.toLowerCase())
+        item.ship_name.toLowerCase().includes(filters.shipName.toLowerCase())
       );
     }
 
     if (filters.arrivalCountry) {
       filtered = filtered.filter(item => 
-        item.arrivalCountry.toLowerCase().includes(filters.arrivalCountry.toLowerCase())
+        item.route.toLowerCase().includes(filters.arrivalCountry.toLowerCase())
       );
     }
 
     if (filters.startDate) {
       filtered = filtered.filter(item => 
-        new Date(item.startDate) >= new Date(filters.startDate)
+        new Date(item.start_date) >= new Date(filters.startDate)
       );
     }
 
     if (filters.endDate) {
       filtered = filtered.filter(item => 
-        new Date(item.endDate) <= new Date(filters.endDate)
+        new Date(item.end_date) <= new Date(filters.endDate)
       );
     }
 
@@ -132,35 +147,78 @@ function ItineraryDashboard() {
     setEditingItinerary(null);
   };
 
-  const handleSaveItinerary = (formData) => {
-    if (editingItinerary) {
-      // Edit existing itinerary
-      const updated = itineraries.map(item => 
-        item.id === editingItinerary.id ? { ...item, ...formData } : item
-      );
-      setItineraries(updated);
-    } else {
-      // Add new itinerary
-      const newItinerary = {
-        id: `IT${String(itineraries.length + 1).padStart(3, '0')}`,
-        ...formData
-      };
-      setItineraries(prev => [...prev, newItinerary]);
-
-      // Check if shipName or arrivalCountry are new and add them to the filter lists if needed
-      if (!availableShipNames.includes(formData.shipName)) {
-        setAvailableShipNames(prev => [...prev, formData.shipName]);
+  const handleSaveItinerary = async (formData) => {
+    try {
+      if (editingItinerary) {
+        // Edit existing itinerary
+        const res = await axios.post(
+          "http://localhost/Project-I/backend/updateItenerary.php",
+          {
+            id: editingItinerary.id,
+            ship_name: formData.shipName,
+            route: formData.arrivalCountry,
+            departure_port: formData.departurePort,
+            start_date: formData.startDate,
+            end_date: formData.endDate,
+            notes: formData.notes
+          },
+          {
+            headers: {
+              "Content-Type": "application/json"
+            }
+          }
+        );
+        alert(res.data.message);
+        if (res.status === 200) {
+          await fetchItineraries();
+        }
+      } else {
+        // Add new itinerary
+        const res = await axios.post(
+          "http://localhost/Project-I/backend/saveItenerary.php",
+          {
+            ship_name: formData.shipName,
+            route: formData.arrivalCountry,
+            departure_port: formData.departurePort,
+            start_date: formData.startDate,
+            end_date: formData.endDate,
+            notes: formData.notes
+          },
+          {
+            headers: {
+              "Content-Type": "application/json"
+            }
+          }
+        );
+        alert(res.data.message);
+        if (res.status === 200) {
+          await fetchItineraries();
+        }
       }
-      if (!availableCountries.includes(formData.arrivalCountry)) {
-        setAvailableCountries(prev => [...prev, formData.arrivalCountry]);
-      }
+      handleCloseModal();
+    } catch (error) {
+      alert("Failed to save itinerary. Please check your backend.");
+      console.error(error);
     }
-    handleCloseModal();
   };
+  
 
-  const handleDeleteItinerary = (id) => {
+  const handleDeleteItinerary = async (id) => {
     if (window.confirm('Are you sure you want to delete this itinerary?')) {
-      setItineraries(prev => prev.filter(item => item.id !== id));
+      try {
+        const res = await axios.post(
+          "http://localhost/Project-I/backend/deleteItenerary.php",
+          { id },
+          { headers: { "Content-Type": "application/json" } }
+        );
+        alert(res.data.message);
+        if (res.status === 200) {
+          await fetchItineraries();
+        }
+      } catch (error) {
+        alert("Failed to delete itinerary. Please check your backend.");
+        console.error(error);
+      }
     }
   };
 
@@ -270,16 +328,16 @@ function ItineraryDashboard() {
                 filteredItineraries.map((itinerary) => (
                   <tr key={itinerary.id}>
                     <td>
-                      <strong>{itinerary.shipName}</strong>
+                      <strong>{itinerary.ship_name}</strong>
                     </td>
                     <td>
-                      <Badge className="port-badge">{itinerary.departurePort}</Badge>
+                      <Badge className="port-badge">{itinerary.departure_port}</Badge>
                     </td>
                     <td>
-                      <Badge className="country-badge">{itinerary.arrivalCountry}</Badge>
+                      <Badge className="country-badge">{itinerary.route}</Badge>
                     </td>
-                    <td>{formatDate(itinerary.startDate)}</td>
-                    <td>{formatDate(itinerary.endDate)}</td>
+                    <td>{formatDate(itinerary.start_date)}</td>
+                    <td>{formatDate(itinerary.end_date)}</td>
                     <td>
                       <div className="action-buttons">
                         <Button
