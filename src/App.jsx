@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useRef } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
-  useNavigate
+  useNavigate,
+  useLocation
 } from 'react-router-dom';
 import HomePage from './HomePage';
 import DestinationsPage from './DestinationsPage';
@@ -22,7 +23,36 @@ import CabinAdminDashboard from './CabinAdminDashboard';
 import PassengerDashboard from './PassengerDashboard';
 import AdminDashboard from './AdminDashboard';
 
-export const AuthContext = React.createContext();
+
+export const AuthContext = createContext();
+export const AuthProvider = ({ children }) => {
+  const [currentUser, setCurrentUser] = useState(() => {
+    // Load user from localStorage initially
+    const user = localStorage.getItem('currentUser');
+    return user ? JSON.parse(user) : null;
+  });
+
+  // Optionally sync currentUser to localStorage on change
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    } else {
+      localStorage.removeItem('currentUser');
+    }
+  }, [currentUser]);
+
+  const logout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem('currentUser');
+  };
+
+  return (
+    <AuthContext.Provider value={{ currentUser, setCurrentUser, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
 
 function SignupRouteHandler({ isAuthenticated, setIsSignupModalOpen }) {
   React.useEffect(() => {
@@ -49,6 +79,7 @@ const ProtectedRoute = ({ allowedRoles, children }) => {
 
 function AppRoutes(props) {
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     isAuthenticated,
     setIsLoginModalOpen,
@@ -58,12 +89,29 @@ function AppRoutes(props) {
     isBookingModalOpen,
     setIsBookingModalOpen
   } = props;
+
+  // Hide Navbar on customer dashboard and its subpages
+  const hideNavbarRoutes = [
+    '/customer-dashboard'
+  ];
+  const shouldShowNavbar = !hideNavbarRoutes.some(route => location.pathname.startsWith(route));
+
+  const sectionRef = useRef(null);
+
+  const handleScroll = () => {
+    if (sectionRef.current) {
+      sectionRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <>
-      <Navbar
-        onSignupClick={() => setIsSignupModalOpen(true)}
-        onLoginClick={() => setIsLoginModalOpen(true)}
-      />
+      {shouldShowNavbar && (
+        <Navbar
+          onSignupClick={() => setIsSignupModalOpen(true)}
+          onLoginClick={() => setIsLoginModalOpen(true)}
+        />
+      )}
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => {
@@ -122,9 +170,18 @@ const App = () => {
   useEffect(() => {
     const savedUser = localStorage.getItem('currentUser');
     const savedAuth = localStorage.getItem('isAuthenticated');
-    if (savedUser && savedAuth === 'true') {
-      setCurrentUser(JSON.parse(savedUser));
-      setIsAuthenticated(true);
+    
+    try {
+      if (savedUser && savedAuth === 'true') {
+        const parsedUser = JSON.parse(savedUser);
+        setCurrentUser(parsedUser);
+        setIsAuthenticated(true);
+      }
+    } catch (error) {
+      console.error('Error restoring authentication state:', error);
+      // Clear corrupted data
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('isAuthenticated');
     }
   }, []);
 
