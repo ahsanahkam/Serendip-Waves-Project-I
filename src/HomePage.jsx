@@ -323,60 +323,139 @@ const Footer = () => (
 // After Destinations section, before About section
 const FleetSection = () => (
   <section id="fleet" style={{
-    background: `linear-gradient(135deg, #667eea99 0%, #764ba299 100%), url('/ShipBalcony.jpg') center center / cover no-repeat`,
-    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #e9eff7 0%, #dbe6f6 100%)',
+    minHeight: '60vh',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
     overflow: 'hidden',
-    color: 'white',
-    padding: 0,
-    margin: 0
+    color: '#1a237e',
+    padding: '0',
+    margin: '0',
   }}>
-    <div className="container text-center text-white">
-      <h1 className="display-3 fw-bold mb-4">
-        Our Fleet
-      </h1>
-      <p className="lead mb-5">
-        Discover our magnificent fleet of luxury cruise ships, each designed to provide unforgettable experiences across the world's most beautiful waters.
-      </p>
-      <div className="mt-5">
-        <Link to="/cruise-ships" className="btn view-all-ships-btn btn-lg">
+    <div className="container" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '3rem', padding: '3rem 0' }}>
+      {/* Left: Image */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <img
+          src="/ShipBalcony.jpg"
+          alt="Our Fleet"
+          style={{
+            width: '100%',
+            maxWidth: '520px',
+            height: 'auto',
+            borderRadius: '0 0 80px 0',
+            boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.13)',
+            objectFit: 'cover',
+          }}
+        />
+      </div>
+      {/* Right: Text */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', gap: '1.5rem', maxWidth: 600 }}>
+        <h1 className="display-3 fw-bold mb-2" style={{ color: '#1a237e', fontWeight: 800, fontSize: '3rem', letterSpacing: '0.5px', textAlign: 'left' }}>
+          Our Fleet
+        </h1>
+        <p className="lead mb-3" style={{ color: '#26334d', fontSize: '1.25rem', textAlign: 'left', fontWeight: 500 }}>
+          Discover our magnificent fleet of luxury cruise ships, each designed to provide unforgettable experiences across the world's most beautiful waters.
+        </p>
+        <Link to="/cruise-ships" className="btn view-all-ships-btn btn-lg mt-2" style={{ alignSelf: 'flex-start' }}>
           View All Ships
         </Link>
       </div>
     </div>
+    <style>{`
+      @media (max-width: 991.98px) {
+        #fleet .container {
+          flex-direction: column !important;
+          gap: 2rem !important;
+          padding: 2rem 0 !important;
+        }
+        #fleet img {
+          max-width: 100% !important;
+          border-radius: 0 0 40px 0 !important;
+        }
+        #fleet h1 {
+          font-size: 2.2rem !important;
+        }
+      }
+      @media (max-width: 575.98px) {
+        #fleet .container {
+          padding: 1rem 0 !important;
+        }
+        #fleet h1 {
+          font-size: 1.5rem !important;
+        }
+      }
+    `}</style>
   </section>
 );
 
 const DestinationsSection = () => (
   <section id="destinations-section" style={{
-    background: `linear-gradient(135deg, #43cea299 0%, #185a9d99 100%), url('/destination.jpg') center center / cover no-repeat`,
-    minHeight: '100vh',
-    height: '100vh',
+    background: 'linear-gradient(135deg, #e9eff7 0%, #dbe6f6 100%)',
+    minHeight: '60vh',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
     overflow: 'hidden',
-    color: 'white',
-    padding: 0,
-    margin: 0
+    color: '#1a237e',
+    padding: '0',
+    margin: '0',
   }}>
-    <div className="container text-center text-white">
-      <h1 className="display-3 fw-bold mb-4">
-        Destinations
-      </h1>
-      <p className="lead mb-5">
-        Explore breathtaking destinations around the world with our premium cruise experiences.
-      </p>
-      <div className="mt-5">
-        <Link to="/destinations" className="btn view-all-destinations-btn btn-lg">
+    <div className="container" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '3rem', padding: '3rem 0' }}>
+      {/* Left: Image */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <img
+          src="/destination.jpg"
+          alt="Destinations"
+          style={{
+            width: '100%',
+            maxWidth: '520px',
+            height: 'auto',
+            borderRadius: '0 0 80px 0',
+            boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.13)',
+            objectFit: 'cover',
+          }}
+        />
+      </div>
+      {/* Right: Text */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', gap: '1.5rem', maxWidth: 600 }}>
+        <h1 className="display-3 fw-bold mb-2" style={{ color: '#1a237e', fontWeight: 800, fontSize: '3rem', letterSpacing: '0.5px', textAlign: 'left' }}>
+          Destinations
+        </h1>
+        <p className="lead mb-3" style={{ color: '#26334d', fontSize: '1.25rem', textAlign: 'left', fontWeight: 500 }}>
+          Explore breathtaking destinations around the world with our premium cruise experiences.
+        </p>
+        <Link to="/destinations" className="btn view-all-destinations-btn btn-lg mt-2" style={{ alignSelf: 'flex-start' }}>
           View All Destinations
         </Link>
       </div>
     </div>
+    <style>{`
+      @media (max-width: 991.98px) {
+        #destinations-section .container {
+          flex-direction: column !important;
+          gap: 2rem !important;
+          padding: 2rem 0 !important;
+        }
+        #destinations-section img {
+          max-width: 100% !important;
+          border-radius: 0 0 40px 0 !important;
+        }
+        #destinations-section h1 {
+          font-size: 2.2rem !important;
+        }
+      }
+      @media (max-width: 575.98px) {
+        #destinations-section .container {
+          padding: 1rem 0 !important;
+        }
+        #destinations-section h1 {
+          font-size: 1.5rem !important;
+        }
+      }
+    `}</style>
   </section>
 );
 

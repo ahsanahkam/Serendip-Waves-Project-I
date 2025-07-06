@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { FaBook, FaUtensils, FaBed, FaRoute, FaUsers } from "react-icons/fa";
+import { FaBook, FaUtensils, FaBed, FaRoute, FaUsers, FaShip } from "react-icons/fa";
 import "./SuperAdminDashboard.css";
 import { useContext } from "react";
 import { AuthContext } from "./App";
@@ -17,6 +17,12 @@ const dashboardButtons = [
     label: "Pantry",
     icon: <FaUtensils size={28} />,
     route: "/food-inventory-management",
+    active: true,
+  },
+  {
+    label: "Cruise",
+    icon: <FaShip size={28} />,
+    route: "/cruise-ships",
     active: true,
   },
   {

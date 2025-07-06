@@ -126,95 +126,88 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
               <span style={{ fontWeight: 700, fontSize: '2.1rem', letterSpacing: '0.04em', color: '#1a237e', lineHeight: 1.1 }}>serendip<br/>waves</span>
             </Link>
           </div>
-          {/* Centered Nav Links */}
-          {isLargeScreen && (
-            <div className="d-flex align-items-center gap-4 mx-auto" style={{ flex: 1, justifyContent: 'center' }}>
-              <a href="#home" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'home')} style={{ 
-                color: '#222', 
-                textDecoration: 'none',
-                fontSize: '1.05rem',
-                padding: '6px 18px',
-                fontWeight: 500
-              }}>Home</a>
-              <Link to="/destinations" className="nav-link fw-semibold" style={{ 
-                color: '#222', 
-                textDecoration: 'none',
-                fontSize: '1.05rem',
-                padding: '6px 18px',
-                fontWeight: 500
-              }}>Destination</Link>
-              <Link to="/cruise-ships" className="nav-link fw-semibold" style={{ 
-                color: '#222',
-                textDecoration: 'none',
-                fontSize: '1.05rem',
-                padding: '6px 18px',
-                fontWeight: 500
-              }}>Cruises</Link>
-              <Link to="/customer-dashboard" className="nav-link fw-semibold" style={{ 
-                color: '#222',
-                textDecoration: 'none',
-                fontSize: '1.05rem',
-                padding: '6px 18px',
-                fontWeight: 500
-              }}>Customer Dashboard</Link>
-              <a href="#about" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'about')} style={{ 
-                color: '#222',
-                fontSize: '1.05rem',
-                padding: '6px 18px',
-                fontWeight: 500
-              }}>About Us</a>
-              <a href="#contact" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'contact')} style={{ 
-                color: '#222',
-                fontSize: '1.05rem',
-                padding: '6px 18px',
-                fontWeight: 500
-              }}>Contact</a>
-              {isAuthenticated && currentUser && currentUser.role === "Admin" && (
-                <Link to="/admin-dashboard" className="nav-link fw-semibold">Admin Dashboard</Link>
-              )}
-              {isAuthenticated && currentUser && currentUser.email === "sadmin@gmail.com" && (
-                <Link to="/super-admin" className="nav-link fw-semibold">Super Admin Dashboard</Link>
-              )}
-            </div>
-          )}
-          {/* Login/Logout Button */}
+          {/* Login/Logout Button and Nav Links */}
           <div className="d-flex align-items-center gap-3">
-            {isAuthenticated ? (
-              <button
-                onClick={logout}
-                className="btn btn-outline-dark btn-sm d-flex align-items-center gap-2 ms-2 btn-login"
-                style={{
-                  borderRadius: '22px',
-                  padding: '7px 24px',
+            {isLargeScreen && (
+              <div className="d-flex align-items-center gap-4">
+                <a href="#home" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'home')} style={{ 
+                  color: '#222', 
+                  textDecoration: 'none',
                   fontSize: '1.05rem',
-                  fontWeight: 500,
-                  border: '1.5px solid #222',
-                  background: '#fff',
-                  color: '#222',
-                  boxShadow: 'none',
-                  transition: 'all 0.2s',
-                }}
-              >
-                Logout
-              </button>
-            ) : (
-              <button 
-                onClick={handleLoginClick}
-                className="btn btn-outline-dark btn-sm d-flex align-items-center gap-2 ms-2 btn-login"
-                style={{ 
-                  borderRadius: '22px',
-                  padding: '7px 24px',
+                  padding: '6px 18px',
+                  fontWeight: 500
+                }}>Home</a>
+                <Link to="/destinations" className="nav-link fw-semibold" style={{ 
+                  color: '#222', 
+                  textDecoration: 'none',
                   fontSize: '1.05rem',
-                  fontWeight: 500,
-                  border: '1.5px solid #222',
-                  background: '#fff',
+                  padding: '6px 18px',
+                  fontWeight: 500
+                }}>Destination</Link>
+                <Link to="/cruise-ships" className="nav-link fw-semibold" style={{ 
                   color: '#222',
-                  boxShadow: 'none',
-                  transition: 'all 0.2s',
-                }}
-              >
-                Login
-              </button>
+                  textDecoration: 'none',
+                  fontSize: '1.05rem',
+                  padding: '6px 18px',
+                  fontWeight: 500
+                }}>Cruises</Link>
+                <a href="#about" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'about')} style={{ 
+                  color: '#222',
+                  fontSize: '1.05rem',
+                  padding: '6px 18px',
+                  fontWeight: 500
+                }}>About Us</a>
+                <a href="#contact" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'contact')} style={{ 
+                  color: '#222',
+                  fontSize: '1.05rem',
+                  padding: '6px 18px',
+                  fontWeight: 500
+                }}>Contact</a>
+                {isAuthenticated && currentUser && currentUser.role === "Admin" && (
+                  <Link to="/admin-dashboard" className="nav-link fw-semibold">Admin Dashboard</Link>
+                )}
+                {isAuthenticated && currentUser && currentUser.email === "sadmin@gmail.com" && (
+                  <Link to="/super-admin" className="nav-link fw-semibold">Super Admin Dashboard</Link>
+                )}
+                {/* Login/Logout Button moved here */}
+                {isAuthenticated ? (
+                  <button
+                    onClick={logout}
+                    className="btn btn-outline-dark btn-sm d-flex align-items-center gap-2 ms-2 btn-login"
+                    style={{
+                      borderRadius: '22px',
+                      padding: '7px 24px',
+                      fontSize: '1.05rem',
+                      fontWeight: 500,
+                      border: '1.5px solid #222',
+                      background: '#fff',
+                      color: '#222',
+                      boxShadow: 'none',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <button 
+                    onClick={handleLoginClick}
+                    className="btn btn-outline-dark btn-sm d-flex align-items-center gap-2 ms-2 btn-login"
+                    style={{ 
+                      borderRadius: '22px',
+                      padding: '7px 24px',
+                      fontSize: '1.05rem',
+                      fontWeight: 500,
+                      border: '1.5px solid #222',
+                      background: '#fff',
+                      color: '#222',
+                      boxShadow: 'none',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    Login
+                  </button>
+                )}
+              </div>
             )}
           </div>
         </div>
@@ -256,18 +249,6 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                   borderBottom: '1px solid rgba(255,255,255,0.1)'
                 }}>
                   Cruises
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link to="/customer-dashboard" className="nav-link fw-semibold" onClick={handleNavLinkClick} style={{ 
-                  color: '#fff',
-                  textDecoration: 'none',
-                  transition: 'color 0.3s ease',
-                  fontSize: '1rem',
-                  padding: '10px 15px',
-                  borderBottom: '1px solid rgba(255,255,255,0.1)'
-                }}>
-                  Customer Dashboard
                 </Link>
               </li>
               <li className="nav-item">
