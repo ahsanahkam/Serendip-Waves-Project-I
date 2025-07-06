@@ -149,11 +149,28 @@ function ItineraryDashboard() {
 
   const handleSaveItinerary = async (formData) => {
     try {
+      let url, data, headers;
+      
       if (editingItinerary) {
-        // Edit existing itinerary
-        const res = await axios.post(
-          "http://localhost/Project-I/backend/updateItenerary.php",
-          {
+        // For updates, check if there's an image
+        if (formData.countryImage) {
+          // Send FormData if image is selected
+          url = "http://localhost/Project-I/backend/updateItenerary.php";
+          const formDataToSend = new FormData();
+          formDataToSend.append('id', editingItinerary.id);
+          formDataToSend.append('ship_name', formData.shipName);
+          formDataToSend.append('route', formData.arrivalCountry);
+          formDataToSend.append('departure_port', formData.departurePort);
+          formDataToSend.append('start_date', formData.startDate);
+          formDataToSend.append('end_date', formData.endDate);
+          formDataToSend.append('notes', formData.notes);
+          formDataToSend.append('country_image', formData.countryImage);
+          data = formDataToSend;
+          headers = { 'Content-Type': 'multipart/form-data' };
+        } else {
+          // Send JSON if no image
+          url = "http://localhost/Project-I/backend/updateItenerary.php";
+          data = {
             id: editingItinerary.id,
             ship_name: formData.shipName,
             route: formData.arrivalCountry,
@@ -161,39 +178,30 @@ function ItineraryDashboard() {
             start_date: formData.startDate,
             end_date: formData.endDate,
             notes: formData.notes
-          },
-          {
-            headers: {
-              "Content-Type": "application/json"
-            }
-          }
-        );
-        alert(res.data.message);
-        if (res.status === 200) {
-          await fetchItineraries();
+          };
+          headers = { 'Content-Type': 'application/json' };
         }
       } else {
-        // Add new itinerary
-        const res = await axios.post(
-          "http://localhost/Project-I/backend/saveItenerary.php",
-          {
-            ship_name: formData.shipName,
-            route: formData.arrivalCountry,
-            departure_port: formData.departurePort,
-            start_date: formData.startDate,
-            end_date: formData.endDate,
-            notes: formData.notes
-          },
-          {
-            headers: {
-              "Content-Type": "application/json"
-            }
-          }
-        );
-        alert(res.data.message);
-        if (res.status === 200) {
-          await fetchItineraries();
+        // For new entries, send FormData (in case we add image upload later)
+        url = "http://localhost/Project-I/backend/addItinerary.php";
+        const formDataToSend = new FormData();
+        formDataToSend.append('ship_name', formData.shipName);
+        formDataToSend.append('route', formData.arrivalCountry);
+        formDataToSend.append('departure_port', formData.departurePort);
+        formDataToSend.append('start_date', formData.startDate);
+        formDataToSend.append('end_date', formData.endDate);
+        formDataToSend.append('notes', formData.notes);
+        if (formData.countryImage) {
+          formDataToSend.append('country_image', formData.countryImage);
         }
+        data = formDataToSend;
+        headers = { 'Content-Type': 'multipart/form-data' };
+      }
+      
+      const res = await axios.post(url, data, { headers });
+      alert(res.data.message);
+      if (res.status === 200) {
+        await fetchItineraries();
       }
       handleCloseModal();
     } catch (error) {
@@ -320,6 +328,7 @@ function ItineraryDashboard() {
                 <th>Arrival Country</th>
                 <th>Start Date</th>
                 <th>End Date</th>
+                <th>Country Image</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -338,6 +347,34 @@ function ItineraryDashboard() {
                     </td>
                     <td>{formatDate(itinerary.start_date)}</td>
                     <td>{formatDate(itinerary.end_date)}</td>
+                    <td>
+                      {itinerary.country_image ? (
+                        <img 
+                          src={`http://localhost/Project-I/backend/${itinerary.country_image}`} 
+                          alt="Country" 
+                          style={{ width: 60, height: 40, objectFit: 'cover', borderRadius: 4 }} 
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'inline';
+                          }}
+                        />
+                      ) : (
+                        <div style={{ 
+                          width: 60, 
+                          height: 40, 
+                          backgroundColor: '#f8f9fa', 
+                          border: '1px solid #dee2e6',
+                          borderRadius: 4,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '12px',
+                          color: '#6c757d'
+                        }}>
+                          No Image
+                        </div>
+                      )}
+                    </td>
                     <td>
                       <div className="action-buttons">
                         <Button
@@ -494,7 +531,15 @@ function ItineraryModal({ show, onHide, itinerary, onSave, shipNames, countries,
   useEffect(() => {
     if (show) {
       if (itinerary) {
-        setFormData(itinerary);
+        // Map backend field names to form field names
+        setFormData({
+          shipName: itinerary.ship_name || '',
+          departurePort: itinerary.departure_port || '',
+          arrivalCountry: itinerary.route || '',
+          startDate: itinerary.start_date || '',
+          endDate: itinerary.end_date || '',
+          notes: itinerary.notes || ''
+        });
       } else {
         setFormData({
           shipName: '',
@@ -639,6 +684,18 @@ function ItineraryModal({ show, onHide, itinerary, onSave, shipNames, countries,
               placeholder="Additional notes about this itinerary..."
               value={formData.notes}
               onChange={(e) => handleInputChange('notes', e.target.value)}
+            />
+          </Form.Group>
+
+          <Form.Group className="form-group">
+            <Form.Label>Country Image (Optional)</Form.Label>
+            <Form.Control
+              type="file"
+              accept="image/*"
+              onChange={e => setFormData(prev => ({
+                ...prev,
+                countryImage: e.target.files[0]
+              }))}
             />
           </Form.Group>
         </Form>
