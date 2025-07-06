@@ -93,7 +93,9 @@ function AppRoutes(props) {
 
   // Hide Navbar on customer dashboard and its subpages
   const hideNavbarRoutes = [
-    '/customer-dashboard'
+    '/customer-dashboard',
+    '/super-admin',
+    '/food-inventory-management'
   ];
   const shouldShowNavbar = !hideNavbarRoutes.some(route => location.pathname.startsWith(route));
 
