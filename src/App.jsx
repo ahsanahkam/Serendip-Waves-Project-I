@@ -95,7 +95,8 @@ function AppRoutes(props) {
   const hideNavbarRoutes = [
     '/customer-dashboard',
     '/super-admin',
-    '/food-inventory-management'
+    '/food-inventory-management',
+    '/admin-dashboard'
   ];
   const shouldShowNavbar = !hideNavbarRoutes.some(route => location.pathname.startsWith(route));
 
