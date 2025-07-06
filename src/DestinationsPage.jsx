@@ -1,112 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
-// All destination data in this file
-const destinations = [
-  {
-    country: "Greece",
-    shipName: "Mediterranean Dream",
-    nights: "7 Nights",
-    price: "$2,500",
-    flag: "🇬🇷",
-    image: "Greece.jpg",
-    description: "Explore the stunning Greek islands with crystal clear waters and ancient ruins."
-  },
-  {
-    country: "Norway",
-    shipName: "Northern Lights Explorer",
-    nights: "10 Nights",
-    price: "$3,100",
-    flag: "🇳🇴",
-    image: "norway.jpg",
-    description: "Witness the magical Northern Lights and fjords of Norway."
-  },
-  {
-    country: "Caribbean",
-    shipName: "Tropical Paradise",
-    nights: "8 Nights",
-    price: "$2,800",
-    flag: "🇯🇲",
-    image: "Careebean.jpg",
-    description: "Relax in the warm Caribbean waters with pristine beaches."
-  },
-  {
-    country: "Alaska",
-    shipName: "Glacier Adventure",
-    nights: "12 Nights",
-    price: "$3,600",
-    flag: "🇺🇸",
-    image: "Alaska.jpg",
-    description: "Experience the majestic glaciers and wildlife of Alaska."
-  },
-  {
-    country: "Japan",
-    shipName: "Cherry Blossom Voyage",
-    nights: "9 Nights",
-    price: "$3,200",
-    flag: "🇯🇵",
-    image: "japan.jpg",
-    description: "Discover the beauty of Japanese culture and cherry blossoms."
-  },
-  {
-    country: "Australia",
-    shipName: "Great Barrier Reef",
-    nights: "11 Nights",
-    price: "$3,900",
-    flag: "🇦🇺",
-    image: "Australia.jpg",
-    description: "Explore the world's largest coral reef system."
-  },
-  {
-    country: "Italy",
-    shipName: "Roman Holiday",
-    nights: "8 Nights",
-    price: "$2,900",
-    flag: "🇮🇹",
-    image: "italy.jpg",
-    description: "Sail the Mediterranean and explore the historic cities of Italy, from Rome to Venice."
-  },
-  {
-    country: "Spain",
-    shipName: "Iberian Explorer",
-    nights: "7 Nights",
-    price: "$2,700",
-    flag: "🇪🇸",
-    image: "spain.jpg",
-    description: "Experience the vibrant culture, cuisine, and beaches of Spain on this unforgettable cruise."
-  },
-  {
-    country: "Egypt",
-    shipName: "Nile Majesty",
-    nights: "6 Nights",
-    price: "$2,400",
-    flag: "🇪🇬",
-    image: "egypt.jpg",
-    description: "Cruise the Nile and discover the ancient wonders of Egypt, including the pyramids and temples."
-  },
-  {
-    country: "France",
-    shipName: "Parisian Dream",
-    nights: "9 Nights",
-    price: "$3,300",
-    flag: "🇫🇷",
-    image: "france.jpg",
-    description: "Enjoy the romance of France, from the Riviera to Paris, with gourmet dining and fine wine."
-  },
-  {
-    country: "Brazil",
-    shipName: "Amazon Adventure",
-    nights: "10 Nights",
-    price: "$3,500",
-    flag: "🇧🇷",
-    image: "brazil.jpg",
-    description: "Journey through the heart of the Amazon rainforest and experience Brazil's natural beauty."
-  },
-];
+import axios from "axios";
 
 const DestinationsPage = () => {
+  const [destinations, setDestinations] = useState([]);
   const [search, setSearch] = useState("");
-  const [filtered, setFiltered] = useState(destinations);
+  const [filtered, setFiltered] = useState([]);
+
+  useEffect(() => {
+    const fetchItineraries = async () => {
+      try {
+        const res = await axios.get("http://localhost/Project-I/backend/getItineraries.php");
+        setDestinations(res.data);
+        setFiltered(res.data);
+      } catch (error) {
+        console.error("Failed to fetch itineraries:", error);
+      }
+    };
+    fetchItineraries();
+  }, []);
+
+  const calculateNights = (startDate, endDate) => {
+    if (!startDate || !endDate) return null;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
 
   const handleSearch = () => {
     const term = search.trim().toLowerCase();
@@ -115,8 +46,8 @@ const DestinationsPage = () => {
       return;
     }
     setFiltered(destinations.filter(dest =>
-      dest.country.toLowerCase().includes(term) ||
-      dest.shipName.toLowerCase().includes(term)
+      (dest.route && dest.route.toLowerCase().includes(term)) ||
+      (dest.ship_name && dest.ship_name.toLowerCase().includes(term))
     ));
   };
 
@@ -183,56 +114,139 @@ const DestinationsPage = () => {
           maxWidth: 1200,
           margin: '0 auto',
         }}>
-          {filtered.map((dest, idx) => (
-            <Link
-              key={idx}
-              to={`/destination/${dest.country.toLowerCase()}`}
-              state={{ destination: dest }}
-              style={{ textDecoration: 'none' }}
-            >
-              <div style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                background: '#fff',
-                borderRadius: 24,
-                boxShadow: '0 4px 24px 0 rgba(30,58,138,0.08)',
-                padding: '2.5rem 2rem',
-                minHeight: 340,
-                gap: '2.5rem',
-                marginBottom: '1.5rem',
-                transition: 'box-shadow 0.2s',
-                cursor: 'pointer',
-              }}>
-                {/* Image on the left */}
-                <div style={{ flex: '0 0 340px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <img
-                    src={`/assets/${dest.image}`}
-                    alt={dest.country}
-                    style={{ width: 320, height: 220, objectFit: 'cover', borderRadius: 18, boxShadow: '0 2px 12px rgba(30,58,138,0.10)' }}
-                  />
-                </div>
-                {/* Details on the right */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '1.2rem' }}>
-                  <div style={{ fontSize: '1.1rem', color: '#222', fontWeight: 500, marginBottom: 2 }}>
-                    <span style={{ fontWeight: 700, fontSize: '1.3rem', color: '#1e3a8a', marginRight: 8 }}>{dest.flag}</span>
-                    {dest.country} <span style={{ color: '#7c3aed', fontWeight: 700, fontSize: '2rem', marginLeft: 8 }}>{dest.shipName}</span>
+          {filtered.map((dest, idx) => {
+            const calculatedNights = calculateNights(dest.start_date, dest.end_date);
+            return (
+              <Link
+                key={idx}
+                to={`/destination/${dest.route ? dest.route.toLowerCase() : ''}`}
+                state={{ destination: dest }}
+                style={{ textDecoration: 'none' }}
+              >
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  background: '#fff',
+                  borderRadius: 24,
+                  boxShadow: '0 4px 24px 0 rgba(30,58,138,0.08)',
+                  padding: '2.5rem 2rem',
+                  minHeight: 340,
+                  gap: '2.5rem',
+                  marginBottom: '1.5rem',
+                  transition: 'box-shadow 0.2s',
+                  cursor: 'pointer',
+                }}>
+                  {/* Image on the left */}
+                  <div style={{ flex: '0 0 340px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img
+                      src={dest.country_image ? `http://localhost/Project-I/backend/${dest.country_image}` : '/assets/default.jpg'}
+                      alt={dest.route}
+                      style={{ width: 320, height: 220, objectFit: 'cover', borderRadius: 18, boxShadow: '0 2px 12px rgba(30,58,138,0.10)' }}
+                    />
                   </div>
-                  <div style={{ color: '#666', fontSize: '1.08rem', marginBottom: 8 }}>{dest.description}</div>
-                  <div style={{ display: 'flex', gap: '2.5rem', marginTop: 8 }}>
-                    <div style={{ background: '#f5f7ff', borderRadius: 16, padding: '1rem 2rem', minWidth: 120, textAlign: 'center', boxShadow: '0 2px 8px rgba(30,58,138,0.04)' }}>
-                      <div style={{ color: '#4f46e5', fontWeight: 700, fontSize: '1.3rem' }}>{dest.nights}</div>
-                      <div style={{ color: '#888', fontSize: '1rem', marginTop: 2 }}>Nights</div>
+                  {/* Details on the right */}
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '1.2rem' }}>
+                    <div style={{ fontSize: '1.1rem', color: '#222', fontWeight: 500, marginBottom: 2 }}>
+                      <span style={{ fontWeight: 700, fontSize: '1.3rem', color: '#1e3a8a', marginRight: 8 }}>{dest.flag || ''}</span>
+                      {dest.route} <span style={{ color: '#7c3aed', fontWeight: 700, fontSize: '2rem', marginLeft: 8 }}>{dest.ship_name}</span>
                     </div>
-                    <div style={{ background: '#f5f7ff', borderRadius: 16, padding: '1rem 2rem', minWidth: 120, textAlign: 'center', boxShadow: '0 2px 8px rgba(30,58,138,0.04)' }}>
-                      <div style={{ color: '#4f46e5', fontWeight: 700, fontSize: '1.3rem' }}>{dest.price}</div>
-                      <div style={{ color: '#888', fontSize: '1rem', marginTop: 2 }}>Price</div>
-                    </div>
+                    <div style={{ color: '#666', fontSize: '1.08rem', marginBottom: 8 }}>{dest.description || ''}</div>
+                    
+                    {/* Notes */}
+                    {dest.notes && (
+                      <div style={{ 
+                        background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)', 
+                        borderRadius: 16, 
+                        padding: '1.2rem 1.5rem',
+                        border: '1px solid rgba(252, 182, 159, 0.3)',
+                        marginBottom: '0.5rem',
+                        boxShadow: '0 4px 15px rgba(252, 182, 159, 0.2)',
+                        position: 'relative',
+                        overflow: 'hidden'
+                      }}>
+                        <div style={{ 
+                          position: 'absolute', 
+                          top: 0, 
+                          left: 0, 
+                          right: 0, 
+                          height: '3px',
+                          background: 'linear-gradient(90deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)'
+                        }}></div>
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'flex-start', 
+                          gap: '0.8rem'
+                        }}>
+                          <div style={{ 
+                            fontSize: '1.2rem', 
+                            marginTop: '0.1rem',
+                            filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))'
+                          }}>
+                            💡
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ 
+                              color: '#8B4513', 
+                              fontSize: '0.95rem', 
+                              lineHeight: '1.5',
+                              fontWeight: 500,
+                              textShadow: '0 1px 2px rgba(255,255,255,0.5)'
+                            }}>
+                              {dest.notes}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Dates and Nights Combined */}
+                    {(dest.start_date || dest.end_date || calculatedNights || dest.nights) && (
+                      <div style={{ 
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+                        borderRadius: 16, 
+                        padding: '1.2rem 1.5rem',
+                        marginBottom: '0.5rem',
+                        color: '#fff',
+                        boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontWeight: 600, fontSize: '1rem', marginBottom: '0.4rem', opacity: 0.9 }}>
+                              📅 Cruise Duration
+                            </div>
+                            <div style={{ fontSize: '0.95rem', opacity: 0.8 }}>
+                              {dest.start_date && dest.end_date ? (
+                                `${formatDate(dest.start_date)} - ${formatDate(dest.end_date)}`
+                              ) : (
+                                dest.start_date ? `From ${formatDate(dest.start_date)}` : 
+                                dest.end_date ? `Until ${formatDate(dest.end_date)}` : 'Dates TBD'
+                              )}
+                            </div>
+                          </div>
+                          <div style={{ 
+                            background: 'rgba(255, 255, 255, 0.2)', 
+                            borderRadius: 12, 
+                            padding: '0.8rem 1.2rem',
+                            textAlign: 'center',
+                            minWidth: 80,
+                            backdropFilter: 'blur(10px)'
+                          }}>
+                            <div style={{ fontWeight: 700, fontSize: '1.4rem', marginBottom: '0.2rem' }}>
+                              {calculatedNights || dest.nights || 'N/A'}
+                            </div>
+                            <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>
+                              Nights
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </section>
     </div>
