@@ -54,4 +54,20 @@
 .dashboard-btn-label {
   font-size: 1.1rem;
   font-weight: 600;
+}
+.superadmin-logout-btn {
+  background: #fff;
+  color: #764ba2;
+  border: 2px solid #000;
+  border-radius: 20px;
+  padding: 8px 28px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: background 0.2s, color 0.2s;
+}
+.superadmin-logout-btn:hover, .superadmin-logout-btn:focus {
+  background: #e53935;
+  color: #fff;
 } 
