@@ -1,8 +1,14 @@
-import React, { useState, useMemo, useEffect } from 'react';
+
+
+import { getFoodInventory, addFoodItem, updateFoodItem, deleteFoodItem } from './api/foodInventoryApi';
+import React, { useState, useMemo, useContext } from 'react';
+import foodInventoryData from './data/foodInventory.json';
 import './foodInventory.css';
 import { Button, Table, Badge, Modal, Form, Row, Col, InputGroup } from 'react-bootstrap';
 import { FaEdit, FaTrash, FaPlus, FaFileCsv, FaFilePdf, FaHistory, FaBoxOpen, FaExclamationTriangle, FaTimesCircle } from 'react-icons/fa';
-import { getFoodInventory, addFoodItem, updateFoodItem, deleteFoodItem } from './api/foodInventoryApi';
+import { AuthContext } from './App';
+import logo from './assets/logo.png';
+
 
 const STATUS = {
   IN_STOCK: 'In Stock',
@@ -24,7 +30,10 @@ const unitOptions = ['kg', 'liters', 'packs'];
 const categoryOptions = ['Vegetables', 'Fruits', 'Meat', 'Dairy', 'Grains', 'Beverages', 'Other'];
 
 function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
-  const [data, setData] = useState([]);
+
+  const { logout } = useContext(AuthContext);
+  const navigate = (to) => { window.location.href = to; };
+  const [data, setData] = useState(foodInventoryData);
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState('add');
   const [form, setForm] = useState({
@@ -140,15 +149,49 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
   };
   const handleCloseDetails = () => setShowDetails(false);
 
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
     <div className="food-inventory-bg py-4">
-      <div className="container food-inventory-dashboard">
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="fw-bold">Food Inventory Dashboard</h2>
+      {/* Custom Navbar */}
+      <div style={{
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '2px 2px',
+        background: '#fff',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        zIndex: 10,
+        minHeight: '90px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+        borderBottom: '1px solid #eee'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+          <img
+            src={logo}
+            alt="Logo"
+            style={{ height: '90px', width: 'auto', maxWidth: '90px', cursor: 'pointer', objectFit: 'contain' }}
+            onClick={() => navigate('/#top')}
+          />
+          <div style={{ fontWeight: 'bold', fontSize: '1.5rem', color: '#1a237e', letterSpacing: '1px' }}>
+            Pantry & Supply Management
+          </div>
         </div>
-        <div className="text-center mb-4">
-          <div className="luxury-subtitle">Pantry & Supply Management</div>
-        </div>
+        <button
+          onClick={handleLogout}
+          className="superadmin-logout-btn"
+        >
+          Logout
+        </button>
+      </div>
+      {/* End Custom Navbar */}
+      <div className="container food-inventory-dashboard" style={{ marginTop: '110px' }}>
         {/* Summary Bar */}
         <div className="summary-bar d-flex flex-wrap justify-content-center gap-3 mb-4">
           <div className="summary-card">
