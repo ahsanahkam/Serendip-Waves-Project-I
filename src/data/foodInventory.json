@@ -1,0 +1,7 @@
+[
+  { "id": 1, "name": "Rice", "quantity": 100, "unit": "kg" },
+  { "id": 2, "name": "Chicken", "quantity": 50, "unit": "kg" },
+  { "id": 3, "name": "Vegetables", "quantity": 75, "unit": "kg" },
+  { "id": 4, "name": "Milk", "quantity": 30, "unit": "liters" },
+  { "id": 5, "name": "Eggs", "quantity": 200, "unit": "pcs" }
+] 

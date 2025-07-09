@@ -4,6 +4,7 @@ import { AuthContext } from "./App";
 import { FaBars, FaMinus, FaUser, FaEnvelope, FaPhone, FaCalendar, FaVenusMars, FaPassport } from "react-icons/fa";
 import BookingModal from "./BookingModal";
 import "./CustomerDashboard.css";
+import { Modal, Button } from "react-bootstrap";
 
 const CustomerDashboard = () => {
   const { currentUser, logout, setIsBookingModalOpen } = useContext(AuthContext);
@@ -15,6 +16,7 @@ const CustomerDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   // Close dropdown when clicking outside
   React.useEffect(() => {
@@ -35,6 +37,19 @@ const CustomerDashboard = () => {
     logout();
     setShowProfileDropdown(false);
     navigate('/');
+  };
+
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+  const handleConfirmLogout = () => {
+    localStorage.removeItem("currentUser");
+    localStorage.removeItem("role");
+    setShowLogoutModal(false);
+    navigate("/");
+  };
+  const handleCancelLogout = () => {
+    setShowLogoutModal(false);
   };
 
   // Debug: Log user data to see what's available
@@ -189,7 +204,7 @@ const CustomerDashboard = () => {
                   
                   <div className="profile-actions">
                     <button
-                      onClick={handleLogout}
+                      onClick={handleLogoutClick}
                       className="logout-button"
                     >
                       Logout
@@ -302,6 +317,22 @@ const CustomerDashboard = () => {
           onBookingCreated={fetchBookings}
         />
       )}
+      <Modal show={showLogoutModal} onHide={handleCancelLogout} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Logout</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Do you want to logout?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCancelLogout}>
+            No
+          </Button>
+          <Button variant="danger" onClick={handleConfirmLogout}>
+            Yes, Logout
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

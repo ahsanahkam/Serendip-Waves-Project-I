@@ -1,111 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import cruis1 from './assets/cruis1.avif';
-import cruis2 from './assets/cruis2.webp';
-import cruis3 from './assets/cruis3.jpg';
-import cruis4 from './assets/cruis4.webp';
-import cruis5 from './assets/cruis5.webp';
-import cruis6 from './assets/cruis6.webp';
-
-// Shuffle images and assign randomly to ships
-const cruiseImages = [cruis1, cruis2, cruis3, cruis4, cruis5, cruis6];
-const shuffledImages = cruiseImages.sort(() => 0.5 - Math.random());
-
-// Cruise ship data with dummy details
-const cruiseShips = [
-  {
-    id: 1,
-    name: "Serendip Dream",
-    class: "Luxury Class",
-    capacity: "2,500 passengers",
-    pools: "4 pools",
-    restaurants: "12 restaurants",
-    width: "150 feet",
-    decks: "18 decks",
-    yearBuilt: "2023",
-    flag: "🇱🇰 Sri Lanka",
-    description: "The crown jewel of our fleet, Serendip Dream offers unparalleled luxury with world-class amenities, gourmet dining, and exclusive entertainment venues.",
-    image: shuffledImages[0]
-  },
-  {
-    id: 2,
-    name: "Serendip Majesty",
-    class: "Premium Class",
-    capacity: "2,000 passengers",
-    pools: "3 pools",
-    restaurants: "8 restaurants",
-    width: "140 feet",
-    decks: "16 decks",
-    yearBuilt: "2022",
-    flag: "🇬🇷 Greece",
-    description: "Experience the perfect blend of elegance and adventure aboard Serendip Majesty, featuring stunning architecture and innovative entertainment options.",
-    image: shuffledImages[1]
-  },
-  {
-    id: 3,
-    name: "Serendip Explorer",
-    class: "Explorer Class",
-    capacity: "1,800 passengers",
-    pools: "2 pools",
-    restaurants: "6 restaurants",
-    width: "130 feet",
-    decks: "14 decks",
-    yearBuilt: "2021",
-    flag: "🇳🇴 Norway",
-    description: "Designed for the adventurous spirit, Serendip Explorer combines comfort with exploration, perfect for discovering remote destinations and natural wonders.",
-    image: shuffledImages[2]
-  },
-  {
-    id: 4,
-    name: "Serendip Serenade",
-    class: "Royal Class",
-    capacity: "2,200 passengers",
-    pools: "4 pools",
-    restaurants: "10 restaurants",
-    width: "145 feet",
-    decks: "17 decks",
-    yearBuilt: "2023",
-    flag: "🇯🇵 Japan",
-    description: "Serendip Serenade embodies timeless elegance with modern sophistication, offering guests a truly regal experience with personalized service and exclusive amenities.",
-    image: shuffledImages[3]
-  },
-  {
-    id: 5,
-    name: "Serendip Adventurer",
-    class: "Adventure Class",
-    capacity: "1,500 passengers",
-    pools: "2 pools",
-    restaurants: "5 restaurants",
-    width: "125 feet",
-    decks: "13 decks",
-    yearBuilt: "2022",
-    flag: "🇦🇺 Australia",
-    description: "Built for thrill-seekers and nature lovers, Serendip Adventurer offers unique experiences with specialized equipment for diving, kayaking, and wildlife viewing.",
-    image: shuffledImages[4]
-  },
-  {
-    id: 6,
-    name: "Serendip Harmony",
-    class: "Harmony Class",
-    capacity: "2,800 passengers",
-    pools: "5 pools",
-    restaurants: "15 restaurants",
-    width: "160 feet",
-    decks: "20 decks",
-    yearBuilt: "2024",
-    flag: "🇨🇦 Canada",
-    description: "The largest and most innovative ship in our fleet, Serendip Harmony redefines luxury cruising with cutting-edge technology and unprecedented entertainment options.",
-    image: shuffledImages[5]
-  }
-];
+import axios from "axios";
 
 const CruiseShipsPage = () => {
+  const [cruiseShips, setCruiseShips] = useState([]);
   const [activeSection, setActiveSection] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  console.log("CruiseShipsPage component is rendering!");
+  // Fetch cruise ships from backend
+  useEffect(() => {
+    axios.get("http://localhost/Project-I/backend/getShipDetails.php")
+      .then(res => setCruiseShips(res.data))
+      .catch(() => setCruiseShips([]));
+  }, []);
 
   // Add CSS for smooth scrolling and full-screen sections
   React.useEffect(() => {
@@ -129,30 +38,22 @@ const CruiseShipsPage = () => {
   }, []);
 
   useEffect(() => {
-    console.log("CruiseShipsPage useEffect running");
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       setIsScrolled(scrollPosition > 50);
-      
-      // Calculate active section based on scroll position
       const sections = document.querySelectorAll('.cruise-ship-section');
       sections.forEach((section, index) => {
         const rect = section.getBoundingClientRect();
         const sectionHeight = window.innerHeight;
         const sectionMiddle = rect.top + rect.height / 2;
         const viewportMiddle = window.innerHeight / 2;
-        
         if (Math.abs(sectionMiddle - viewportMiddle) < sectionHeight / 2) {
           setActiveSection(index);
         }
       });
     };
-
     window.addEventListener('scroll', handleScroll);
-    
-    // Add smooth scrolling behavior to the page
     document.documentElement.style.scrollBehavior = 'smooth';
-    
     return () => {
       window.removeEventListener('scroll', handleScroll);
       document.documentElement.style.scrollBehavior = 'auto';
@@ -198,7 +99,6 @@ const CruiseShipsPage = () => {
             Discover our magnificent fleet of luxury cruise ships, each designed to provide 
             unforgettable experiences across the world's most beautiful waters.
           </p>
-          
           <div className="mt-5">
             <Link to="/" className="btn btn-outline-light btn-lg me-3">
               ← Back to Home
@@ -223,7 +123,7 @@ const CruiseShipsPage = () => {
       }}>
         {cruiseShips.map((ship, index) => (
           <button
-            key={ship.id}
+            key={ship.ship_name || ship.id || index}
             onClick={() => scrollToSection(index)}
             className={`btn btn-sm rounded-circle ${
               activeSection === index ? 'btn-warning' : 'btn-outline-light'
@@ -236,7 +136,7 @@ const CruiseShipsPage = () => {
               transition: 'all 0.3s ease',
               boxShadow: activeSection === index ? '0 0 10px rgba(255, 193, 7, 0.5)' : 'none'
             }}
-            title={ship.name}
+            title={ship.ship_name || ship.name}
           />
         ))}
       </div>
@@ -244,7 +144,7 @@ const CruiseShipsPage = () => {
       {/* Cruise Ships Sections */}
       {cruiseShips.map((ship, index) => (
         <section
-          key={ship.id}
+          key={ship.ship_name || ship.id || index}
           className="cruise-ship-section"
           style={{
             height: '100vh',
@@ -274,8 +174,8 @@ const CruiseShipsPage = () => {
                   overflow: 'hidden'
                 }}>
                   <img
-                    src={ship.image}
-                    alt={ship.name}
+                    src={ship.ship_image ? `http://localhost/Project-I/backend/${ship.ship_image}` : 'https://via.placeholder.com/500x500'}
+                    alt={ship.ship_name}
                     loading="lazy"
                     style={{
                       width: '100%',
@@ -294,7 +194,8 @@ const CruiseShipsPage = () => {
                   {/* Ship Header */}
                   <div className="mb-4">
                     <div className="d-flex align-items-center mb-3">
-                      <span style={{ fontSize: '2rem', marginRight: '15px' }}>{ship.flag}</span>
+                      {/* No flag field in DB, so skip or add a placeholder */}
+                      <span style={{ fontSize: '2rem', marginRight: '15px' }}>🚢</span>
                       <div>
                         <h2 className="fw-bold mb-1" style={{ 
                           fontSize: '2.5rem',
@@ -302,12 +203,12 @@ const CruiseShipsPage = () => {
                           WebkitBackgroundClip: 'text',
                           WebkitTextFillColor: 'transparent'
                         }}>
-                          {ship.name}
+                          {ship.ship_name}
                         </h2>
                       </div>
                     </div>
                     <p className="lead text-muted" style={{ fontSize: '1.1rem', lineHeight: '1.6' }}>
-                      {ship.description}
+                      {ship.about_ship}
                     </p>
                   </div>
 
@@ -317,7 +218,7 @@ const CruiseShipsPage = () => {
                       <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '15px' }}>
                         <div className="card-body text-center p-3">
                           <div className="fw-bold text-primary" style={{ fontSize: '1.2rem' }}>
-                            {ship.capacity}
+                            {ship.passenger_count} passengers
                           </div>
                           <div className="text-muted small">Capacity</div>
                         </div>
@@ -327,7 +228,7 @@ const CruiseShipsPage = () => {
                       <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '15px' }}>
                         <div className="card-body text-center p-3">
                           <div className="fw-bold text-primary" style={{ fontSize: '1.2rem' }}>
-                            {ship.pools}
+                            {ship.pool_count} pools
                           </div>
                           <div className="text-muted small">Pools</div>
                         </div>
@@ -337,7 +238,7 @@ const CruiseShipsPage = () => {
                       <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '15px' }}>
                         <div className="card-body text-center p-3">
                           <div className="fw-bold text-primary" style={{ fontSize: '1.2rem' }}>
-                            {ship.restaurants}
+                            {ship.restaurant_count} restaurants
                           </div>
                           <div className="text-muted small">Restaurants</div>
                         </div>
@@ -347,7 +248,7 @@ const CruiseShipsPage = () => {
                       <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '15px' }}>
                         <div className="card-body text-center p-3">
                           <div className="fw-bold text-primary" style={{ fontSize: '1.2rem' }}>
-                            {ship.decks}
+                            {ship.deck_count} decks
                           </div>
                           <div className="text-muted small">Decks</div>
                         </div>

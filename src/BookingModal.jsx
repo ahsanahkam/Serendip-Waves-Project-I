@@ -131,31 +131,31 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
         setBookingSuccess(true);
         setBookingId(data.booking_id);
         setCabinNumber(data.cabin_number);
-        setSuccess("Booking successful! Thank you for booking with Serendip Waves.");
-        setTimeout(() => {
-          onClose();
-          setStep(1);
-          setForm({
-            adults: 1,
-            children: 0,
+    setSuccess("Booking successful! Thank you for booking with Serendip Waves.");
+    setTimeout(() => {
+      onClose();
+      setStep(1);
+      setForm({
+        adults: 1,
+        children: 0,
             cabinType: "Interior",
             fullName: currentUser?.full_name || "",
             gender: currentUser?.gender || "",
-            citizenship: "",
+        citizenship: "",
             destination: "",
             email: currentUser?.email || "",
-            age: "",
-            cardType: "Visa",
-            cardNumber: "",
-            expiry: "",
-            cvv: ""
-          });
-          setSuccess("");
+        age: "",
+        cardType: "Visa",
+        cardNumber: "",
+        expiry: "",
+        cvv: ""
+      });
+      setSuccess("");
           // Trigger refresh of bookings in parent component
           if (onBookingCreated) {
             onBookingCreated();
           }
-        }, 2000);
+    }, 2000);
       } else {
         setError(data.message || "Failed to create booking");
       }
@@ -359,7 +359,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
               <label style={{ fontWeight: 600 }}>Adults</label>
               <select
                 name="adults"
-                value={form.adults}
+                  value={form.adults}
                 onChange={handleAdultsChange}
                 className="booking-modal-select"
                 style={{ width: 90, borderRadius: 6, border: '1px solid #ccc', padding: 6, marginTop: 8, marginRight: 12 }}
@@ -372,7 +372,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
               <label style={{ fontWeight: 600, marginLeft: 10 }}>Children</label>
               <select
                 name="children"
-                value={form.children}
+                  value={form.children}
                 onChange={handleChildrenChange}
                 className="booking-modal-select"
                 style={{ width: 90, borderRadius: 6, border: '1px solid #ccc', padding: 6, marginTop: 8 }}

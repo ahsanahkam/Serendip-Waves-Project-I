@@ -1,22 +1,36 @@
+/* Merged PassengerDashboard.css and passenger.css */
 body, .passenger-dashboard-bg {
   font-family: 'Inter', system-ui, Arial, sans-serif;
   background: linear-gradient(135deg, #e0e7ef 60%, #f8fafc 100%);
 }
 .passenger-dashboard-bg {
   min-height: 100vh;
-  padding-bottom: 2rem;
+  /* Use the more visually appealing gradient from passenger.css */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px 0;
 }
 .passenger-table-wrapper {
-  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 18px;
   box-shadow: 0 8px 32px rgba(37, 99, 235, 0.10);
-  background: #fff;
   padding: 1.5rem 1rem;
-  margin-bottom: 2rem;
+  margin: 20px auto 2rem auto;
+  max-width: 1400px;
 }
 .passenger-table {
+  width: 100%;
+  margin: 0;
   border-radius: 18px;
   overflow: hidden;
   background: #fff;
+}
+.passenger-table th {
+  background: #f8f9fa;
+  color: #333;
+  font-weight: 600;
+  padding: 15px 12px;
+  border-bottom: 2px solid #dee2e6;
+  text-align: left;
 }
 .table-primary th {
   background: #2563eb !important;
@@ -24,6 +38,14 @@ body, .passenger-dashboard-bg {
   font-weight: 700;
   font-size: 1.08rem;
   letter-spacing: 0.5px;
+}
+.passenger-table td {
+  padding: 15px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+.passenger-table tbody tr:hover {
+  background-color: #f8f9fa;
 }
 .badge.bg-primary {
   background: #2563eb !important;
@@ -41,7 +63,7 @@ body, .passenger-dashboard-bg {
   .passenger-table {
     font-size: 0.95rem;
   }
-}
+} 
 .dashboard-bg {
   min-height: 100vh;
   background: linear-gradient(135deg, #b8c6ff 0%, #6f86d6 100%) !important;

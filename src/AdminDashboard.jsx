@@ -117,7 +117,7 @@ const AdminDashboard = () => {
             <FaBook style={iconStyle} />
             Booking Overview
           </Link>
-          <Link to="/cruise-ships" style={cardStyle}>
+          <Link to="/manage-cruises" style={cardStyle}>
             <FaShip style={iconStyle} />
             Cruise
           </Link>

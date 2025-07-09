@@ -16,6 +16,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [step, setStep] = useState("login"); // 'login', 'forgot', 'otp', 'newPassword'
+  const [generatedOtp, setGeneratedOtp] = useState("");
   const navigate = useNavigate();
   const { isAuthenticated, logout, currentUser, setCurrentUser } = useContext(AuthContext);
 
@@ -33,6 +34,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
     setIsLoading(false);
     setPasswordError("");
     setStep("login");
+    setGeneratedOtp("");
   };
 
   // Handlers
@@ -60,6 +62,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
       const data = await response.json();
       if (data.success) {
         setSuccess("OTP has been sent to your email address.");
+        setGeneratedOtp(data.otp?.toString() || "");
         setStep("otp");
       } else {
         setError(data.message || "Failed to send OTP.");
@@ -78,6 +81,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
       toast.error("Please fill in all fields.");
       return;
     }
+    setIsLoading(true); // Start loading
     try {
       const response = await axios.post(
         "http://localhost/Project-I/backend/login.php",
@@ -110,10 +114,12 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
           } else {
             navigate("/customer-dashboard");
           }
+          setIsLoading(false); // Stop loading after navigation
         }, 2000);
       } else {
         setError(response.data.message || "Invalid username or password.");
         toast.error(response.data.message || "Invalid username or password.");
+        setIsLoading(false); // Stop loading on error
       }
     } catch (error) {
       if (error.response && error.response.data) {
@@ -126,6 +132,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
         setError("Login failed. Try again.");
         toast.error("Login failed. Try again.");
       }
+      setIsLoading(false); // Stop loading on error
     }
   };
 
@@ -133,20 +140,11 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-    try {
-      const response = await fetch("http://localhost/Project-I/backend/emailValidationOTP.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: forgotEmail, otp }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        setStep("newPassword");
-      } else {
-        setError(data.message || "Invalid OTP. Please try again.");
-      }
-    } catch (err) {
-      setError("An error occurred. Please try again.");
+    // Compare entered OTP with generatedOtp
+    if (otp.trim() === generatedOtp) {
+      setStep("newPassword");
+    } else {
+      setError("Invalid OTP. Please try again.");
     }
     setIsLoading(false);
   };
@@ -179,8 +177,15 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
       const data = await response.json();
       if (data.success) {
         alert('Password reset successful! You can now log in with your new password.');
-        resetAll();
-        onClose();
+        setStep("login");
+        setForm({ email: forgotEmail, password: "" });
+        setNewPassword("");
+        setConfirmPassword("");
+        setOtp("");
+        setSuccess("");
+        setError("");
+        setPasswordError("");
+        // Do NOT call onClose();
       } else {
         setPasswordError(data.message || "Failed to reset password.");
       }
