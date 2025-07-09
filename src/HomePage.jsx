@@ -3,7 +3,7 @@ import Home from "./assets/Home.jpg";
 import DestinationsPage from "./DestinationsPage";
 import { Link } from "react-router-dom";
 import AboutSection from './AboutSection';
-import heroVideo from './assets/hero.mp4';
+import heroImage from './assets/hero.jpg';
 
 // Optimized Hero Section as a component
 const Hero = ({ onBookingClick }) => (
@@ -17,29 +17,12 @@ const Hero = ({ onBookingClick }) => (
       overflow: "hidden",
       marginTop: "-80px",
       paddingTop: "80px",
+      backgroundImage: `url(${heroImage})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat"
     }}
   >
-    {/* Video background */}
-    <video
-      autoPlay
-      loop
-      muted
-      playsInline
-      className="hero-video"
-      style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        objectFit: "cover",
-        zIndex: 0,
-      }}
-    >
-      <source src={heroVideo} type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-
     {/* Overlay */}
     <div
       style={{
@@ -323,8 +306,10 @@ const Footer = () => (
 // After Destinations section, before About section
 const FleetSection = () => (
   <section id="fleet" style={{
-    background: 'linear-gradient(135deg, #e9eff7 0%, #dbe6f6 100%)',
-    minHeight: '60vh',
+
+    background: "linear-gradient(135deg, #667eea99 0%, #764ba299 100%), url('/ShipBalcony.jpg') center center / cover no-repeat",
+    minHeight: '100vh',
+
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -392,8 +377,10 @@ const FleetSection = () => (
 
 const DestinationsSection = () => (
   <section id="destinations-section" style={{
-    background: 'linear-gradient(135deg, #e9eff7 0%, #dbe6f6 100%)',
-    minHeight: '60vh',
+
+    background: "linear-gradient(135deg, #43cea299 0%, #185a9d99 100%), url('/destination.jpg') center center / cover no-repeat",
+    minHeight: '100vh',
+    height: '100vh',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -520,7 +507,7 @@ const HomePage = ({ onBookingClick }) => {
           transition: background 0.2s, color 0.2s, box-shadow 0.2s;
         }
         .hero-cta-btn:hover, .hero-cta-btn:focus {
-          background: #ffb300;
+        background: #ffb300;
           color: #fff;
           box-shadow: 0 4px 24px rgba(13,110,253,0.18);
         }

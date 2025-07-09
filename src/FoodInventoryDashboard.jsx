@@ -1,3 +1,6 @@
+
+
+import { getFoodInventory, addFoodItem, updateFoodItem, deleteFoodItem } from './api/foodInventoryApi';
 import React, { useState, useMemo, useContext } from 'react';
 import foodInventoryData from './data/foodInventory.json';
 import './foodInventory.css';
@@ -5,6 +8,7 @@ import { Button, Table, Badge, Modal, Form, Row, Col, InputGroup } from 'react-b
 import { FaEdit, FaTrash, FaPlus, FaFileCsv, FaFilePdf, FaHistory, FaBoxOpen, FaExclamationTriangle, FaTimesCircle } from 'react-icons/fa';
 import { AuthContext } from './App';
 import logo from './assets/logo.png';
+
 
 const STATUS = {
   IN_STOCK: 'In Stock',
@@ -26,6 +30,7 @@ const unitOptions = ['kg', 'liters', 'packs'];
 const categoryOptions = ['Vegetables', 'Fruits', 'Meat', 'Dairy', 'Grains', 'Beverages', 'Other'];
 
 function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
+
   const { logout } = useContext(AuthContext);
   const navigate = (to) => { window.location.href = to; };
   const [data, setData] = useState(foodInventoryData);
@@ -92,28 +97,44 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
     setForm(f => ({ ...f, [name]: value }));
   };
 
-  const handleFormSubmit = e => {
+  const handleFormSubmit = async e => {
     e.preventDefault();
     if (!form.itemName || !form.quantity || !form.unit || !form.expiryDate || !form.supplier) {
       setFormError('Please fill in all required fields.');
       return;
     }
+    const item = {
+      id: form.id,
+      item_name: form.itemName,
+      category: form.category,
+      quantity: form.quantity,
+      unit: form.unit,
+      unit_price: form.unitPrice,
+      total_price: form.unitPrice && form.quantity ? Number(form.unitPrice) * Number(form.quantity) : 0,
+      expiry_date: form.expiryDate,
+      supplier_name: form.supplier,
+      supplier_contacts: form.supplierContacts,
+      status: getStatus(form)
+    };
     if (modalMode === 'add') {
-      setData(prev => [
-        ...prev,
-        { ...form, id: Date.now() },
-      ]);
+      await addFoodItem(item);
     } else if (modalMode === 'edit') {
-      setData(prev => prev.map(i => i.id === form.id ? { ...form } : i));
+      await updateFoodItem(item);
     }
+    getFoodInventory().then(setData);
     setShowModal(false);
   };
 
-  const handleDelete = id => {
+  const handleDelete = async id => {
     if (window.confirm('Are you sure you want to delete this item?')) {
-      setData(prev => prev.filter(i => i.id !== id));
+      await deleteFoodItem(id);
+      getFoodInventory().then(setData);
     }
   };
+
+  useEffect(() => {
+    getFoodInventory().then(setData);
+  }, []);
 
   // Summary counts
   const totalItems = data.length;
@@ -368,4 +389,4 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
   );
 }
 
-export default FoodInventoryDashboard; 
+export default FoodInventoryDashboard;
