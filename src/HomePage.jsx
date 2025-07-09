@@ -3,118 +3,95 @@ import Home from "./assets/Home.jpg";
 import DestinationsPage from "./DestinationsPage";
 import { Link } from "react-router-dom";
 import AboutSection from './AboutSection';
-import heroVideo from './assets/hero.mp4';
+import heroImage from './assets/hero.jpg';
 
 // Optimized Hero Section as a component
-const Hero = ({ onBookingClick }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  return (
-    <section
-      id="home"
-      className="hero-section"
+const Hero = ({ onBookingClick }) => (
+  <section
+    id="home"
+    className="hero-section"
+    style={{
+      width: "100vw",
+      minHeight: "100vh",
+      position: "relative",
+      overflow: "hidden",
+      marginTop: "-80px",
+      paddingTop: "80px",
+      backgroundImage: `url(${heroImage})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat"
+    }}
+  >
+    {/* Overlay */}
+    <div
       style={{
-        width: "100vw",
-        minHeight: "100vh",
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        background: "rgba(16,24,32,0.25)",
+        zIndex: 1,
+      }}
+    />
+
+    {/* Hero Content */}
+    <div
+      style={{
         position: "relative",
-        overflow: "hidden",
-        marginTop: "-80px",
-        paddingTop: "80px",
+        zIndex: 2,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-end",
+        justifyContent: "center",
+        height: "100vh",
+        maxWidth: "700px",
+        margin: "0 0 0 auto",
+        color: "#fff",
+        textAlign: "right",
+        padding: "0 7vw 0 2vw"
       }}
     >
-      {/* Video background */}
-      <video
-        autoPlay
-      
-        muted
-        playsInline
-        className="hero-video"
+      <h1 style={{
+        fontWeight: 900,
+        fontSize: "3.2rem",
+        lineHeight: 1.1,
+        marginBottom: "1.2rem",
+        letterSpacing: "-2px",
+        textShadow: "0 2px 12px rgba(0,0,0,0.25)"
+      }}>
+        EXPLORE THE<br />WORLD WITH<br />SERENDIP WAVES
+      </h1>
+      <p style={{
+        fontSize: "1.1rem",
+        letterSpacing: "0.12em",
+        textTransform: "uppercase",
+        fontWeight: 400,
+        marginBottom: "2.2rem",
+        color: "#e0e0e0",
+        textShadow: "0 1px 6px rgba(0,0,0,0.18)"
+      }}>
+        WHERE LUXURY MEETS THE SEA<br />EVERY JOURNEY, A MASTERPIECE.
+      </p>
+      <button
+        className="btn btn-lg px-5 py-3 hero-cta-btn shadow"
         style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          zIndex: 0,
+          background: '#ffd600',
+          color: '#222',
+          fontWeight: 600,
+          borderRadius: '2rem',
+          fontSize: '1.25rem',
+          border: 'none',
+          boxShadow: '0 2px 12px rgba(0,0,0,0.10)'
         }}
+        onClick={onBookingClick}
       >
-        <source src={heroVideo} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-
-      {/* Overlay */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          background: "rgba(16,24,32,0.25)",
-          zIndex: 1,
-        }}
-      />
-
-      {/* Hero Content */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 2,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-end",
-          justifyContent: "center",
-          height: "100vh",
-          maxWidth: "700px",
-          margin: "0 0 0 auto",
-          color: "#fff",
-          textAlign: "right",
-          padding: "0 7vw 0 2vw"
-        }}
-      >
-        <h1 style={{
-          fontWeight: 900,
-          fontSize: "3.2rem",
-          lineHeight: 1.1,
-          marginBottom: "1.2rem",
-          letterSpacing: "-2px",
-          textShadow: "0 2px 12px rgba(0,0,0,0.25)"
-        }}>
-          EXPLORE THE<br />WORLD WITH<br />SERENDIP WAVES
-        </h1>
-        <p style={{
-          fontSize: "1.1rem",
-          letterSpacing: "0.12em",
-          textTransform: "uppercase",
-          fontWeight: 400,
-          marginBottom: "2.2rem",
-          color: "#fff",
-          textShadow: "0 1px 6px rgba(0,0,0,0.18)"
-        }}>
-          WHERE LUXURY MEETS THE SEA<br />EVERY JOURNEY, A MASTERPIECE.
-        </p>
-        <button
-          className="btn btn-lg px-5 py-3 hero-cta-btn shadow"
-          style={{
-            background: isHovered ? '#ffb300' : '#ffd600',
-            color: '#222',
-            fontWeight: 600,
-            borderRadius: '2rem',
-            fontSize: '1.25rem',
-            border: 'none',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.10)',
-            transition: 'background 0.2s, color 0.2s, box-shadow 0.2s'
-          }}
-          onClick={onBookingClick}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          Book Now
-        </button>
-      </div>
-    </section>
-  );
-};
+        Book Now
+      </button>
+    </div>
+  </section>
+);
 
 // Contact Section
 const ContactSection = () => (
@@ -329,7 +306,7 @@ const Footer = () => (
 // After Destinations section, before About section
 const FleetSection = () => (
   <section id="fleet" style={{
-    background: `linear-gradient(135deg, #667eea99 0%, #764ba299 100%), url('/ShipBalcony.jpg') center center / cover no-repeat`,
+    background: "linear-gradient(135deg, #667eea99 0%, #764ba299 100%), url('/ShipBalcony.jpg') center center / cover no-repeat",
     minHeight: '100vh',
     display: 'flex',
     alignItems: 'center',
@@ -356,55 +333,35 @@ const FleetSection = () => (
   </section>
 );
 
-const DestinationsSection = () => {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <section id="destinations-section" style={{
-      background: '#fff',
-      minHeight: '100vh',
-      height: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      position: 'relative',
-      overflow: 'hidden',
-      color: '#102347',
-      padding: 0,
-      margin: 0
-    }}>
-      <div className="container text-center">
-        <h1 className="display-3 fw-bold mb-4" style={{ color: '#102347' }}>
-          Destinations
-        </h1>
-        <p className="lead mb-5" style={{ color: '#185a9d', fontWeight: 500 }}>
-          Explore breathtaking destinations around the world with our premium cruise experiences.
-        </p>
-        <div className="mt-5">
-          <Link
-            to="/destinations"
-            className="btn btn-lg"
-            style={{
-              background: isHovered ? '#ffb300' : '#ffd600',
-              color: '#102347',
-              fontWeight: 'bold',
-              border: 'none',
-              borderRadius: '2rem',
-              padding: '0.9rem 2.5rem',
-              fontSize: '1.3rem',
-              boxShadow: '0 4px 18px rgba(16,35,71,0.10)',
-              transition: 'background 0.2s, color 0.2s, box-shadow 0.2s'
-            }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
-            View All Destinations
-          </Link>
-        </div>
+const DestinationsSection = () => (
+  <section id="destinations-section" style={{
+    background: "linear-gradient(135deg, #43cea299 0%, #185a9d99 100%), url('/destination.jpg') center center / cover no-repeat",
+    minHeight: '100vh',
+    height: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    overflow: 'hidden',
+    color: 'white',
+    padding: 0,
+    margin: 0
+  }}>
+    <div className="container text-center text-white">
+      <h1 className="display-3 fw-bold mb-4">
+        Destinations
+      </h1>
+      <p className="lead mb-5">
+        Explore breathtaking destinations around the world with our premium cruise experiences.
+      </p>
+      <div className="mt-5">
+        <Link to="/destinations" className="btn view-all-destinations-btn btn-lg">
+          View All Destinations
+        </Link>
       </div>
-    </section>
-  );
-};
+    </div>
+  </section>
+);
 
 const HomePage = ({ onBookingClick }) => {
   return (
@@ -467,7 +424,7 @@ const HomePage = ({ onBookingClick }) => {
           transition: background 0.2s, color 0.2s, box-shadow 0.2s;
         }
         .hero-cta-btn:hover, .hero-cta-btn:focus {
-          background: #ffb300;
+        background: #ffb300;
           color: #fff;
           box-shadow: 0 4px 24px rgba(13,110,253,0.18);
         }
