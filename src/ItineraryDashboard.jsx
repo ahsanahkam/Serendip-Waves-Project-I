@@ -4,15 +4,8 @@ import { FaPlus, FaEdit, FaTrash, FaSearch, FaTimes, FaRoute } from 'react-icons
 import './itinerary.css';
 import axios from 'axios';
 
-// Ship names from existing data
-const shipNames = [
-  'Serendip Dream',
-  'Serendip Majesty', 
-  'Serendip Explorer',
-  'Serendip Serenade',
-  'Serendip Adventurer',
-  'Serendip Harmony'
-];
+// Remove static shipNames
+// const shipNames = [ ... ];
 
 // Common countries for dropdown
 const countries = [
@@ -58,9 +51,9 @@ function ItineraryDashboard() {
     startDate: '',
     endDate: ''
   });
-  const [availableShipNames, setAvailableShipNames] = useState(shipNames);
-  const [availableCountries, setAvailableCountries] = useState(countries);
-  const [availablePorts, setAvailablePorts] = useState(commonPorts);
+  const [availableShipNames, setAvailableShipNames] = useState([]); // Now dynamic
+  const [availableCountries, setAvailableCountries] = useState([]);
+  const [availablePorts, setAvailablePorts] = useState([]);
   const [showAddShipModal, setShowAddShipModal] = useState(false);
   const [showAddRouteModal, setShowAddRouteModal] = useState(false);
   const [newShipName, setNewShipName] = useState('');
@@ -76,15 +69,26 @@ function ItineraryDashboard() {
       const data = response.data;
       setItineraries(data);
       setFilteredItineraries(data);
-      // Extract ship names and countries dynamically
-      const ships = [...new Set(data.map(item => item.ship_name))];
+      // Extract countries dynamically
       const countries = [...new Set(data.map(item => item.route))];
-      setAvailableShipNames(ships);
       setAvailableCountries(countries);
     } catch (error) {
       console.error("Failed to fetch itineraries:", error);
     }
   };
+
+  // Fetch ships from backend for dropdowns
+  useEffect(() => {
+    async function fetchShips() {
+      try {
+        const res = await axios.get('http://localhost/Project-I/backend/getShipDetails.php');
+        setAvailableShipNames(res.data.map(ship => ship.ship_name));
+      } catch (err) {
+        setAvailableShipNames([]);
+      }
+    }
+    fetchShips();
+  }, []);
 
   useEffect(() => {
     fetchItineraries();
@@ -150,54 +154,28 @@ function ItineraryDashboard() {
   const handleSaveItinerary = async (formData) => {
     try {
       let url, data, headers;
-      
+      const formDataToSend = new FormData();
+      formDataToSend.append('ship_name', formData.shipName);
+      formDataToSend.append('route', formData.arrivalCountry);
+      formDataToSend.append('departure_port', formData.departurePort);
+      formDataToSend.append('start_date', formData.startDate);
+      formDataToSend.append('end_date', formData.endDate);
+      formDataToSend.append('notes', formData.notes);
       if (editingItinerary) {
-        // For updates, check if there's an image
+        url = "http://localhost/Project-I/backend/updateItenerary.php";
+        formDataToSend.append('id', editingItinerary.id);
+        // Only append image if a new one is selected
         if (formData.countryImage) {
-          // Send FormData if image is selected
-          url = "http://localhost/Project-I/backend/updateItenerary.php";
-          const formDataToSend = new FormData();
-          formDataToSend.append('id', editingItinerary.id);
-          formDataToSend.append('ship_name', formData.shipName);
-          formDataToSend.append('route', formData.arrivalCountry);
-          formDataToSend.append('departure_port', formData.departurePort);
-          formDataToSend.append('start_date', formData.startDate);
-          formDataToSend.append('end_date', formData.endDate);
-          formDataToSend.append('notes', formData.notes);
           formDataToSend.append('country_image', formData.countryImage);
-          data = formDataToSend;
-          headers = { 'Content-Type': 'multipart/form-data' };
-        } else {
-          // Send JSON if no image
-          url = "http://localhost/Project-I/backend/updateItenerary.php";
-          data = {
-            id: editingItinerary.id,
-            ship_name: formData.shipName,
-            route: formData.arrivalCountry,
-            departure_port: formData.departurePort,
-            start_date: formData.startDate,
-            end_date: formData.endDate,
-            notes: formData.notes
-          };
-          headers = { 'Content-Type': 'application/json' };
         }
       } else {
-        // For new entries, send FormData (in case we add image upload later)
         url = "http://localhost/Project-I/backend/addItinerary.php";
-        const formDataToSend = new FormData();
-        formDataToSend.append('ship_name', formData.shipName);
-        formDataToSend.append('route', formData.arrivalCountry);
-        formDataToSend.append('departure_port', formData.departurePort);
-        formDataToSend.append('start_date', formData.startDate);
-        formDataToSend.append('end_date', formData.endDate);
-        formDataToSend.append('notes', formData.notes);
         if (formData.countryImage) {
           formDataToSend.append('country_image', formData.countryImage);
         }
-        data = formDataToSend;
-        headers = { 'Content-Type': 'multipart/form-data' };
       }
-      
+      data = formDataToSend;
+      headers = { 'Content-Type': 'multipart/form-data' };
       const res = await axios.post(url, data, { headers });
       alert(res.data.message);
       if (res.status === 200) {
@@ -348,31 +326,8 @@ function ItineraryDashboard() {
                     <td>{formatDate(itinerary.start_date)}</td>
                     <td>{formatDate(itinerary.end_date)}</td>
                     <td>
-                      {itinerary.country_image ? (
-                        <img 
-                          src={`http://localhost/Project-I/backend/${itinerary.country_image}`} 
-                          alt="Country" 
-                          style={{ width: 60, height: 40, objectFit: 'cover', borderRadius: 4 }} 
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                            e.target.nextSibling.style.display = 'inline';
-                          }}
-                        />
-                      ) : (
-                        <div style={{ 
-                          width: 60, 
-                          height: 40, 
-                          backgroundColor: '#f8f9fa', 
-                          border: '1px solid #dee2e6',
-                          borderRadius: 4,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '12px',
-                          color: '#6c757d'
-                        }}>
-                          No Image
-                        </div>
+                      {itinerary.country_image && (
+                        <img src={`http://localhost/Project-I/backend/${itinerary.country_image}`} alt="Country" style={{ width: 60, height: 40, objectFit: 'cover' }} />
                       )}
                     </td>
                     <td>
@@ -608,13 +563,16 @@ function ItineraryModal({ show, onHide, itinerary, onSave, shipNames, countries,
             <div className="col-md-6">
               <Form.Group className="form-group">
                 <Form.Label>Ship Name *</Form.Label>
-                <Form.Control
-                  type="text"
+                <Form.Select
                   className={errors.shipName ? 'is-invalid' : ''}
-                  placeholder="Enter ship name..."
                   value={formData.shipName}
-                  onChange={(e) => handleInputChange('shipName', e.target.value)}
-                />
+                  onChange={e => handleInputChange('shipName', e.target.value)}
+                >
+                  <option value="">Select a ship</option>
+                  {shipNames && shipNames.map((ship, idx) => (
+                    <option key={idx} value={ship}>{ship}</option>
+                  ))}
+                </Form.Select>
                 {errors.shipName && <div className="invalid-feedback">{errors.shipName}</div>}
               </Form.Group>
             </div>

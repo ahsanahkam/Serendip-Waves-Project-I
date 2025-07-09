@@ -6,6 +6,12 @@ import { useContext } from "react";
 import { AuthContext } from "./App";
 import logo from './assets/logo.png';
 
+const iconStyle = {
+  fontSize: 28,
+  marginRight: 12,
+  color: "#4f46e5"
+};
+
 const dashboardButtons = [
   {
     label: "Booking Overview",
@@ -21,8 +27,8 @@ const dashboardButtons = [
   },
   {
     label: "Cruise",
-    icon: <FaShip size={28} />,
-    route: "/cruise-ships",
+    icon: <FaShip style={iconStyle} />,
+    route: "/manage-cruises",
     active: true,
   },
   {

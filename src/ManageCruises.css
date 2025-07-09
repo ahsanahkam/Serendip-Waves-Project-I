@@ -1,0 +1,218 @@
+/* ManageCruises.css - Styles for the Cruise Management admin table and modal */
+
+.itinerary-dashboard-bg {
+  background: linear-gradient(120deg, #f8fafc 0%, #e0e7ef 100%);
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+.itinerary-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+  padding: 32px 28px 24px 28px;
+}
+
+.itinerary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.itinerary-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #2a2a2a;
+  letter-spacing: -1px;
+}
+
+.admin-info {
+  text-align: right;
+}
+
+.admin-name {
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.admin-role {
+  font-size: 0.95rem;
+  color: #64748b;
+}
+
+.filter-section {
+  background: #f1f5f9;
+  border-radius: 12px;
+  padding: 18px 24px 10px 24px;
+  margin-bottom: 28px;
+}
+
+.filter-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 12px;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: flex-end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+}
+
+.filter-label {
+  font-size: 0.98rem;
+  color: #475569;
+  margin-bottom: 4px;
+}
+
+.filter-input {
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  padding: 6px 10px;
+  font-size: 1rem;
+  background: #fff;
+}
+
+/* Group filter and clear buttons in the same row */
+.filter-actions {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.filter-btn {
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 0.98rem;
+  min-width: 70px;
+  max-width: 90px;
+  margin-top: 0;
+}
+
+.clear-btn {
+  background: #f87171;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 0.92rem;
+  min-width: 70px;
+  max-width: 90px;
+  margin-left: 0;
+  margin-top: 0;
+}
+
+.table-section {
+  margin-top: 18px;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.table-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #22223b;
+}
+
+.add-btn {
+  background: #10b981;
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 8px 22px;
+  font-size: 1.08rem;
+  box-shadow: 0 2px 8px rgba(16,185,129,0.08);
+}
+
+.itinerary-table {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 1rem;
+}
+
+.itinerary-table th, .itinerary-table td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.itinerary-table th {
+  background: #f1f5f9;
+  color: #334155;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.itinerary-table td {
+  background: #fff;
+  color: #22223b;
+  font-size: 1rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.edit-btn {
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  padding: 5px 14px;
+}
+
+.delete-btn {
+  background: #f87171;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  padding: 5px 14px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #64748b;
+  gap: 8px;
+}
+
+.empty-state-icon {
+  font-size: 2.5rem;
+  color: #cbd5e1;
+}
+
+.empty-state-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.empty-state-subtext {
+  font-size: 0.98rem;
+  color: #94a3b8;
+} 

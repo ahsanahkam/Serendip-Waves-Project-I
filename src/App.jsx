@@ -23,6 +23,7 @@ import CabinAdminDashboard from './CabinAdminDashboard';
 import PassengerDashboard from './PassengerDashboard';
 import AdminDashboard from './AdminDashboard';
 import DestinationDetails from './DestinationDetails';
+import ManageCruises from './ManageCruises';
 
 
 export const AuthContext = createContext();
@@ -96,7 +97,8 @@ function AppRoutes(props) {
     '/customer-dashboard',
     '/super-admin',
     '/food-inventory-management',
-    '/admin-dashboard'
+    '/admin-dashboard',
+    '/manage-cruises'
   ];
   const shouldShowNavbar = !hideNavbarRoutes.some(route => location.pathname.startsWith(route));
 
@@ -156,6 +158,7 @@ function AppRoutes(props) {
         <Route path="/customer-dashboard" element={<CustomerDashboard />} />
         <Route path="/food-inventory-management" element={<FoodInventoryDashboard />} />
         <Route path="/itinerary-management" element={<ItineraryDashboard />} />
+        <Route path="/manage-cruises" element={<ManageCruises />} />
         <Route path="/cabin-admin" element={<CabinAdminDashboard />} />
         <Route path="/passenger-management" element={<PassengerDashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
