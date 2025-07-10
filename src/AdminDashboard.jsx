@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FaBook, FaUsers, FaRoute, FaBed, FaShip } from "react-icons/fa";
 import { AuthContext } from './App';
 import logo from './assets/logo.png';
+import { Modal, Button } from 'react-bootstrap';
 
 const cardStyle = {
   background: "#ece9f6",
@@ -32,15 +33,23 @@ const iconStyle = {
 const AdminDashboard = () => {
   const { logout } = useContext(AuthContext);
   const navigate = (to) => { window.location.href = to; };
-  const handleLogout = () => {
+  const [showLogoutModal, setShowLogoutModal] = React.useState(false);
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+  const handleCloseLogoutModal = () => {
+    setShowLogoutModal(false);
+  };
+  const handleConfirmLogout = () => {
     logout();
     navigate('/');
+    setShowLogoutModal(false);
   };
   return (
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #b8c6ff 0%, #6f86d6 100%)",
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -84,7 +93,7 @@ const AdminDashboard = () => {
           </div>
         </div>
         <button
-          onClick={handleLogout}
+          onClick={handleLogoutClick}
           className="superadmin-logout-btn"
         >
           Logout
@@ -113,28 +122,45 @@ const AdminDashboard = () => {
             width: "100%",
           }}
         >
-          <Link to="/booking-overview" style={cardStyle}>
+          <Link to="/booking-overview" className="admin-dashboard-btn">
             <FaBook style={iconStyle} />
             Booking Overview
           </Link>
-          <Link to="/manage-cruises" style={cardStyle}>
+          <Link to="/manage-cruises" className="admin-dashboard-btn">
             <FaShip style={iconStyle} />
             Cruise
           </Link>
-          <Link to="/passenger-management" style={cardStyle}>
+          <Link to="/passenger-management" className="admin-dashboard-btn">
             <FaUsers style={iconStyle} />
             Passenger Management
           </Link>
-          <Link to="/itinerary-management" style={cardStyle}>
+          <Link to="/itinerary-management" className="admin-dashboard-btn">
             <FaRoute style={iconStyle} />
             Itinerary Management
           </Link>
-          <Link to="/cabin-admin" style={cardStyle}>
+          <Link to="/cabin-admin" className="admin-dashboard-btn">
             <FaBed style={iconStyle} />
             Cabin Management
           </Link>
         </div>
       </div>
+      {/* Logout Confirmation Modal */}
+      <Modal show={showLogoutModal} onHide={handleCloseLogoutModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Logout</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Do you want to logout?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseLogoutModal}>
+            No
+          </Button>
+          <Button variant="danger" onClick={handleConfirmLogout}>
+            Yes, Logout
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

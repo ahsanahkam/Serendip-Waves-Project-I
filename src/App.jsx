@@ -24,6 +24,7 @@ import PassengerDashboard from './PassengerDashboard';
 import AdminDashboard from './AdminDashboard';
 import DestinationDetails from './DestinationDetails';
 import ManageCruises from './ManageCruises';
+import './App.css';
 
 
 export const AuthContext = createContext();
@@ -98,7 +99,11 @@ function AppRoutes(props) {
     '/super-admin',
     '/food-inventory-management',
     '/admin-dashboard',
-    '/manage-cruises'
+    '/manage-cruises',
+    '/booking-overview',
+    '/passenger-management',
+    '/itinerary-management',
+    '/cabin-admin'
   ];
   const shouldShowNavbar = !hideNavbarRoutes.some(route => location.pathname.startsWith(route));
 

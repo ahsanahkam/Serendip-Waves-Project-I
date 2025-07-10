@@ -59,6 +59,7 @@ const categoryOptions = ['Vegetables', 'Fruits', 'Meat', 'Dairy', 'Grains', 'Bev
 function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
   const { logout } = useContext(AuthContext);
   const navigate = (to) => { window.location.href = to; };
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState('add');
@@ -224,9 +225,16 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
   };
   const handleCloseDetails = () => setShowDetails(false);
 
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+  const handleCloseLogoutModal = () => {
+    setShowLogoutModal(false);
+  };
+  const handleConfirmLogout = () => {
     logout();
     navigate('/');
+    setShowLogoutModal(false);
   };
 
   return (
@@ -259,7 +267,7 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
           </div>
         </div>
         <button
-          onClick={handleLogout}
+          onClick={handleLogoutClick}
           className="superadmin-logout-btn"
         >
           Logout
@@ -469,6 +477,23 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
           </Modal.Body>
         </Modal>
       </div>
+      {/* Logout Confirmation Modal */}
+      <Modal show={showLogoutModal} onHide={handleCloseLogoutModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Logout</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Do you want to logout?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseLogoutModal}>
+            No
+          </Button>
+          <Button variant="danger" onClick={handleConfirmLogout}>
+            Yes, Logout
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

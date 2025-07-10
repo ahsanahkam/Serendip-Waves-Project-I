@@ -16,6 +16,10 @@ import {
   FaCalendarAlt,
   FaDollarSign,
 } from "react-icons/fa";
+import logo from './assets/logo.png';
+import { AuthContext } from './App';
+import { useContext } from 'react';
+import { Modal, Button } from 'react-bootstrap';
 
 const cruiseNames = [
   "Serendip Dream",
@@ -104,6 +108,9 @@ const initialCabins = [
 ];
 
 function CabinAdminDashboard() {
+  const { logout } = useContext(AuthContext);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const navigate = (to) => { window.location.href = to; };
   const [cabins, setCabins] = useState(initialCabins);
   const [search, setSearch] = useState("");
   const [cruise, setCruise] = useState("All Cruises");
@@ -148,35 +155,67 @@ function CabinAdminDashboard() {
     setEditIdx(null);
   };
 
-  return (
-    <div className="dashboard-bg min-vh-100">
-      {/* Gradient Header */}
-      <div className="booking-header-gradient py-5 mb-4">
-        <div className="container">
-          <div className="d-flex flex-column align-items-center justify-content-center">
-            <div
-              className="d-flex align-items-center justify-content-center mb-2"
-              style={{ fontSize: "2.7rem" }}
-            >
-              <FaBed
-                className="me-3 text-white"
-                style={{ fontSize: "2.7rem" }}
-              />
-              <span
-                className="fw-bold text-white"
-                style={{ fontSize: "2.7rem", lineHeight: 1 }}
-              >
-                Cabin Management
-              </span>
-            </div>
-            <div className="text-white fs-5" style={{ fontWeight: 400 }}>
-              Monitor and manage all cabins with powerful filters and quick
-              actions.
-            </div>
-          </div>
+  const handleLogoutClick = () => setShowLogoutModal(true);
+  const handleCloseLogoutModal = () => setShowLogoutModal(false);
+  const handleConfirmLogout = () => {
+    logout();
+    navigate('/');
+    setShowLogoutModal(false);
+  };
+
+  // Custom Navbar (Admin Dashboard style)
+  const navbar = (
+    <div
+      style={{
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '2px 2px',
+        background: '#fff',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        zIndex: 10,
+        minHeight: '90px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+        borderBottom: '1px solid #eee'
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+        <img
+          src={logo}
+          alt="Logo"
+          style={{ height: '90px', width: 'auto', maxWidth: '90px', cursor: 'pointer', objectFit: 'contain' }}
+          onClick={() => navigate('/#top')}
+        />
+        <div style={{ fontWeight: 'bold', fontSize: '1.5rem', color: '#1a237e', letterSpacing: '1px' }}>
+          Cabin Management
         </div>
       </div>
-      <div className="container" style={{ maxWidth: 1200 }}>
+      <button
+        onClick={handleLogoutClick}
+        className="superadmin-logout-btn"
+      >
+        Logout
+      </button>
+    </div>
+  );
+
+  return (
+    <div
+      style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        padding: '0 1rem',
+      }}
+    >
+      {navbar}
+      <div style={{ marginTop: '110px', width: '100%' }}>
         {/* Filter Card */}
         <div className="cabin-card mb-4">
           <div className="row g-3 align-items-end">
@@ -410,6 +449,23 @@ function CabinAdminDashboard() {
           </div>
         )}
       </div>
+      {/* Logout Confirmation Modal */}
+      <Modal show={showLogoutModal} onHide={handleCloseLogoutModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Logout</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Do you want to logout?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseLogoutModal}>
+            No
+          </Button>
+          <Button variant="danger" onClick={handleConfirmLogout}>
+            Yes, Logout
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

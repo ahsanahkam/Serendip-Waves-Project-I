@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { FaBook, FaUtensils, FaBed, FaRoute, FaUsers, FaShip } from "react-icons/fa";
 import "./SuperAdminDashboard.css";
 import { useContext } from "react";
 import { AuthContext } from "./App";
 import logo from './assets/logo.png';
+import { Modal, Button } from "react-bootstrap";
 
 const iconStyle = {
   fontSize: 28,
@@ -54,10 +55,20 @@ const dashboardButtons = [
 function SuperAdminDashboard() {
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowLogoutModal(false);
+  };
+
+  const handleConfirmLogout = () => {
     logout();
     navigate("/");
+    setShowLogoutModal(false);
   };
 
   return (
@@ -87,7 +98,7 @@ function SuperAdminDashboard() {
           </div>
         </div>
         <button
-          onClick={handleLogout}
+          onClick={handleLogoutClick}
           className="superadmin-logout-btn"
         >
           Logout
@@ -116,6 +127,25 @@ function SuperAdminDashboard() {
           ))}
         </div>
       </div>
+
+      {showLogoutModal && (
+        <Modal show={showLogoutModal} onHide={handleCloseModal} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Logout</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Do you want to logout?
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseModal}>
+              No
+            </Button>
+            <Button variant="danger" onClick={handleConfirmLogout}>
+              Yes, Logout
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
     </div>
   );
 }

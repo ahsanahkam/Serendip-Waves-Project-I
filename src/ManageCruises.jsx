@@ -3,8 +3,14 @@ import { Modal, Button, Form, Table, Badge } from 'react-bootstrap';
 import { FaPlus, FaEdit, FaTrash, FaSearch, FaTimes, FaShip } from 'react-icons/fa';
 import './ManageCruises.css';
 import axios from 'axios';
+import logo from './assets/logo.png';
+import { AuthContext } from './App';
+import { useContext } from 'react';
 
 function ManageCruises() {
+  const { logout } = useContext(AuthContext);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const navigate = (to) => { window.location.href = to; };
   const [ships, setShips] = useState([]);
   const [filteredShips, setFilteredShips] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -194,9 +200,67 @@ function ManageCruises() {
     }
   };
 
+  const handleLogoutClick = () => setShowLogoutModal(true);
+  const handleCloseLogoutModal = () => setShowLogoutModal(false);
+  const handleConfirmLogout = () => {
+    logout();
+    navigate('/');
+    setShowLogoutModal(false);
+  };
+
+  // Custom Navbar (Admin Dashboard style)
+  const navbar = (
+    <div
+      style={{
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '2px 2px',
+        background: '#fff',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        zIndex: 10,
+        minHeight: '90px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+        borderBottom: '1px solid #eee'
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+        <img
+          src={logo}
+          alt="Logo"
+          style={{ height: '90px', width: 'auto', maxWidth: '90px', cursor: 'pointer', objectFit: 'contain' }}
+          onClick={() => navigate('/#top')}
+        />
+        <div style={{ fontWeight: 'bold', fontSize: '1.5rem', color: '#1a237e', letterSpacing: '1px' }}>
+          Manage Cruises
+        </div>
+      </div>
+      <button
+        onClick={handleLogoutClick}
+        className="superadmin-logout-btn"
+      >
+        Logout
+      </button>
+    </div>
+  );
+
   return (
-    <div className="itinerary-dashboard-bg">
-      <div className="itinerary-container">
+    <div
+      style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        padding: '0 1rem',
+      }}
+    >
+      {navbar}
+      <div style={{ marginTop: '110px', width: '100%' }}>
         {/* Header */}
         <div className="itinerary-header">
           <h1 className="itinerary-title">Cruise Management</h1>
@@ -447,6 +511,23 @@ function ManageCruises() {
           </Modal.Footer>
         </Modal>
       </div>
+      {/* Logout Confirmation Modal */}
+      <Modal show={showLogoutModal} onHide={handleCloseLogoutModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Logout</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Do you want to logout?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseLogoutModal}>
+            No
+          </Button>
+          <Button variant="danger" onClick={handleConfirmLogout}>
+            Yes, Logout
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
