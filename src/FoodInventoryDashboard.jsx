@@ -1,15 +1,46 @@
-import React, { useState, useMemo, useContext } from 'react';
-import foodInventoryData from './data/foodInventory.json';
+import React, { useState, useMemo, useContext, useEffect } from 'react';
+import axios from 'axios';
 import './foodInventory.css';
 import { Button, Table, Badge, Modal, Form, Row, Col, InputGroup } from 'react-bootstrap';
 import { FaEdit, FaTrash, FaPlus, FaFileCsv, FaFilePdf, FaHistory, FaBoxOpen, FaExclamationTriangle, FaTimesCircle } from 'react-icons/fa';
 import { AuthContext } from './App';
 import logo from './assets/logo.png';
 
+// Status constants
 const STATUS = {
   IN_STOCK: 'In Stock',
-  LOW: 'Low',
-  EXPIRED: 'Expired',
+  LOW: 'Low Stock',
+  EXPIRED: 'Expired'
+};
+
+// Function to get status badge with color
+const getStatusBadge = (status) => {
+  let variant = 'secondary';
+  let text = status;
+  let icon = null;
+  
+  switch (status) {
+    case STATUS.IN_STOCK:
+      variant = 'success';
+      icon = <FaBoxOpen className="me-1" />;
+      break;
+    case STATUS.LOW:
+      variant = 'warning';
+      icon = <FaExclamationTriangle className="me-1" />;
+      break;
+    case STATUS.EXPIRED:
+      variant = 'danger';
+      icon = <FaTimesCircle className="me-1" />;
+      break;
+    default:
+      variant = 'secondary';
+  }
+  
+  return (
+    <Badge bg={variant} className="status-badge">
+      {icon}{text}
+    </Badge>
+  );
 };
 
 const LOW_THRESHOLD = 20; // Example threshold for low stock
@@ -28,7 +59,7 @@ const categoryOptions = ['Vegetables', 'Fruits', 'Meat', 'Dairy', 'Grains', 'Bev
 function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
   const { logout } = useContext(AuthContext);
   const navigate = (to) => { window.location.href = to; };
-  const [data, setData] = useState(foodInventoryData);
+  const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState('add');
   const [form, setForm] = useState({
@@ -40,6 +71,7 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
     expiryDate: '',
     supplier: '',
     supplierContacts: '',
+    supplierEmail: '',
     unitPrice: '',
     purchaseDate: '',
   });
@@ -47,6 +79,29 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
   const [statusFilter, setStatusFilter] = useState('All');
   const [supplierFilter, setSupplierFilter] = useState('All');
   const [categoryFilter, setCategoryFilter] = useState('All');
+
+  // Fetch data from backend
+  useEffect(() => {
+    axios.get('http://localhost/Project-I/backend/getInventory.php')
+      .then(res => {
+        const mapped = res.data.map(item => ({
+          id: item.item_id,
+          itemName: item.food_item_name,
+          category: item.category,
+          quantity: item.quantity_in_stock,
+          unit: item.unit || 'kg', // Use item.unit if available, else default
+          expiryDate: item.expiry_date,
+          supplier: item.supplier_name,
+          supplierContacts: item.supplier_contact,
+          supplierEmail: item.supplier_email,
+          unitPrice: item.unit_price,
+          purchaseDate: item.purchase_date || '',
+          status: item.status,
+        }));
+        setData(mapped);
+      })
+      .catch(() => setData([]));
+  }, []);
 
   // Unique suppliers for filter dropdown
   const suppliers = useMemo(() => ['All', ...Array.from(new Set(data.map(i => i.supplier)))], [data]);
@@ -71,7 +126,7 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
 
   const handleShowModal = (mode, item = null) => {
     setModalMode(mode);
-    setForm(item ? { ...item } : {
+    setForm(item ? { ...item, supplierEmail: item.supplierEmail || '' } : {
       id: '',
       itemName: '',
       category: '',
@@ -80,6 +135,7 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
       expiryDate: '',
       supplier: '',
       supplierContacts: '',
+      supplierEmail: '',
       unitPrice: '',
       purchaseDate: '',
     });
@@ -92,26 +148,66 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
     setForm(f => ({ ...f, [name]: value }));
   };
 
-  const handleFormSubmit = e => {
+  // After add/edit, refresh and map data
+  const refreshData = () => {
+    axios.get('http://localhost/Project-I/backend/getInventory.php')
+      .then(res => {
+        const mapped = res.data.map(item => ({
+          id: item.item_id,
+          itemName: item.food_item_name,
+          category: item.category,
+          quantity: item.quantity_in_stock,
+          unit: item.unit || 'kg',
+          expiryDate: item.expiry_date,
+          supplier: item.supplier_name,
+          supplierContacts: item.supplier_contact,
+          supplierEmail: item.supplier_email,
+          unitPrice: item.unit_price,
+          purchaseDate: item.purchase_date || '',
+          status: item.status,
+        }));
+        setData(mapped);
+      })
+      .catch(() => setData([]));
+  };
+
+  const handleFormSubmit = async e => {
     e.preventDefault();
     if (!form.itemName || !form.quantity || !form.unit || !form.expiryDate || !form.supplier) {
       setFormError('Please fill in all required fields.');
       return;
     }
+    const payload = {
+      food_item_name: form.itemName,
+      category: form.category,
+      quantity_in_stock: Number(form.quantity),
+      unit_price: Number(form.unitPrice),
+      expiry_date: form.expiryDate,
+      purchase_date: form.purchaseDate,
+      supplier_name: form.supplier,
+      supplier_contact: form.supplierContacts,
+      supplier_email: form.supplierEmail,
+      status: getStatus({ ...form, quantity: Number(form.quantity), expiryDate: form.expiryDate })
+    };
     if (modalMode === 'add') {
-      setData(prev => [
-        ...prev,
-        { ...form, id: Date.now() },
-      ]);
+      await axios.post('http://localhost/Project-I/backend/addFoodItem.php', payload);
     } else if (modalMode === 'edit') {
-      setData(prev => prev.map(i => i.id === form.id ? { ...form } : i));
+      await axios.post('http://localhost/Project-I/backend/updateStock.php', {
+        ...payload,
+        item_id: form.id
+      });
     }
+    refreshData();
     setShowModal(false);
   };
 
-  const handleDelete = id => {
+  const handleDelete = async id => {
     if (window.confirm('Are you sure you want to delete this item?')) {
-      setData(prev => prev.filter(i => i.id !== id));
+      await axios.post('http://localhost/Project-I/backend/updateStock.php', {
+        action: 'delete',
+        item_id: id
+      });
+      refreshData();
     }
   };
 
@@ -234,6 +330,7 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
                   <th>Expiry Date</th>
                   <th>Supplier Name</th>
                   <th>Supplier Contacts</th>
+                  <th>Supplier Email</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -255,7 +352,8 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
                         <td>{item.expiryDate}</td>
                         <td>{item.supplier}</td>
                         <td>{item.supplierContacts || '-'}</td>
-                        <td>{status}</td>
+                        <td>{item.supplierEmail || '-'}</td>
+                        <td>{getStatusBadge(status)}</td>
                         <td>
                           <Button size="sm" variant="outline-primary" className="me-2" onClick={() => handleShowModal('edit', item)}><FaEdit /></Button>
                           <Button size="sm" variant="outline-danger" onClick={() => handleDelete(item.id)}><FaTrash /></Button>
@@ -313,6 +411,12 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
                 </Col>
                 <Col md={6}>
                   <Form.Group className="mb-2">
+                    <Form.Label>Supplier Email</Form.Label>
+                    <Form.Control name="supplierEmail" type="email" value={form.supplierEmail} onChange={handleFormChange} />
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group className="mb-2">
                     <Form.Label>Unit Price (Rs.)</Form.Label>
                     <Form.Control name="unitPrice" type="number" min="0" value={form.unitPrice} onChange={handleFormChange} />
                   </Form.Group>
@@ -357,8 +461,9 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
                 <p><strong>Expiry Date:</strong> {detailsItem.expiryDate}</p>
                 <p><strong>Supplier:</strong> {detailsItem.supplier}</p>
                 <p><strong>Supplier Contacts:</strong> {detailsItem.supplierContacts || '-'}</p>
+                <p><strong>Supplier Email:</strong> {detailsItem.supplierEmail || '-'}</p>
                 <p><strong>Purchase Date:</strong> {detailsItem.purchaseDate || '-'}</p>
-                <p><strong>Status:</strong> {getStatus(detailsItem)}</p>
+                <p><strong>Status:</strong> {getStatusBadge(getStatus(detailsItem))}</p>
               </div>
             )}
           </Modal.Body>
