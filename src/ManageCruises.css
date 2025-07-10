@@ -84,6 +84,11 @@
   background: #fff;
 }
 
+.filter-section select {
+  color: #333 !important;
+  background: #fff !important;
+}
+
 /* Group filter and clear buttons in the same row */
 .filter-actions {
   display: flex;

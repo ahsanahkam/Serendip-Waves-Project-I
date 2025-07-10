@@ -433,3 +433,8 @@
   color: #888;
   margin-bottom: 30px;
 } 
+
+.filter-section select {
+  color: #333 !important;
+  background: #fff !important;
+} 
