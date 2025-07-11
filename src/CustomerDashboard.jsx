@@ -18,6 +18,8 @@ const CustomerDashboard = () => {
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
+  const user = currentUser || JSON.parse(localStorage.getItem("currentUser"));
+
   // Close dropdown when clicking outside
   React.useEffect(() => {
     const handleClickOutside = (event) => {

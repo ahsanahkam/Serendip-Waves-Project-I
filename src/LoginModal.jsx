@@ -18,7 +18,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
   const [step, setStep] = useState("login"); // 'login', 'forgot', 'otp', 'newPassword'
   const [generatedOtp, setGeneratedOtp] = useState("");
   const navigate = useNavigate();
-  const { isAuthenticated, logout, currentUser, setCurrentUser } = useContext(AuthContext);
+  const { isAuthenticated, logout, currentUser, setCurrentUser, setIsAuthenticated } = useContext(AuthContext);
 
   if (!isOpen) return null;
 
@@ -88,7 +88,8 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
         {
           email: form.email,
           password: form.password,
-        }
+        },
+        { withCredentials: true }
       );
       if (response.data.success) {
         const { role, user } = response.data;
@@ -98,6 +99,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
         localStorage.setItem("currentUser", JSON.stringify(user));
         localStorage.setItem("role", role);
         setCurrentUser(user);
+        setIsAuthenticated(true); // Ensure Navbar updates
 
         setTimeout(() => {
           toast.dismiss();
@@ -110,10 +112,8 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
             window.location.href = "/food-inventory-management";
           } else if (user.email === "admin3@gmail.com"  && form.password === "dadmin123") {
             navigate("/admin-dashboard");
-          
-          } else {
-            navigate("/customer-dashboard");
           }
+          // Customers: do not redirect, just close modal and update Navbar
           setIsLoading(false); // Stop loading after navigation
         }, 2000);
       } else {
@@ -424,7 +424,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
         >
           &times;
         </button>
-        <div className="card-body p-5">
+        <div className="card-body p-3">
           {modalContent}
         </div>
       </div>
@@ -502,10 +502,11 @@ const cardStyle = {
   minWidth: '340px',
   width: '100%',
   position: 'relative',
-  padding: '40px 32px',
+  padding: '24px 20px',
   boxSizing: 'border-box',
   margin: 'auto',
   display: 'block',
+  marginTop: '64px', // add space from navbar
 };
 
 const closeBtnStyle = {
@@ -536,7 +537,11 @@ const buttonStyle = {
   border: '1px solid rgba(255, 193, 7, 0.3)',
   backdropFilter: 'blur(10px)',
   color: '#000',
-  fontWeight: 700
+  fontWeight: 700,
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 };
 
 export default LoginModal; 

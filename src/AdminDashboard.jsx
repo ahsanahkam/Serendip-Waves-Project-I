@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { FaBook, FaUsers, FaRoute, FaBed, FaShip } from "react-icons/fa";
+import { FaBook, FaUsers, FaRoute, FaBed, FaShip, FaInfoCircle } from "react-icons/fa";
 import { AuthContext } from './App';
 import logo from './assets/logo.png';
 import { Modal, Button } from 'react-bootstrap';
@@ -137,6 +137,10 @@ const AdminDashboard = () => {
           <Link to="/itinerary-management" className="admin-dashboard-btn">
             <FaRoute style={iconStyle} />
             Itinerary Management
+          </Link>
+          <Link to="/itinerary-details" className="admin-dashboard-btn">
+            <FaInfoCircle style={iconStyle} />
+            Itinerary Details
           </Link>
           <Link to="/cabin-admin" className="admin-dashboard-btn">
             <FaBed style={iconStyle} />

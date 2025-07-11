@@ -41,7 +41,7 @@
 }
 html, body {
   background: transparent !important;
-}
+} 
 
 /* Remove spinner arrows from number input fields */
 input[type="number"]::-webkit-outer-spin-button,

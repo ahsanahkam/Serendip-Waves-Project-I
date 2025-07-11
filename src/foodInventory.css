@@ -224,7 +224,7 @@ body, .food-inventory-dashboard {
     min-width: 100px;
     padding: 0.7rem 0.7rem;
   }
-}
+} 
 
 /* Remove spinner arrows from number input fields */
 input[type="number"]::-webkit-outer-spin-button,

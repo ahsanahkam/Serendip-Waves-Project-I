@@ -24,33 +24,52 @@ import PassengerDashboard from './PassengerDashboard';
 import AdminDashboard from './AdminDashboard';
 import DestinationDetails from './DestinationDetails';
 import ManageCruises from './ManageCruises';
+import ItineraryDetails from './ItineraryDetails';
 import './App.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 
 export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(() => {
-    // Load user from localStorage initially
-    const user = localStorage.getItem('currentUser');
-    return user ? JSON.parse(user) : null;
-  });
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Optionally sync currentUser to localStorage on change
+  // On mount, check session with backend
   useEffect(() => {
-    if (currentUser) {
-      localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    } else {
-      localStorage.removeItem('currentUser');
-    }
-  }, [currentUser]);
+    fetch('http://localhost/Project-I/backend/login.php?action=session_user', {
+      method: 'GET',
+      credentials: 'include',
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.user) {
+          setCurrentUser(data.user);
+          setIsAuthenticated(true);
+        } else {
+          setCurrentUser(null);
+          setIsAuthenticated(false);
+        }
+      })
+      .catch(() => {
+        setCurrentUser(null);
+        setIsAuthenticated(false);
+      });
+  }, []);
+
+  const login = (userData) => {
+    setCurrentUser(userData);
+    setIsAuthenticated(true);
+  };
 
   const logout = () => {
     setCurrentUser(null);
-    localStorage.removeItem('currentUser');
+    setIsAuthenticated(false);
+    // Optionally, call backend to destroy session
+    fetch('http://localhost/Project-I/backend/logout.php', { method: 'POST', credentials: 'include' });
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated: !!currentUser, currentUser, setCurrentUser, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, currentUser, setCurrentUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -168,70 +187,21 @@ function AppRoutes(props) {
         <Route path="/passenger-management" element={<PassengerDashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/destination/:country" element={<DestinationDetails />} />
+        <Route path="/itinerary-details" element={<ItineraryDetails />} />
       </Routes>
     </>
   );
 }
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
-  useEffect(() => {
-    const savedUser = localStorage.getItem('currentUser');
-    const savedAuth = localStorage.getItem('isAuthenticated');
-    
-    try {
-      if (savedUser && savedAuth === 'true') {
-        const parsedUser = JSON.parse(savedUser);
-        setCurrentUser(parsedUser);
-        setIsAuthenticated(true);
-      }
-    } catch (error) {
-      console.error('Error restoring authentication state:', error);
-      // Clear corrupted data
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('isAuthenticated');
-    }
-  }, []);
-
-  const login = (userData) => {
-    setCurrentUser(userData);
-    setIsAuthenticated(true);
-    setIsLoginModalOpen(false);
-    localStorage.setItem('currentUser', JSON.stringify(userData));
-    localStorage.setItem('isAuthenticated', 'true');
-  };
-
-  const logout = () => {
-    setCurrentUser(null);
-    setIsAuthenticated(false);
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('isAuthenticated');
-  };
-
-  const authValue = {
-    isAuthenticated,
-    currentUser,
-    setCurrentUser,
-    login,
-    logout,
-    isLoginModalOpen,
-    setIsLoginModalOpen,
-    isSignupModalOpen,
-    setIsSignupModalOpen,
-    isBookingModalOpen,
-    setIsBookingModalOpen
-  };
-
   return (
-    <AuthContext.Provider value={authValue}>
+    <AuthProvider>
       <Router>
         <AppRoutes
-          isAuthenticated={isAuthenticated}
           setIsLoginModalOpen={setIsLoginModalOpen}
           setIsSignupModalOpen={setIsSignupModalOpen}
           isLoginModalOpen={isLoginModalOpen}
@@ -240,7 +210,7 @@ const App = () => {
           setIsBookingModalOpen={setIsBookingModalOpen}
         />
       </Router>
-    </AuthContext.Provider>
+    </AuthProvider>
   );
 };
 
