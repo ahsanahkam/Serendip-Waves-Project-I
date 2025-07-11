@@ -217,7 +217,7 @@ const CruiseShipsPage = () => {
                     <div className="col-6 mb-3">
                       <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '15px' }}>
                         <div className="card-body text-center p-3">
-                          <div className="fw-bold text-primary" style={{ fontSize: '1.2rem' }}>
+                          <div className="fw-bold" style={{ fontSize: '1.2rem', color: '#000' }}>
                             {ship.passenger_count} passengers
                           </div>
                           <div className="text-muted small">Capacity</div>
@@ -227,7 +227,7 @@ const CruiseShipsPage = () => {
                     <div className="col-6 mb-3">
                       <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '15px' }}>
                         <div className="card-body text-center p-3">
-                          <div className="fw-bold text-primary" style={{ fontSize: '1.2rem' }}>
+                          <div className="fw-bold" style={{ fontSize: '1.2rem', color: '#000' }}>
                             {ship.pool_count} pools
                           </div>
                           <div className="text-muted small">Pools</div>
@@ -237,7 +237,7 @@ const CruiseShipsPage = () => {
                     <div className="col-6 mb-3">
                       <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '15px' }}>
                         <div className="card-body text-center p-3">
-                          <div className="fw-bold text-primary" style={{ fontSize: '1.2rem' }}>
+                          <div className="fw-bold" style={{ fontSize: '1.2rem', color: '#000' }}>
                             {ship.restaurant_count} restaurants
                           </div>
                           <div className="text-muted small">Restaurants</div>
@@ -247,7 +247,7 @@ const CruiseShipsPage = () => {
                     <div className="col-6 mb-3">
                       <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '15px' }}>
                         <div className="card-body text-center p-3">
-                          <div className="fw-bold text-primary" style={{ fontSize: '1.2rem' }}>
+                          <div className="fw-bold" style={{ fontSize: '1.2rem', color: '#000' }}>
                             {ship.deck_count} decks
                           </div>
                           <div className="text-muted small">Decks</div>

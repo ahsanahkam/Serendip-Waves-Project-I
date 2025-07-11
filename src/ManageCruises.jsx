@@ -64,16 +64,16 @@ function ManageCruises() {
       filtered = filtered.filter(ship => ship.ship_name === filters.shipName);
     }
     if (filters.passengerCount) {
-      filtered = filtered.filter(ship => ship.passenger_count === parseInt(filters.passengerCount));
+      filtered = filtered.filter(ship => Number(ship.passenger_count) === Number(filters.passengerCount));
     }
     if (filters.poolCount) {
-      filtered = filtered.filter(ship => ship.pool_count === parseInt(filters.poolCount));
+      filtered = filtered.filter(ship => Number(ship.pool_count) === Number(filters.poolCount));
     }
     if (filters.deckCount) {
-      filtered = filtered.filter(ship => ship.deck_count === parseInt(filters.deckCount));
+      filtered = filtered.filter(ship => Number(ship.deck_count) === Number(filters.deckCount));
     }
     if (filters.restaurantCount) {
-      filtered = filtered.filter(ship => ship.restaurant_count === parseInt(filters.restaurantCount));
+      filtered = filtered.filter(ship => Number(ship.restaurant_count) === Number(filters.restaurantCount));
     }
     setFilteredShips(filtered);
   }, [filters, ships]);
@@ -369,10 +369,10 @@ function ManageCruises() {
                 filteredShips.map((ship, idx) => (
                   <tr key={idx}>
                     <td><strong>{ship.ship_name}</strong></td>
-                    <td><Badge bg="primary">{ship.passenger_count}</Badge></td>
-                    <td><Badge bg="warning" text="dark">{ship.pool_count}</Badge></td>
-                    <td><Badge bg="success">{ship.deck_count}</Badge></td>
-                    <td><Badge bg="info">{ship.restaurant_count}</Badge></td>
+                    <td><Badge bg="light" text="dark" style={{ color: '#000', fontWeight: 'bold' }}>{ship.passenger_count}</Badge></td>
+                    <td><Badge bg="light" text="dark" style={{ color: '#000', fontWeight: 'bold' }}>{ship.pool_count}</Badge></td>
+                    <td><Badge bg="light" text="dark" style={{ color: '#000', fontWeight: 'bold' }}>{ship.deck_count}</Badge></td>
+                    <td><Badge bg="light" text="dark" style={{ color: '#000', fontWeight: 'bold' }}>{ship.restaurant_count}</Badge></td>
                     <td>
                       {ship.ship_image && (
                         <img src={`http://localhost/Project-I/backend/${ship.ship_image}`} alt={ship.ship_name} style={{ width: 60, height: 40, objectFit: 'cover', borderRadius: 6 }} />
