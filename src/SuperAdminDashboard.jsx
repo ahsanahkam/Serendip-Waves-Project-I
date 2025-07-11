@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { FaBook, FaUtensils, FaBed, FaRoute, FaUsers, FaShip } from "react-icons/fa";
+import { FaBook, FaUtensils, FaBed, FaRoute, FaUsers, FaShip, FaInfoCircle } from "react-icons/fa";
 import "./SuperAdminDashboard.css";
 import { useContext } from "react";
 import { AuthContext } from "./App";
@@ -42,6 +42,12 @@ const dashboardButtons = [
     label: "Itinerary Management",
     icon: <FaRoute size={28} />,
     route: "/itinerary-management",
+    active: true,
+  },
+  {
+    label: "Itinerary Details",
+    icon: <FaInfoCircle size={28} />,
+    route: "/itinerary-details",
     active: true,
   },
   {

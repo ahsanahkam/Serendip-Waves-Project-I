@@ -1,14 +1,20 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "./App";
+import BookingModal from "./BookingModal";
 import GreeceImg from './assets/Greece.jpg';
+import { Modal, Button } from 'react-bootstrap';
 
 const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 992);
   const location = useLocation();
   const navigate = useNavigate();
-  const { currentUser, isAuthenticated, logout } = useContext(AuthContext);
+  const { currentUser, isAuthenticated, logout, setIsBookingModalOpen, isBookingModalOpen } = useContext(AuthContext);
+  const [localBookingModalOpen, setLocalBookingModalOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef(null);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -18,6 +24,21 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileOpen(false);
+      }
+    }
+    if (profileOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [profileOpen]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -163,31 +184,59 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                   padding: '6px 18px',
                   fontWeight: 500
                 }}>Contact</a>
-                {isAuthenticated && currentUser && currentUser.role === "Admin" && (
-                  <Link to="/admin-dashboard" className="nav-link fw-semibold">Admin Dashboard</Link>
-                )}
-                {isAuthenticated && currentUser && currentUser.email === "sadmin@gmail.com" && (
-                  <Link to="/super-admin" className="nav-link fw-semibold">Super Admin Dashboard</Link>
-                )}
-                {/* Login/Logout Button moved here */}
-                {isAuthenticated ? (
-                  <button
-                    onClick={logout}
-                    className="btn btn-outline-dark btn-sm d-flex align-items-center gap-2 ms-2 btn-login"
-                    style={{
-                      borderRadius: '22px',
-                      padding: '7px 24px',
-                      fontSize: '1.05rem',
-                      fontWeight: 500,
-                      border: '1.5px solid #222',
-                      background: '#fff',
-                      color: '#222',
-                      boxShadow: 'none',
-                      transition: 'all 0.2s',
-                    }}
-                  >
-                    Logout
-                  </button>
+                {isAuthenticated && (!currentUser?.role || currentUser?.role === 'Customer') ? (
+                  <div className="position-relative" ref={profileRef}>
+                    <button
+                      className="btn btn-outline-light"
+                      type="button"
+                      style={{ color: '#222', fontWeight: 700, borderRadius: '22px', padding: '7px 24px', fontSize: '1.05rem' }}
+                      onClick={() => setProfileOpen((open) => !open)}
+                    >
+                      {currentUser?.full_name || currentUser?.name || currentUser?.email || 'Profile'}
+                    </button>
+                    {profileOpen && (
+                      <div style={{
+                        position: 'absolute',
+                        right: 0,
+                        top: '110%',
+                        minWidth: 240,
+                        background: '#fff',
+                        border: '1px solid #eee',
+                        borderRadius: 12,
+                        boxShadow: '0 2px 12px #0001',
+                        zIndex: 2000,
+                        padding: '18px 20px',
+                      }}>
+                        <div style={{ borderBottom: '1px solid #eee', marginBottom: 10, paddingBottom: 8 }}>
+                          <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: 2 }}>
+                            {currentUser?.full_name || currentUser?.name || 'User'}
+                          </div>
+                          <div style={{ color: '#666', fontSize: '0.97rem' }}>{currentUser?.email}</div>
+                        </div>
+                        <div style={{ borderTop: '1px solid #eee', marginTop: 10, paddingTop: 8 }}>
+                          <Link to="/customer-dashboard" style={{ display: 'block', color: '#1a237e', fontWeight: 500, textDecoration: 'none', marginBottom: 8 }}>
+                            Customer Dashboard
+                          </Link>
+                          <button
+                            style={{ display: 'block', color: '#1a237e', fontWeight: 500, textDecoration: 'none', marginBottom: 8, background: 'none', border: 'none', width: '100%', textAlign: 'center', padding: 0, cursor: 'pointer' }}
+                            onClick={() => {
+                              if (setIsBookingModalOpen) {
+                                setIsBookingModalOpen(true);
+                              } else {
+                                setLocalBookingModalOpen(true);
+                              }
+                              setProfileOpen(false);
+                            }}
+                          >
+                            New Booking
+                          </button>
+                          <button className="dropdown-item" onClick={() => setShowLogoutModal(true)} style={{ padding: 0, color: '#e53935', background: 'none', border: 'none', width: '100%', textAlign: 'center', fontWeight: 500 }}>
+                            Logout
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <button 
                     onClick={handleLoginClick}
@@ -312,6 +361,34 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
           </div>
         )}
       </nav>
+      {(isBookingModalOpen !== undefined ? isBookingModalOpen : localBookingModalOpen) && (
+        <BookingModal
+          isOpen={isBookingModalOpen !== undefined ? isBookingModalOpen : localBookingModalOpen}
+          onClose={() => {
+            if (setIsBookingModalOpen) {
+              setIsBookingModalOpen(false);
+            } else {
+              setLocalBookingModalOpen(false);
+            }
+          }}
+        />
+      )}
+      {showLogoutModal && (
+        <Modal show={showLogoutModal} onHide={() => setShowLogoutModal(false)} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Logout</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Do you want to logout?</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowLogoutModal(false)}>No</Button>
+            <Button variant="danger" onClick={() => {
+              logout();
+              setShowLogoutModal(false);
+              navigate('/');
+            }}>Yes, Logout</Button>
+          </Modal.Footer>
+        </Modal>
+      )}
     </>
   );
 };

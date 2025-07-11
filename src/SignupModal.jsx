@@ -142,7 +142,7 @@ const SignupModal = ({ isOpen, onClose, openLoginModal }) => {
       <div style={overlayStyle}>
         <div className="card border-0 shadow-lg position-relative" style={cardStyle}>
           <button style={closeBtnStyle} onClick={onClose}>&times;</button>
-          <div className="card-body p-3">
+          <div className="card-body p-2">
             <div className="text-center mb-3">
               <img src="/logo.png" alt="Serendip Waves Logo" width="80" height="80" className="mb-2" />
               <h2 className="fw-bold mb-0 text-white">Sign Up for Serendip Waves</h2>
@@ -366,19 +366,23 @@ const SignupModal = ({ isOpen, onClose, openLoginModal }) => {
                     'Verify OTP'
                   )}
                 </button>
-                <button 
-                  type="button"
-                  className="btn btn-outline-light btn-lg" 
-                  onClick={() => setOtpModalVisible(false)}
-                  style={{
-                    borderRadius: '10px',
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    background: 'rgba(255,255,255,0.1)',
-                    color: '#fff'
-                  }}
-                >
-                  Cancel
-                </button>
+                <div style={{ textAlign: 'center', width: '100%' }}>
+                  <button 
+                    type="button"
+                    className="btn btn-outline-light btn-lg" 
+                    onClick={() => setOtpModalVisible(false)}
+                    style={{
+                      borderRadius: '10px',
+                      border: '1px solid rgba(255,255,255,0.3)',
+                      background: 'rgba(255,255,255,0.1)',
+                      color: '#fff',
+                      display: 'inline-block',
+                      minWidth: 120
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -425,10 +429,11 @@ const cardStyle = {
   minWidth: '500px',
   width: '100%',
   position: 'relative',
-  padding: '20px 32px',
+  padding: '12px 16px',
   boxSizing: 'border-box',
   margin: 'auto',
-  display: 'block'
+  display: 'block',
+  marginTop: '64px', // add space from navbar
 };
 
 const closeBtnStyle = {
@@ -459,7 +464,11 @@ const buttonStyle = {
   border: '1px solid rgba(255, 193, 7, 0.3)',
   backdropFilter: 'blur(10px)',
   color: '#000',
-  fontWeight: 700
+  fontWeight: 700,
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 };
 
 export default SignupModal; 

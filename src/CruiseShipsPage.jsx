@@ -99,11 +99,40 @@ const CruiseShipsPage = () => {
             Discover our magnificent fleet of luxury cruise ships, each designed to provide 
             unforgettable experiences across the world's most beautiful waters.
           </p>
-          <div className="mt-5">
-            <Link to="/" className="btn btn-outline-light btn-lg me-3">
+          <div className="mt-5" style={{ display: 'flex', flexDirection: 'row', gap: 16, justifyContent: 'center' }}>
+            <Link to="/" style={{
+              color: '#fff',
+              fontWeight: 700,
+              fontSize: '1.1rem',
+              textDecoration: 'none',
+              padding: '0.7rem 2rem',
+              borderRadius: '10px',
+              background: 'transparent',
+              border: '2px solid #fff',
+              marginRight: 8,
+              display: 'inline-block',
+              transition: 'background 0.2s, color 0.2s',
+            }}>
               ← Back to Home
             </Link>
-            <Link to="/destinations" className="btn btn-warning btn-lg">
+            <Link to="/destinations" style={{
+              background: '#ffc107',
+              color: '#111',
+              fontWeight: 700,
+              fontSize: '1.1rem',
+              borderRadius: '10px',
+              padding: 0,
+              minWidth: '180px',
+              height: '48px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              boxShadow: '0 2px 8px rgba(255,193,7,0.10)',
+              border: 'none',
+              margin: 0,
+              transition: 'background 0.2s, color 0.2s',
+            }}>
               View Destinations
             </Link>
           </div>
@@ -258,7 +287,17 @@ const CruiseShipsPage = () => {
 
                   {/* CTA Button */}
                   <div className="text-center">
-                    <Link to="/destinations" className="btn btn-warning btn-lg px-5 py-3 fw-bold" style={{ borderRadius: '25px' }}>
+                    <Link to="/destinations" className="btn btn-warning btn-lg fw-bold" style={{
+                      borderRadius: '18px',
+                      padding: '1.2rem 3.5rem',
+                      fontWeight: 800,
+                      fontSize: '1.35rem',
+                      display: 'inline-block',
+                      minWidth: 0,
+                      width: 'auto',
+                      boxShadow: '0 4px 16px rgba(255,193,7,0.18)',
+                      letterSpacing: '0.02em',
+                    }}>
                       View Destinations
                     </Link>
                   </div>
