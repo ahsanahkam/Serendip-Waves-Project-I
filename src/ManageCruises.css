@@ -80,8 +80,10 @@
   border-radius: 8px;
   border: 1px solid #cbd5e1;
   padding: 6px 10px;
-  font-size: 1rem;
+  font-size: 1.15rem;
   background: #fff;
+  color: #000;
+  font-weight: 600;
 }
 
 .filter-section select {
@@ -220,4 +222,26 @@
 .empty-state-subtext {
   font-size: 0.98rem;
   color: #94a3b8;
+}
+
+/* Remove spinner arrows from number input fields */
+.filter-input[type="number"]::-webkit-outer-spin-button,
+.filter-input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.filter-input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Remove spinner arrows from Form.Control number inputs */
+.form-control[type="number"]::-webkit-outer-spin-button,
+.form-control[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.form-control[type="number"] {
+  -moz-appearance: textfield;
 } 
