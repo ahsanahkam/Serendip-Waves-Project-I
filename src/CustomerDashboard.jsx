@@ -8,13 +8,18 @@ import "./CustomerDashboard.css";
 import { Modal, Button } from "react-bootstrap";
 
 const CustomerDashboard = () => {
-  const { currentUser, logout, setIsBookingModalOpen } = useContext(AuthContext);
+  const { currentUser, logout, setIsBookingModalOpen, setCurrentUser } = useContext(AuthContext);
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState("my-booking");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [editForm, setEditForm] = useState(null);
+  const [editError, setEditError] = useState("");
+  const [editSuccess, setEditSuccess] = useState("");
+  const [editLoading, setEditLoading] = useState(false);
+  const [profileSuccessMsg, setProfileSuccessMsg] = useState("");
 
   const user = currentUser || JSON.parse(localStorage.getItem("currentUser"));
 
@@ -59,6 +64,77 @@ const CustomerDashboard = () => {
   useEffect(() => {
     fetchBookings();
   }, [currentUser?.id]);
+
+  // When switching to edit-profile, initialize form
+  useEffect(() => {
+    if (activeSection === "edit-profile" && currentUser) {
+      setEditForm({
+        full_name: currentUser.full_name || currentUser.name || "",
+        email: currentUser.email || "",
+        date_of_birth: currentUser.date_of_birth || currentUser.dob || "",
+        gender: currentUser.gender || "",
+        phone_number: currentUser.phone_number || currentUser.phone || "",
+        passport_number: currentUser.passport_number || currentUser.passport || "",
+      });
+      setEditError("");
+      setEditSuccess("");
+    }
+  }, [activeSection, currentUser]);
+
+  const handleEditFormChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditProfileSubmit = async (e) => {
+    e.preventDefault();
+    setEditLoading(true);
+    setEditError("");
+    setEditSuccess("");
+    try {
+      const formData = new FormData();
+      formData.append("id", currentUser.id);
+      Object.entries(editForm).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+      // Update profile
+      const response = await fetch("http://localhost/Project-I/backend/updateProfile.php", {
+        method: "POST",
+        body: formData,
+      });
+      const updateData = await response.json();
+      if (updateData.success) {
+        // Always show success message if update succeeded
+        setProfileSuccessMsg("Profile updated successfully!");
+        // Fetch latest user data, but do not change the message if it fails
+        fetch(`http://localhost/Project-I/backend/getUser.php?id=${currentUser.id}`, {
+          credentials: 'include',
+        })
+          .then(res => res.json())
+          .then(userData => {
+            if (userData.success && userData.user) {
+              localStorage.setItem("currentUser", JSON.stringify(userData.user));
+              setCurrentUser(userData.user);
+            } else {
+              setCurrentUser(updateData.user); // fallback
+            }
+            setActiveSection("my-profile");
+            setTimeout(() => setProfileSuccessMsg(""), 2500);
+          })
+          .catch(() => {
+            setCurrentUser(updateData.user); // fallback
+            setActiveSection("my-profile");
+            setTimeout(() => setProfileSuccessMsg(""), 2500);
+          });
+      } else {
+        setEditError(updateData.message || "Failed to update profile.");
+      }
+    } catch (err) {
+      setEditError("An error occurred. Please try again.");
+    } finally {
+      setEditLoading(false);
+    }
+  };
 
   return (
     <div className="dashboard-container">
@@ -167,11 +243,15 @@ const CustomerDashboard = () => {
 
             {activeSection === "my-profile" && (
               <div>
+                {profileSuccessMsg && <div className="alert alert-success">{profileSuccessMsg}</div>}
                 <div className="profile-section-header">
                   <h2 className="section-title">My Profile</h2>
                   <button 
                     className="edit-profile-btn"
-                    onClick={() => setActiveSection("edit-profile")}
+                    onClick={() => {
+                      console.log('Edit Profile button clicked');
+                      setActiveSection("edit-profile");
+                    }}
                   >
                     <i className="fas fa-edit"></i>
                     Edit Profile
@@ -257,6 +337,47 @@ const CustomerDashboard = () => {
                     </div>
                   )}
                 </div>
+              </div>
+            )}
+            {activeSection === "edit-profile" && (
+              <div className="edit-profile-section">
+                <h2 className="section-title">Edit Profile</h2>
+                <form className="edit-profile-form" onSubmit={handleEditProfileSubmit} style={{ maxWidth: 500, margin: "0 auto" }}>
+                  {editSuccess && <div className="alert alert-success">{editSuccess}</div>}
+                  <div className="form-group mb-3">
+                    <label>Full Name</label>
+                    <input type="text" name="full_name" className="form-control" value={editForm?.full_name || ""} onChange={handleEditFormChange} required />
+                  </div>
+                  <div className="form-group mb-3">
+                    <label>Email</label>
+                    <input type="email" name="email" className="form-control" value={editForm?.email || ""} onChange={handleEditFormChange} required />
+                  </div>
+                  <div className="form-group mb-3">
+                    <label>Date of Birth</label>
+                    <input type="date" name="date_of_birth" className="form-control" value={editForm?.date_of_birth ? editForm.date_of_birth.slice(0,10) : ""} onChange={handleEditFormChange} />
+                  </div>
+                  <div className="form-group mb-3">
+                    <label>Gender</label>
+                    <select name="gender" className="form-control" value={editForm?.gender || ""} onChange={handleEditFormChange}>
+                      <option value="">Select gender</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div className="form-group mb-3">
+                    <label>Phone Number</label>
+                    <input type="text" name="phone_number" className="form-control" value={editForm?.phone_number || ""} onChange={handleEditFormChange} />
+                  </div>
+                  <div className="form-group mb-3">
+                    <label>Passport Number</label>
+                    <input type="text" name="passport_number" className="form-control" value={editForm?.passport_number || ""} onChange={handleEditFormChange} />
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <button type="button" className="btn btn-secondary" onClick={() => setActiveSection("my-profile")}>Cancel</button>
+                    <button type="submit" className="btn btn-primary" disabled={editLoading}>{editLoading ? "Saving..." : "Save Changes"}</button>
+                  </div>
+                </form>
               </div>
             )}
           </main>
