@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "./App";
 import { FaBars, FaMinus, FaUser, FaEnvelope, FaPhone, FaCalendar, FaVenusMars, FaPassport } from "react-icons/fa";
 import BookingModal from "./BookingModal";
+import Navbar from "./Navbar";
 import "./CustomerDashboard.css";
 import { Modal, Button } from "react-bootstrap";
 
@@ -11,48 +12,13 @@ const CustomerDashboard = () => {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState("my-booking");
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
-  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const user = currentUser || JSON.parse(localStorage.getItem("currentUser"));
 
-  // Close dropdown when clicking outside
-  React.useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (showProfileDropdown && !event.target.closest('.profile-dropdown')) {
-        setShowProfileDropdown(false);
-      }
-    };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showProfileDropdown]);
-
-  // Handle logout with navigation
-  const handleLogout = () => {
-    logout();
-    setShowProfileDropdown(false);
-    navigate('/');
-  };
-
-  const handleLogoutClick = () => {
-    setShowLogoutModal(true);
-  };
-  const handleConfirmLogout = () => {
-    localStorage.removeItem("currentUser");
-    localStorage.removeItem("role");
-    setShowLogoutModal(false);
-    navigate("/");
-  };
-  const handleCancelLogout = () => {
-    setShowLogoutModal(false);
-  };
 
   // Debug: Log user data to see what's available
   console.log('Current User Data:', currentUser);
@@ -96,133 +62,13 @@ const CustomerDashboard = () => {
 
   return (
     <div className="dashboard-container">
-      {/* Top Navigation Bar */}
-      <nav className="top-navbar">
-        <div className="navbar-container">
-          <div className="navbar-left">
-            <button 
-              className="navbar-sidebar-toggle"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-            >
-              <FaBars />
-            </button>
-            <div className="navbar-brand">
-              <img src="/logo.png" alt="Serendip Waves" className="navbar-logo" />
-              <h2 className="navbar-title">Serendip Waves</h2>
-            </div>
-          </div>
-          
-          <div className="navbar-actions">
-            <button 
-              onClick={() => setShowBookingModal(true)}
-              className="navbar-booking-btn"
-            >
-              <i className="fas fa-plus"></i>
-              New Booking
-            </button>
-            
-            <div className="profile-dropdown">
-              <button 
-                className="profile-button"
-                onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-              >
-                <FaUser />
-                {currentUser?.full_name || currentUser?.fullName || currentUser?.name || "User"}
-              </button>
-              
-              {profileDropdownOpen && (
-                <div className="profile-dropdown-content">
-                  <div className="profile-header">
-                    <h3>
-                      {currentUser?.full_name || currentUser?.fullName || currentUser?.name || "User"}
-                    </h3>
-                  </div>
-                  
-                  <div className="profile-info">
-                    <div className="profile-info-item">
-                      <FaUser />
-                      <span className="label">Full Name:</span>
-                      <span className="value">
-                        {currentUser?.full_name || currentUser?.fullName || currentUser?.name || "Not provided"}
-                      </span>
-                    </div>
-                    
-                    <div className="profile-info-item">
-                      <FaEnvelope />
-                      <span className="label">Email:</span>
-                      <span className="value">
-                        {currentUser?.email || "Not provided"}
-                      </span>
-                    </div>
-                    
-                    <div className="profile-info-item">
-                      <FaCalendar />
-                      <span className="label">Date of Birth:</span>
-                      <span className="value">
-                        {currentUser?.date_of_birth || currentUser?.dob || currentUser?.dateOfBirth ? 
-                          new Date(currentUser.date_of_birth || currentUser.dob || currentUser.dateOfBirth).toLocaleDateString() : 
-                          "Not provided"}
-                      </span>
-                    </div>
-                    
-                    <div className="profile-info-item">
-                      <FaVenusMars />
-                      <span className="label">Gender:</span>
-                      <span className="value">
-                        {currentUser?.gender || "Not provided"}
-                      </span>
-                    </div>
-                    
-                    {currentUser?.passport_number || currentUser?.passport || currentUser?.passportNumber && (
-                      <div className="profile-info-item">
-                        <FaPassport />
-                        <span className="label">Passport:</span>
-                        <span className="value">
-                          {currentUser?.passport_number || currentUser?.passport || currentUser?.passportNumber || "Not provided"}
-                        </span>
-                      </div>
-                    )}
-                    
-                    {currentUser?.created_at && (
-                      <div className="profile-info-item">
-                        <FaCalendar />
-                        <span className="label">Member Since:</span>
-                        <span className="value">
-                          {new Date(currentUser.created_at).toLocaleDateString()}
-                        </span>
-                      </div>
-                    )}
-                    
-                    {currentUser?.phone_number || currentUser?.phone || currentUser?.phoneNumber ? (
-                      <div className="profile-info-item">
-                        <FaPhone />
-                        <span className="label">Phone:</span>
-                        <span className="value">
-                          {currentUser?.phone_number || currentUser?.phone || currentUser?.phoneNumber}
-                        </span>
-                      </div>
-                    ) : null}
-                  </div>
-                  
-                  <div className="profile-actions">
-                    <button
-                      onClick={handleLogoutClick}
-                      className="logout-button"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
+      {/* Home Navbar */}
+      <Navbar />
 
       {/* Main Content Area */}
       <div className="main-content">
         {/* Sidebar */}
-        <div className={`sidebar ${!sidebarOpen ? 'collapsed' : ''}`}>
+        <div className="sidebar">
           <ul className="sidebar-nav">
             <li>
               <a 
@@ -242,6 +88,16 @@ const CustomerDashboard = () => {
               >
                 <i className="fas fa-calendar-check"></i>
                 My Bookings
+              </a>
+            </li>
+            <li>
+              <a 
+                href="#my-profile" 
+                className={activeSection === "my-profile" ? "active" : ""}
+                onClick={() => setActiveSection("my-profile")}
+              >
+                <i className="fas fa-user"></i>
+                My Profile
               </a>
             </li>
           </ul>
@@ -308,33 +164,105 @@ const CustomerDashboard = () => {
                 )}
               </div>
             )}
+
+            {activeSection === "my-profile" && (
+              <div>
+                <div className="profile-section-header">
+                  <h2 className="section-title">My Profile</h2>
+                  <button 
+                    className="edit-profile-btn"
+                    onClick={() => setActiveSection("edit-profile")}
+                  >
+                    <i className="fas fa-edit"></i>
+                    Edit Profile
+                  </button>
+                </div>
+                
+                <div className="profile-info-card">
+                  <div className="profile-info-item">
+                    <div className="info-label">
+                      <i className="fas fa-user"></i>
+                      Full Name
+                    </div>
+                    <div className="info-value">
+                      {currentUser?.full_name || currentUser?.name || "Not provided"}
+                    </div>
+                  </div>
+                  
+                  <div className="profile-info-item">
+                    <div className="info-label">
+                      <i className="fas fa-envelope"></i>
+                      Email
+                    </div>
+                    <div className="info-value">
+                      {currentUser?.email || "Not provided"}
+                    </div>
+                  </div>
+                  
+                  <div className="profile-info-item">
+                    <div className="info-label">
+                      <i className="fas fa-calendar"></i>
+                      Date of Birth
+                    </div>
+                    <div className="info-value">
+                      {currentUser?.date_of_birth || currentUser?.dob ? 
+                        new Date(currentUser.date_of_birth || currentUser.dob).toLocaleDateString() : 
+                        "Not provided"}
+                    </div>
+                  </div>
+                  
+                  <div className="profile-info-item">
+                    <div className="info-label">
+                      <i className="fas fa-venus-mars"></i>
+                      Gender
+                    </div>
+                    <div className="info-value">
+                      {currentUser?.gender || "Not provided"}
+                    </div>
+                  </div>
+                  
+                  {currentUser?.phone_number || currentUser?.phone ? (
+                    <div className="profile-info-item">
+                      <div className="info-label">
+                        <i className="fas fa-phone"></i>
+                        Phone Number
+                      </div>
+                      <div className="info-value">
+                        {currentUser?.phone_number || currentUser?.phone}
+                      </div>
+                    </div>
+                  ) : null}
+                  
+                  {currentUser?.passport_number || currentUser?.passport ? (
+                    <div className="profile-info-item">
+                      <div className="info-label">
+                        <i className="fas fa-passport"></i>
+                        Passport Number
+                      </div>
+                      <div className="info-value">
+                        {currentUser?.passport_number || currentUser?.passport}
+                      </div>
+                    </div>
+                  ) : null}
+                  
+                  {currentUser?.created_at && (
+                    <div className="profile-info-item">
+                      <div className="info-label">
+                        <i className="fas fa-calendar-alt"></i>
+                        Member Since
+                      </div>
+                      <div className="info-value">
+                        {new Date(currentUser.created_at).toLocaleDateString()}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </main>
         </div>
       </div>
-      {showBookingModal && (
-        <BookingModal
-          isOpen={showBookingModal}
-          onClose={() => setShowBookingModal(false)}
-          currentUser={currentUser}
-          onBookingCreated={fetchBookings}
-        />
-      )}
-      <Modal show={showLogoutModal} onHide={handleCancelLogout} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirm Logout</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Do you want to logout?
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCancelLogout}>
-            No
-          </Button>
-          <Button variant="danger" onClick={handleConfirmLogout}>
-            Yes, Logout
-          </Button>
-        </Modal.Footer>
-      </Modal>
+
     </div>
   );
 };

@@ -59,57 +59,91 @@ const DestinationsPage = () => {
           background: "#fff",
           padding: "3rem 0 3rem 0",
           minHeight: "100vh",
-          width: "100vw",
+          width: "100%",
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           paddingTop: '110px',
+          paddingLeft: '1rem',
+          paddingRight: '1rem',
         }}
       >
-        <h2 className="text-center mb-2 fw-bold" style={{ fontSize: "2.5rem" }}>
+        <h2 className="text-center mb-2 fw-bold" style={{ 
+          fontSize: "clamp(1.8rem, 4vw, 2.5rem)",
+          marginBottom: '1rem'
+        }}>
           Featured Destinations
         </h2>
-        <p className="lead text-muted text-center mb-5" style={{ fontSize: "1.2rem", maxWidth: 600, margin: "0 auto" }}>
+        <p className="lead text-muted text-center mb-5" style={{ 
+          fontSize: "clamp(1rem, 2.5vw, 1.2rem)", 
+          maxWidth: 600, 
+          margin: "0 auto 2rem auto",
+          padding: '0 1rem'
+        }}>
           Discover breathtaking destinations around the world with our premium cruise experiences
         </p>
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2.5rem', alignItems: 'center' }}>
-          <input
-            type="text"
-            placeholder="Search by country or ship name..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            style={{
-              padding: '0.5rem 1rem',
-              borderRadius: 8,
-              border: '1px solid #ccc',
-              fontSize: '1rem',
-              minWidth: 220,
-              background: '#1e3a8a',
-              color: '#fff',
-            }}
-            onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
-          />
-          <button
-            onClick={handleSearch}
-            style={{
-              padding: '0.5rem 1.2rem',
-              borderRadius: 8,
-              border: 'none',
-              background: '#1e3a8a',
-              color: '#fff',
-              fontWeight: 600,
-              fontSize: '1rem',
-              cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(30,58,138,0.08)'
-            }}
-          >
-            Search
-          </button>
+        
+        {/* Responsive Search Bar */}
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column',
+          gap: '1rem', 
+          marginBottom: '2.5rem', 
+          alignItems: 'center',
+          width: '100%',
+          maxWidth: '500px'
+        }}>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: '0.5rem',
+            width: '100%',
+            flexWrap: 'wrap',
+            justifyContent: 'center'
+          }}>
+            <input
+              type="text"
+              placeholder="Search by country or ship name..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{
+                padding: '0.75rem 1rem',
+                borderRadius: 8,
+                border: '1px solid #ccc',
+                fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
+                minWidth: '200px',
+                flex: '1',
+                maxWidth: '300px',
+                background: '#1e3a8a',
+                color: '#fff',
+              }}
+              onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
+            />
+            <button
+              onClick={handleSearch}
+              style={{
+                padding: '0.75rem 1.2rem',
+                borderRadius: 8,
+                border: 'none',
+                background: '#1e3a8a',
+                color: '#fff',
+                fontWeight: 600,
+                fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(30,58,138,0.08)',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Search
+            </button>
+          </div>
         </div>
+
+        {/* Responsive Destinations Grid */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: '2.5rem',
+          gap: '2rem',
           width: '100%',
           maxWidth: 1200,
           margin: '0 auto',

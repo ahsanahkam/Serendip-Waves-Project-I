@@ -97,7 +97,18 @@ const Hero = ({ onBookingClick }) => (
 
 // Contact Section
 const ContactSection = () => (
-  <section id="contact" className="py-5" style={{ background: '#ffffff' }}>
+  <section id="contact" className="py-5 contact-section" style={{ background: '#ffffff' }}>
+    <style>{`
+      /* Hide scrollbar for Chrome, Safari and Opera */
+      .contact-section::-webkit-scrollbar {
+        display: none;
+      }
+      /* Hide scrollbar for IE, Edge and Firefox */
+      .contact-section {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;     /* Firefox */
+      }
+    `}</style>
     <div className="container">
       <div className="text-center mb-5">
         <h2 className="display-4 fw-bold text-dark mb-3">Contact Us</h2>
