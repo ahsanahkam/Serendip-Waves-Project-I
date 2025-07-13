@@ -87,6 +87,9 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
   return (
     <>
       <style>{`
+        .navbar {
+          padding: 12px 0 !important;
+        }
         .navbar .btn-login {
           transition: all 0.2s;
         }
@@ -98,10 +101,119 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
         .navbar .nav-link, .navbar-nav .nav-link {
           transition: background 0.2s, color 0.2s;
           border-radius: 10px;
+          margin: 0 4px;
         }
         .navbar .nav-link:hover, .navbar-nav .nav-link:hover {
           background: #e0e7ff !important;
           color: #1a237e !important;
+        }
+        .hamburger-menu {
+          display: none;
+          flex-direction: column;
+          justify-content: space-around;
+          width: 25px;
+          height: 25px;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          padding: 0;
+          z-index: 10;
+        }
+        .hamburger-menu span {
+          width: 25px;
+          height: 3px;
+          background: #1a237e;
+          border-radius: 10px;
+          transition: all 0.3s linear;
+          position: relative;
+          transform-origin: 1px;
+        }
+        .hamburger-menu.open span:first-child {
+          transform: rotate(45deg);
+        }
+        .hamburger-menu.open span:nth-child(2) {
+          opacity: 0;
+        }
+        .hamburger-menu.open span:nth-child(3) {
+          transform: rotate(-45deg);
+        }
+        @media (max-width: 991px) {
+          .hamburger-menu {
+            display: flex;
+          }
+        }
+        .mobile-menu {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(26, 35, 126, 0.35);
+          backdrop-filter: blur(18px) saturate(180%);
+          -webkit-backdrop-filter: blur(18px) saturate(180%);
+          z-index: 9998;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          padding: 2rem;
+          border-radius: 32px;
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+          border: 1.5px solid rgba(255, 255, 255, 0.18);
+          max-width: 90vw;
+          max-height: 90vh;
+          margin: 2vh auto;
+        }
+        .mobile-menu .close-btn {
+          position: absolute;
+          top: 24px;
+          right: 24px;
+          width: 40px;
+          height: 40px;
+          background: rgba(255,255,255,0.25);
+          border: 1.5px solid rgba(255,255,255,0.25);
+          border-radius: 50%;
+          color: #1a237e;
+          font-size: 1.7rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          z-index: 10000;
+          transition: background 0.2s, color 0.2s;
+        }
+        .mobile-menu .close-btn:hover {
+          background: #fff;
+          color: #e53935;
+        }
+        .mobile-menu .nav-link {
+          color: #fff !important;
+          font-size: 1.2rem !important;
+          padding: 1rem 0 !important;
+          border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+          text-align: center;
+          width: 100%;
+        }
+        .mobile-menu .nav-link:hover {
+          background: rgba(255,255,255,0.1) !important;
+          color: #ffd600 !important;
+        }
+        .logo-text {
+          font-size: clamp(1.2rem, 3vw, 2.1rem) !important;
+          line-height: 1.1 !important;
+        }
+        .logo-image {
+          width: clamp(60px, 15vw, 120px) !important;
+          height: auto !important;
+          max-height: 80px !important;
+        }
+        @media (max-width: 576px) {
+          .logo-text {
+            font-size: 1.1rem !important;
+          }
+          .logo-image {
+            width: 50px !important;
+          }
         }
       `}</style>
       <nav 
@@ -115,15 +227,15 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
           left: 0,
           right: 0,
           width: '100%',
-          padding: '6px 0',
-          minHeight: '60px',
-          maxHeight: '80px',
+          padding: '12px 0',
+          minHeight: '70px',
+          maxHeight: '90px',
           borderBottom: '1px solid #eee'
         }}
       >
-        <div className="container-fluid px-0 d-flex justify-content-between align-items-center">
+        <div className="container-fluid px-4 d-flex justify-content-between align-items-center">
           {/* Logo and Brand */}
-          <div className="d-flex align-items-center">
+          <div className="d-flex align-items-center" style={{ padding: '0 8px' }}>
             <Link
               to="/"
               className="navbar-brand d-flex align-items-center fw-bold fs-5 me-4"
@@ -131,7 +243,8 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                 color: '#1a237e',
                 fontFamily: 'Montserrat, Arial, sans-serif',
                 textDecoration: 'none',
-                transition: 'color 0.3s ease'
+                transition: 'color 0.3s ease',
+                flexShrink: 0
               }}
               onClick={e => {
                 e.preventDefault();
@@ -143,45 +256,61 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                 }
               }}
             >
-              <img src="/logo.png" alt="Serendip Waves Logo" width="120" height="120" className="me-2" style={{ maxHeight: '100px', width: 'auto', objectFit: 'contain', verticalAlign: 'middle' }} />
-              <span style={{ fontWeight: 700, fontSize: '2.1rem', letterSpacing: '0.04em', color: '#1a237e', lineHeight: 1.1 }}>serendip<br/>waves</span>
+              <img 
+                src="/logo.png" 
+                alt="Serendip Waves Logo" 
+                className="logo-image me-2" 
+                style={{ 
+                  objectFit: 'contain', 
+                  verticalAlign: 'middle' 
+                }} 
+              />
+              <span className="logo-text" style={{ 
+                fontWeight: 700, 
+                letterSpacing: '0.04em', 
+                color: '#1a237e', 
+                whiteSpace: 'nowrap'
+              }}>
+                serendip<br/>waves
+              </span>
             </Link>
           </div>
-          {/* Login/Logout Button and Nav Links */}
-          <div className="d-flex align-items-center gap-3">
-            {isLargeScreen && (
+
+          {/* Desktop Navigation */}
+          {isLargeScreen && (
+            <div className="d-flex align-items-center gap-3" style={{ padding: '0 8px' }}>
               <div className="d-flex align-items-center gap-4">
                 <a href="#home" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'home')} style={{ 
                   color: '#222', 
                   textDecoration: 'none',
                   fontSize: '1.05rem',
-                  padding: '6px 18px',
+                  padding: '8px 20px',
                   fontWeight: 500
                 }}>Home</a>
                 <Link to="/destinations" className="nav-link fw-semibold" style={{ 
                   color: '#222', 
                   textDecoration: 'none',
                   fontSize: '1.05rem',
-                  padding: '6px 18px',
+                  padding: '8px 20px',
                   fontWeight: 500
                 }}>Destination</Link>
                 <Link to="/cruise-ships" className="nav-link fw-semibold" style={{ 
                   color: '#222',
                   textDecoration: 'none',
                   fontSize: '1.05rem',
-                  padding: '6px 18px',
+                  padding: '8px 20px',
                   fontWeight: 500
                 }}>Cruises</Link>
                 <a href="#about" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'about')} style={{ 
                   color: '#222',
                   fontSize: '1.05rem',
-                  padding: '6px 18px',
+                  padding: '8px 20px',
                   fontWeight: 500
                 }}>About Us</a>
                 <a href="#contact" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'contact')} style={{ 
                   color: '#222',
                   fontSize: '1.05rem',
-                  padding: '6px 18px',
+                  padding: '8px 20px',
                   fontWeight: 500
                 }}>Contact</a>
                 {isAuthenticated && (!currentUser?.role || currentUser?.role === 'Customer') ? (
@@ -189,7 +318,7 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                     <button
                       className="btn btn-outline-light"
                       type="button"
-                      style={{ color: '#222', fontWeight: 700, borderRadius: '22px', padding: '7px 24px', fontSize: '1.05rem' }}
+                      style={{ color: '#222', fontWeight: 700, borderRadius: '22px', padding: '10px 28px', fontSize: '1.05rem' }}
                       onClick={() => setProfileOpen((open) => !open)}
                     >
                       {currentUser?.full_name || currentUser?.name || currentUser?.email || 'Profile'}
@@ -243,7 +372,7 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                     className="btn btn-outline-dark btn-sm d-flex align-items-center gap-2 ms-2 btn-login"
                     style={{ 
                       borderRadius: '22px',
-                      padding: '7px 24px',
+                      padding: '10px 28px',
                       fontSize: '1.05rem',
                       fontWeight: 500,
                       border: '1.5px solid #222',
@@ -257,107 +386,96 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                   </button>
                 )}
               </div>
-            )}
-          </div>
+            </div>
+          )}
+
+          {/* Mobile Hamburger Menu Button */}
+          {!isLargeScreen && (
+            <button
+              className={`hamburger-menu ${isMenuOpen ? 'open' : ''}`}
+              onClick={toggleMenu}
+              aria-label="Toggle navigation menu"
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+          )}
         </div>
-        {/* Collapsible Navigation Menu for Small Screens */}
+
+        {/* Mobile Navigation Menu */}
         {!isLargeScreen && isMenuOpen && (
-          <div className="collapse navbar-collapse show d-lg-none" id="navbarNav">
-            <ul className="navbar-nav">
-              <li className="nav-item">
-                <a href="#home" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'home')} style={{ 
-                  color: '#fff', 
-                  textDecoration: 'none',
-                  transition: 'color 0.3s ease',
-                  fontSize: '1rem',
-                  padding: '10px 15px',
-                  borderBottom: '1px solid rgba(255,255,255,0.1)'
-                }}>
-                  Home
-                </a>
-              </li>
-              <li className="nav-item">
-                <Link to="/destinations" className="nav-link fw-semibold" style={{ 
-                  color: '#fff', 
-                  textDecoration: 'none',
-                  transition: 'color 0.3s ease',
-                  fontSize: '1rem',
-                  padding: '10px 15px',
-                  borderBottom: '1px solid rgba(255,255,255,0.1)'
-                }}>
-                  Destination
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link to="/cruise-ships" className="nav-link fw-semibold" onClick={handleNavLinkClick} style={{ 
-                  color: '#fff',
-                  textDecoration: 'none',
-                  transition: 'color 0.3s ease',
-                  fontSize: '1rem',
-                  padding: '10px 15px',
-                  borderBottom: '1px solid rgba(255,255,255,0.1)'
-                }}>
-                  Cruises
-                </Link>
-              </li>
-              <li className="nav-item">
-                <a href="#about" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'about')} style={{ 
-                  color: '#fff',
-                  transition: 'color 0.3s ease',
-                  fontSize: '1rem',
-                  padding: '10px 15px',
-                  borderBottom: '1px solid rgba(255,255,255,0.1)'
-                }}>
-                  About Us
-                </a>
-              </li>
-              <li className="nav-item">
-                <a href="#contact" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'contact')} style={{ 
-                  color: '#fff',
-                  transition: 'color 0.3s ease',
-                  fontSize: '1rem',
-                  padding: '10px 15px',
-                  borderBottom: '1px solid rgba(255,255,255,0.1)'
-                }}>
-                  Contact
-                </a>
-              </li>
-              <li className="nav-item">
-                <Link to="/super-admin" className="nav-link fw-semibold">Super Admin Dashboard</Link>
-              </li>
-              <li className="nav-item">
-                <button 
-                  onClick={handleSignupClick}
-                  className="nav-link fw-semibold w-100 text-start border-0 bg-transparent" 
-                  style={{ 
-                    color: '#ffd600',
-                    textDecoration: 'none',
-                    transition: 'color 0.3s ease',
-                    fontSize: '1rem',
-                    padding: '10px 15px',
-                    borderBottom: '1px solid rgba(255,255,255,0.1)'
-                  }}
-                >
-                  <i className="bi bi-person-plus me-2"></i>Sign Up
-                </button>
-              </li>
-              <li className="nav-item">
-                <button 
-                  onClick={handleLoginClick}
-                  className="nav-link fw-semibold w-100 text-start border-0 bg-transparent" 
-                  style={{ 
-                    color: '#fff',
-                    textDecoration: 'none',
-                    transition: 'color 0.3s ease',
-                    fontSize: '1rem',
-                    padding: '10px 15px',
-                    borderBottom: '1px solid rgba(255,255,255,0.1)'
-                  }}
-                >
-                  <i className="bi bi-person-circle me-2"></i>Login
-                </button>
-              </li>
-            </ul>
+          <div className="mobile-menu">
+            <button className="close-btn" onClick={() => setIsMenuOpen(false)} aria-label="Close menu">&times;</button>
+            <div className="d-flex flex-column align-items-center gap-3" style={{ width: '100%', maxWidth: '300px' }}>
+              <a href="#home" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'home')}>
+                Home
+              </a>
+              <Link to="/destinations" className="nav-link fw-semibold" onClick={handleNavLinkClick}>
+                Destination
+              </Link>
+              <Link to="/cruise-ships" className="nav-link fw-semibold" onClick={handleNavLinkClick}>
+                Cruises
+              </Link>
+              <a href="#about" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'about')}>
+                About Us
+              </a>
+              <a href="#contact" className="nav-link fw-semibold" onClick={e => handleNavClick(e, 'contact')}>
+                Contact
+              </a>
+              {isAuthenticated && (!currentUser?.role || currentUser?.role === 'Customer') ? (
+                <>
+                  <Link to="/customer-dashboard" className="nav-link fw-semibold" onClick={handleNavLinkClick}>
+                    Dashboard
+                  </Link>
+                  <button 
+                    onClick={() => {
+                      if (setIsBookingModalOpen) {
+                        setIsBookingModalOpen(true);
+                      } else {
+                        setLocalBookingModalOpen(true);
+                      }
+                      setIsMenuOpen(false);
+                    }}
+                    className="nav-link fw-semibold w-100 text-center border-0 bg-transparent"
+                  >
+                    New Booking
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setShowLogoutModal(true);
+                    }}
+                    className="nav-link fw-semibold w-100 text-center border-0 bg-transparent"
+                    style={{ color: '#ff6b6b' }}
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button 
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      handleSignupClick();
+                    }}
+                    className="nav-link fw-semibold w-100 text-center border-0 bg-transparent" 
+                    style={{ color: '#ffd600' }}
+                  >
+                    Sign Up
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      handleLoginClick();
+                    }}
+                    className="nav-link fw-semibold w-100 text-center border-0 bg-transparent"
+                  >
+                    Login
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         )}
       </nav>
