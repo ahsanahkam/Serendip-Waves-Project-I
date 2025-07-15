@@ -17,6 +17,7 @@ const SignupModal = ({ isOpen, onClose, openLoginModal }) => {
     confirmPassword: ""
   });
   const [error, setError] = useState("");
+  const [errors, setErrors] = useState({}); // <-- field-specific errors
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -53,16 +54,21 @@ const SignupModal = ({ isOpen, onClose, openLoginModal }) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setErrors({});
     setIsLoading(true);
 
-    // Simple validation
-    if (!form.fullName || !form.phone || !form.dob || !form.gender || !form.email || !form.password || !form.confirmPassword) {
-      setError("Please fill in all required fields.");
-      setIsLoading(false);
-      return;
-    }
-    if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match.");
+    // Field-specific validation
+    const newErrors = {};
+    if (!form.fullName) newErrors.fullName = "You should enter your full name.";
+    if (!form.phone) newErrors.phone = "Please provide your phone number.";
+    if (!form.dob) newErrors.dob = "Enter your date of birth in mm/dd/yyyy format.";
+    if (!form.gender) newErrors.gender = "Select your gender from the dropdown.";
+    if (!form.email) newErrors.email = "Please enter a valid email address.";
+    if (!form.password) newErrors.password = "You must create a password.";
+    if (!form.confirmPassword) newErrors.confirmPassword = "Please confirm your password.";
+    if (form.password && form.confirmPassword && form.password !== form.confirmPassword) newErrors.confirmPassword = "Passwords do not match.";
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       setIsLoading(false);
       return;
     }
@@ -155,14 +161,17 @@ const SignupModal = ({ isOpen, onClose, openLoginModal }) => {
                 <div className="col-md-6 mb-2">
                   <label className="form-label fw-semibold text-white mb-1">Full Name *</label>
                   <input type="text" className="form-control form-control-lg" name="fullName" value={form.fullName} onChange={handleChange} placeholder="Enter your full name" style={inputStyle} />
+                  {errors.fullName && <div className="text-danger small mt-1">{errors.fullName}</div>}
                 </div>
                 <div className="col-md-6 mb-2">
                   <label className="form-label fw-semibold text-white mb-1">Phone Number *</label>
                   <input type="tel" className="form-control form-control-lg" name="phone" value={form.phone} onChange={handleChange} placeholder="Enter your phone number" style={inputStyle} />
+                  {errors.phone && <div className="text-danger small mt-1">{errors.phone}</div>}
                 </div>
                 <div className="col-md-6 mb-2">
                   <label className="form-label fw-semibold text-white mb-1">Date of Birth *</label>
                   <input type="date" className="form-control form-control-lg" name="dob" value={form.dob} onChange={handleChange} style={inputStyle} />
+                  {errors.dob && <div className="text-danger small mt-1">{errors.dob}</div>}
                 </div>
                 <div className="col-md-6 mb-2">
                   <label className="form-label fw-semibold text-white mb-1">Gender *</label>
@@ -172,10 +181,12 @@ const SignupModal = ({ isOpen, onClose, openLoginModal }) => {
                     <option value="Female">Female</option>
                     <option value="Other">Other</option>
                   </select>
+                  {errors.gender && <div className="text-danger small mt-1">{errors.gender}</div>}
                 </div>
                 <div className="col-md-6 mb-2">
                   <label className="form-label fw-semibold text-white mb-1">Email Address *</label>
                   <input type="email" className="form-control form-control-lg" name="email" value={form.email} onChange={handleChange} placeholder="Enter your email" style={inputStyle} />
+                  {errors.email && <div className="text-danger small mt-1">{errors.email}</div>}
                 </div>
                 <div className="col-md-6 mb-2">
                   <label className="form-label fw-semibold text-white mb-1">Passport Number (optional)</label>
@@ -208,6 +219,7 @@ const SignupModal = ({ isOpen, onClose, openLoginModal }) => {
                       {showPassword ? '👁️' : '👁️‍🗨️'}
                     </span>
                   </div>
+                  {errors.password && <div className="text-danger small mt-1">{errors.password}</div>}
                 </div>
                 <div className="col-md-6 mb-2">
                   <label className="form-label fw-semibold text-white mb-1">Confirm Password *</label>
@@ -236,6 +248,7 @@ const SignupModal = ({ isOpen, onClose, openLoginModal }) => {
                       {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
                     </span>
                   </div>
+                  {errors.confirmPassword && <div className="text-danger small mt-1">{errors.confirmPassword}</div>}
                 </div>
               </div>
               <div className="d-grid mb-3">
