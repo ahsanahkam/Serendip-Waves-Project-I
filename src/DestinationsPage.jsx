@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import destiImg from './assets/desti.webp';
 
 const DestinationsPage = () => {
   const [destinations, setDestinations] = useState([]);
@@ -68,6 +69,7 @@ const DestinationsPage = () => {
           paddingRight: '1rem',
         }}
       >
+        
         <h2 className="text-center mb-2 fw-bold" style={{ 
           fontSize: "clamp(1.8rem, 4vw, 2.5rem)",
           marginBottom: '1rem'
@@ -82,63 +84,28 @@ const DestinationsPage = () => {
         }}>
           Discover breathtaking destinations around the world with our premium cruise experiences
         </p>
-        
-        {/* Responsive Search Bar */}
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: 'column',
-          gap: '1rem', 
-          marginBottom: '2.5rem', 
-          alignItems: 'center',
-          width: '100%',
-          maxWidth: '500px'
-        }}>
-          <div style={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: '0.5rem',
-            width: '100%',
-            flexWrap: 'wrap',
-            justifyContent: 'center'
-          }}>
-            <input
-              type="text"
-              placeholder="Search by country or ship name..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{
-                padding: '0.75rem 1rem',
-                borderRadius: 8,
-                border: '1px solid #ccc',
-                fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
-                minWidth: '200px',
-                flex: '1',
-                maxWidth: '300px',
-                background: '#1e3a8a',
-                color: '#fff',
-              }}
-              onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
-            />
-            <button
-              onClick={handleSearch}
-              style={{
-                padding: '0.75rem 1.2rem',
-                borderRadius: 8,
-                border: 'none',
-                background: '#1e3a8a',
-                color: '#fff',
-                fontWeight: 600,
-                fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
-                cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(30,58,138,0.08)',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              Search
-            </button>
+        <div>
+          <div className="featured-search-card">
+            <div className="featured-search-bar">
+              <span className="featured-search-icon">🚢</span>
+              <input
+                type="text"
+                placeholder="Search by country or ship name..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="featured-search-input"
+                onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
+              />
+              <button
+                onClick={handleSearch}
+                className="featured-search-btn"
+              >
+                Search
+              </button>
+            </div>
           </div>
         </div>
-
+        
         {/* Responsive Destinations Grid */}
         <div style={{
           display: 'flex',
@@ -283,6 +250,93 @@ const DestinationsPage = () => {
           })}
         </div>
       </section>
+      {/* SVG Wave for Nautical Theme */}
+      <div style={{ width: '100%', overflow: 'hidden', lineHeight: 0, marginTop: '-2.5rem' }}>
+        <svg viewBox="0 0 1440 120" width="100%" height="80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <path d="M0,32 C360,120 1080,0 1440,96 L1440,120 L0,120 Z" fill="#185a9d" fillOpacity="0.18" />
+          <path d="M0,64 C480,0 960,160 1440,64 L1440,120 L0,120 Z" fill="#43cea2" fillOpacity="0.22" />
+        </svg>
+      </div>
+      <style>{`
+        #destinations {
+          position: relative;
+          min-height: 60vh;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-start;
+          padding-top: 110px;
+          padding-bottom: 3rem;
+          background: #fff !important;
+        }
+        @media (min-width: 900px) {
+          #destinations {
+            min-height: 70vh;
+          }
+        }
+        .featured-search-card {
+          /* background image now set inline in JSX */
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.13);
+          border-radius: 24px;
+          padding: 32px 24px;
+          max-width: 600px;
+          margin: 0 auto 2.5rem auto;
+          backdrop-filter: blur(6px);
+          overflow: hidden;
+        }
+        /* overlay and z-index now set inline in JSX */
+        .featured-search-bar {
+          position: relative;
+          z-index: 1;
+        }
+        .featured-search-icon {
+          font-size: 1.7rem;
+          color: #185a9d;
+          margin-right: 0.5rem;
+        }
+        .featured-search-input {
+          flex: 1;
+          padding: 14px 16px;
+          border: none;
+          border-radius: 12px;
+          font-size: 1.1rem;
+          background: #e3f6fd;
+          color: #0f2027;
+          box-shadow: 0 2px 8px rgba(58,90,152,0.07);
+          outline: none;
+          transition: box-shadow 0.2s;
+        }
+        .featured-search-input:focus {
+          box-shadow: 0 4px 16px rgba(58,90,152,0.13);
+        }
+        .featured-search-btn {
+          background: linear-gradient(90deg, #185a9d 0%, #43cea2 100%);
+          color: #fff;
+          font-weight: 700;
+          border: none;
+          border-radius: 12px;
+          padding: 14px 32px;
+          font-size: 1.1rem;
+          cursor: pointer;
+          transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+          box-shadow: 0 2px 8px rgba(58,90,152,0.07);
+        }
+        .featured-search-btn:hover {
+          background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
+          color: #ffd600;
+        }
+        @media (max-width: 700px) {
+          .featured-search-card {
+            padding: 18px 6px;
+            max-width: 98vw;
+          }
+          .featured-search-btn {
+            padding: 12px 18px;
+            font-size: 1rem;
+          }
+        }
+      `}</style>
     </div>
   );
 };
