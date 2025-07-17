@@ -146,6 +146,10 @@ const AdminDashboard = () => {
             <FaBed style={iconStyle} />
             Cabin Management
           </Link>
+          <Link to="/enquiries" className="admin-dashboard-btn">
+            <FaInfoCircle style={iconStyle} />
+            Enquiries
+          </Link>
         </div>
       </div>
       {/* Logout Confirmation Modal */}

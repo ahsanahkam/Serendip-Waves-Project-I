@@ -56,6 +56,12 @@ const dashboardButtons = [
     route: "/passenger-management",
     active: true,
   },
+  {
+    label: "Enquiries",
+    icon: <FaInfoCircle size={28} />,
+    route: "/enquiries",
+    active: true,
+  },
 ];
 
 function SuperAdminDashboard() {

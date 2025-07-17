@@ -1,0 +1,166 @@
+/**
+ * Enquiries.jsx - now fetches and deletes from backend
+ */
+import React, { useEffect, useState, useContext } from 'react';
+import { Table, Modal, Button, Spinner, Alert } from 'react-bootstrap';
+import './Enquiries.css';
+import logo from './assets/logo.png';
+import { AuthContext } from './App';
+
+const BACKEND = 'http://localhost/Project-I/backend';
+
+const Enquiries = () => {
+  const [enquiries, setEnquiries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [deleteLoading, setDeleteLoading] = useState(null); // id of deleting row
+  const { logout } = useContext(AuthContext);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  // Fetch all enquiries
+  const fetchEnquiries = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch(`${BACKEND}/getEnquiries.php`);
+      const data = await res.json();
+      if (data.status === 'success') {
+        setEnquiries(data.enquiries);
+      } else {
+        setError(data.message || 'Failed to fetch enquiries.');
+      }
+    } catch (err) {
+      setError('Failed to fetch enquiries.');
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchEnquiries();
+  }, []);
+
+  // Delete an enquiry
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this enquiry?')) return;
+    setDeleteLoading(id);
+    setError('');
+    try {
+      const res = await fetch(`${BACKEND}/deleteEnquiries.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `id=${encodeURIComponent(id)}`,
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        setEnquiries(enquiries.filter(e => e.id !== id));
+      } else {
+        setError(data.message || 'Failed to delete enquiry.');
+      }
+    } catch (err) {
+      setError('Failed to delete enquiry.');
+    }
+    setDeleteLoading(null);
+  };
+
+  const handleLogoutClick = () => setShowLogoutModal(true);
+  const handleCloseLogoutModal = () => setShowLogoutModal(false);
+  const handleConfirmLogout = () => {
+    logout();
+    window.location.href = '/';
+    setShowLogoutModal(false);
+  };
+
+  return (
+    <div className="enquiries-dashboard-bg">
+      {/* Custom Navbar/Header */}
+      <div className="enquiries-header-bar">
+        <div className="enquiries-header-left">
+          <img src={logo} alt="Logo" className="enquiries-logo" onClick={() => window.location.href = '/#top'} />
+          <div className="enquiries-title">Enquiries</div>
+        </div>
+        <button onClick={handleLogoutClick} className="enquiries-logout-btn">Logout</button>
+      </div>
+      {/* End Custom Navbar/Header */}
+      <div className="enquiries-table-container">
+        <div className="enquiries-table-section">
+          <div className="enquiries-table-header">
+            <span className="enquiries-table-title">All Enquiries</span>
+          </div>
+          {error && <Alert variant="danger" className="my-3">{error}</Alert>}
+          {loading ? (
+            <div className="text-center my-5"><Spinner animation="border" variant="primary" /></div>
+          ) : (
+            <Table className="enquiries-table" striped bordered hover responsive>
+              <thead>
+                <tr>
+                  <th className="enquiries-th">Name</th>
+                  <th className="enquiries-th">Email</th>
+                  <th className="enquiries-th">Message</th>
+                  <th className="enquiries-th">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {enquiries.length === 0 ? (
+                  <tr><td colSpan="4" className="text-center">No enquiries found.</td></tr>
+                ) : (
+                  enquiries.map(enq => (
+                    <tr key={enq.id}>
+                      <td>{enq.name}</td>
+                      <td>{enq.email}</td>
+                      <td>{enq.message}</td>
+                      <td className="enquiries-action-buttons">
+                        <button
+                          className="enquiries-icon-btn enquiries-edit-btn"
+                          title="Edit"
+                          disabled
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M15.502 1.94a1.5 1.5 0 0 1 0 2.12l-1.086 1.086-2.12-2.12 1.086-1.086a1.5 1.5 0 0 1 2.12 0zm-2.439 2.439-9.193 9.193a.5.5 0 0 0-.121.196l-1 3a.5.5 0 0 0 .633.633l3-1a.5.5 0 0 0 .196-.12l9.193-9.194-2.12-2.12z"/>
+                          </svg>
+                        </button>
+                        <button
+                          className="enquiries-icon-btn enquiries-delete-btn"
+                          onClick={() => handleDelete(enq.id)}
+                          title="Delete"
+                          disabled={deleteLoading === enq.id}
+                        >
+                          {deleteLoading === enq.id ? (
+                            <Spinner animation="border" size="sm" />
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5.5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6zm2 .5a.5.5 0 0 1 .5-.5.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6z"/>
+                              <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3a.5.5 0 0 0 0 1H3h10h.5a.5.5 0 0 0 0-1h-11z"/>
+                            </svg>
+                          )}
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </Table>
+          )}
+        </div>
+      </div>
+      {/* Logout Modal */}
+      <Modal show={showLogoutModal} onHide={handleCloseLogoutModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Logout</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Do you want to logout?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseLogoutModal}>
+            No
+          </Button>
+          <Button variant="danger" onClick={handleConfirmLogout}>
+            Yes, Logout
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </div>
+  );
+};
+
+export default Enquiries; 
