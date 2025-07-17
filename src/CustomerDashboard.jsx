@@ -106,6 +106,7 @@ const CustomerDashboard = () => {
       if (updateData.success) {
         // Always show success message if update succeeded
         setProfileSuccessMsg("Profile updated successfully!");
+        setActiveSection("my-profile"); // Move this here for immediate redirect
         // Fetch latest user data, but do not change the message if it fails
         fetch(`http://localhost/Project-I/backend/getUser.php?id=${currentUser.id}`, {
           credentials: 'include',
@@ -118,12 +119,10 @@ const CustomerDashboard = () => {
             } else {
               setCurrentUser(updateData.user); // fallback
             }
-            setActiveSection("my-profile");
             setTimeout(() => setProfileSuccessMsg(""), 2500);
           })
           .catch(() => {
             setCurrentUser(updateData.user); // fallback
-            setActiveSection("my-profile");
             setTimeout(() => setProfileSuccessMsg(""), 2500);
           });
       } else {
