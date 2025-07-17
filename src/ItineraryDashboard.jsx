@@ -284,14 +284,6 @@ function ItineraryDashboard() {
       {navbar}
       <div style={{ marginTop: '110px', width: '100%' }}>
         {/* Header */}
-        <div className="itinerary-header">
-          <h1 className="itinerary-title">Itinerary Management</h1>
-          <div className="admin-info">
-            <div className="admin-name">Super Admin</div>
-            <div className="admin-role">Administrator</div>
-          </div>
-        </div>
-
         {/* Filter Section */}
         <div className="filter-section">
           <h3 className="filter-title">Filter Itineraries</h3>
@@ -395,21 +387,21 @@ function ItineraryDashboard() {
                       )}
                     </td>
                     <td>
-                      <div className="action-buttons">
-                        <Button
-                          className="icon-btn edit-btn"
-                          size="sm"
+                      <div className="horizontal-action-buttons">
+                        <button
+                          className="action-rect-btn edit"
+                          title="Edit"
                           onClick={() => handleShowModal(itinerary)}
                         >
                           <FaEdit />
-                        </Button>
-                        <Button
-                          className="icon-btn delete-btn"
-                          size="sm"
+                        </button>
+                        <button
+                          className="action-rect-btn delete"
+                          title="Delete"
                           onClick={() => handleDeleteItinerary(itinerary.id)}
                         >
                           <FaTrash />
-                        </Button>
+                        </button>
                       </div>
                     </td>
                   </tr>

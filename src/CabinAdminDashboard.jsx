@@ -379,20 +379,22 @@ function CabinAdminDashboard() {
                         </span>
                       </td>
                       <td>
-                        <button
-                          className="btn btn-link text-primary p-1 me-2"
-                          onClick={() => handleEdit(idx)}
-                          title="Edit"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          className="btn btn-link text-danger p-1"
-                          onClick={() => handleDelete(idx)}
-                          title="Delete"
-                        >
-                          <FaTrash />
-                        </button>
+                        <div className="horizontal-action-buttons">
+                          <button
+                            className="action-rect-btn edit"
+                            title="Edit"
+                            onClick={() => handleEdit(idx)}
+                          >
+                            <FaEdit />
+                          </button>
+                          <button
+                            className="action-rect-btn delete"
+                            title="Delete"
+                            onClick={() => handleDelete(idx)}
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))

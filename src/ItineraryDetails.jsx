@@ -3,6 +3,7 @@ import './ItineraryDetails.css';
 import logo from './assets/logo.png';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 
 const API_BASE = 'http://localhost/Project-I/backend';
 
@@ -173,20 +174,6 @@ const ItineraryDetails = () => {
   return (
     <div className="itinerary-dashboard-bg">
       <div className="itinerary-container">
-        <div className="itinerary-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
-            <img
-              src={logo}
-              alt="Logo"
-              style={{ height: '90px', width: 'auto', maxWidth: '90px', cursor: 'pointer', objectFit: 'contain' }}
-            />
-            <div className="itinerary-title">Itinerary Details Management</div>
-          </div>
-          <div className="admin-info">
-            <div className="admin-name">Super Admin</div>
-            <div className="admin-role">Administrator</div>
-          </div>
-        </div>
         <div className="table-section">
           <div className="table-header">
             <div className="table-title">Itinerary Details</div>
@@ -230,9 +217,23 @@ const ItineraryDetails = () => {
                         </td>
                       ))}
                       <td style={{ maxWidth: 200, whiteSpace: 'pre-wrap' }}>{detail.schedule}</td>
-                      <td className="action-buttons">
-                        <button className="icon-btn edit-btn" onClick={() => handleEdit(detail)} title="Edit"><span role="img" aria-label="Edit">✏️</span></button>
-                        <button className="icon-btn delete-btn" onClick={() => handleDelete(detail.detail_id)} title="Delete"><span role="img" aria-label="Delete">🗑️</span></button>
+                      <td>
+                        <div className="horizontal-action-buttons">
+                          <button
+                            className="action-rect-btn edit"
+                            title="Edit"
+                            onClick={() => handleEdit(detail)}
+                          >
+                            <FaEdit />
+                          </button>
+                          <button
+                            className="action-rect-btn delete"
+                            title="Delete"
+                            onClick={() => handleDelete(detail.detail_id)}
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))

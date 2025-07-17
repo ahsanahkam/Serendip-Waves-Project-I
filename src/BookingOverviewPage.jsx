@@ -297,7 +297,6 @@ function BookingOverviewPage() {
     >
       {navbar}
       <div style={{ marginTop: '110px', width: '100%' }}>
-        <h2 className="mb-4">Booking Overview</h2>
         {/* Gradient Header */}
         <section className="booking-hero-section mb-4" style={{ minHeight: '220px', padding: '40px 0' }}>
           <div className="booking-hero-background"></div>
@@ -392,8 +391,22 @@ function BookingOverviewPage() {
                     <td>{b.date}</td>
                     <td>${b.price.toLocaleString()}</td>
                     <td>
-                      <Button size="sm" variant="primary" className="me-2" onClick={() => openEditModal(b)}><FaEdit /></Button>
-                      <Button size="sm" variant="danger" onClick={() => handleDelete(b.id)}><FaTrash /></Button>
+                      <div className="horizontal-action-buttons">
+                        <button
+                          className="action-rect-btn edit"
+                          title="Edit"
+                          onClick={() => openEditModal(b)}
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          className="action-rect-btn delete"
+                          title="Delete"
+                          onClick={() => handleDelete(b.id)}
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
