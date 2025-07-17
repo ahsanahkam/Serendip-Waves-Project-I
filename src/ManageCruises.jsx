@@ -381,13 +381,21 @@ function ManageCruises() {
                     <td>{ship.class}</td>
                     <td>{ship.year_built}</td>
                     <td>
-                      <div className="action-buttons">
-                        <Button className="edit-btn" size="sm" onClick={() => handleShowModal(ship)}>
-                          <FaEdit /> Edit
-                        </Button>
-                        <Button className="delete-btn" size="sm" onClick={() => handleDeleteShip(ship.ship_name)}>
-                          <FaTrash /> Delete
-                        </Button>
+                      <div className="horizontal-action-buttons">
+                        <button
+                          className="action-rect-btn edit"
+                          title="Edit"
+                          onClick={() => handleShowModal(ship)}
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          className="action-rect-btn delete"
+                          title="Delete"
+                          onClick={() => handleDeleteShip(ship.ship_name)}
+                        >
+                          <FaTrash />
+                        </button>
                       </div>
                     </td>
                   </tr>

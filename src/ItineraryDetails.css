@@ -258,6 +258,14 @@
   color: #764ba2;
 } 
 
+.table-section {
+  margin-top: 48px;
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
 @media (max-width: 700px) {
   .modal-content-custom {
     padding: 18px 6px 12px 6px;

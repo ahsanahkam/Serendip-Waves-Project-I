@@ -5,6 +5,7 @@ import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import logo from './assets/logo.png';
 import { AuthContext } from './App';
 import { useContext } from 'react';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 
 const adminName = 'Super Admin';
 
@@ -172,8 +173,22 @@ function PassengerDashboard() {
                       <td><span className="badge bg-info bg-opacity-75 rounded-pill px-3 py-2">{row.route}</span></td>
                       <td>{row.cabinId}</td>
                       <td>
-                        <Button size="sm" variant="outline-primary" className="me-2" onClick={() => handleEdit(row)}>Edit</Button>
-                        <Button size="sm" variant="outline-danger" onClick={() => handleDelete(idx)}>Delete</Button>
+                        <div className="horizontal-action-buttons">
+                          <button
+                            className="action-rect-btn edit"
+                            title="Edit"
+                            onClick={() => handleEdit(row)}
+                          >
+                            <FaEdit />
+                          </button>
+                          <button
+                            className="action-rect-btn delete"
+                            title="Delete"
+                            onClick={() => handleDelete(idx)}
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
