@@ -25,6 +25,7 @@ import AdminDashboard from './AdminDashboard';
 import DestinationDetails from './DestinationDetails';
 import ManageCruises from './ManageCruises';
 import ItineraryDetails from './ItineraryDetails';
+import Enquiries from './Enquiries';
 import './App.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
@@ -33,6 +34,8 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [defaultBookingCountry, setDefaultBookingCountry] = useState("");
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   // On mount, check session with backend
   useEffect(() => {
@@ -69,7 +72,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, currentUser, setCurrentUser, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, currentUser, setCurrentUser, login, logout, defaultBookingCountry, setDefaultBookingCountry, isBookingModalOpen, setIsBookingModalOpen }}>
       {children}
     </AuthContext.Provider>
   );
@@ -108,9 +111,9 @@ function AppRoutes(props) {
     setIsSignupModalOpen,
     isLoginModalOpen,
     isSignupModalOpen,
-    isBookingModalOpen,
-    setIsBookingModalOpen
+    defaultBookingCountry
   } = props;
+  const { isBookingModalOpen, setIsBookingModalOpen } = useContext(AuthContext);
 
   // Hide Navbar on customer dashboard and its subpages
   const hideNavbarRoutes = [
@@ -122,7 +125,8 @@ function AppRoutes(props) {
     '/booking-overview',
     '/passenger-management',
     '/itinerary-management',
-    '/cabin-admin'
+    '/cabin-admin',
+    '/enquiries' // Hide navbar for Enquiries page
   ];
   const shouldShowNavbar = !hideNavbarRoutes.some(route => location.pathname.startsWith(route));
 
@@ -169,6 +173,7 @@ function AppRoutes(props) {
       <BookingModal
         isOpen={isBookingModalOpen}
         onClose={() => setIsBookingModalOpen(false)}
+        defaultCountry={defaultBookingCountry}
       />
       <Routes>
         <Route path="/" element={<HomePage onBookingClick={() => setIsBookingModalOpen(true)} />} />
@@ -188,6 +193,7 @@ function AppRoutes(props) {
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/destination/:country" element={<DestinationDetails />} />
         <Route path="/itinerary-details" element={<ItineraryDetails />} />
+        <Route path="/enquiries" element={<Enquiries />} />
       </Routes>
     </>
   );
@@ -196,7 +202,7 @@ function AppRoutes(props) {
 const App = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [defaultBookingCountry, setDefaultBookingCountry] = useState("");
 
   return (
     <AuthProvider>
@@ -206,8 +212,7 @@ const App = () => {
           setIsSignupModalOpen={setIsSignupModalOpen}
           isLoginModalOpen={isLoginModalOpen}
           isSignupModalOpen={isSignupModalOpen}
-          isBookingModalOpen={isBookingModalOpen}
-          setIsBookingModalOpen={setIsBookingModalOpen}
+          defaultBookingCountry={defaultBookingCountry}
         />
       </Router>
     </AuthProvider>

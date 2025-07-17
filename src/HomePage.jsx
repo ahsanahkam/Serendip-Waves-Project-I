@@ -3,13 +3,14 @@
 import HeroImage from './assets/Hero.jpg';
 
 // Optimized Hero Section as a component
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import DestinationsPage from "./DestinationsPage";
 import { Link } from "react-router-dom";
 import AboutSection from './AboutSection';
+import { AuthContext } from './App';
 
 // Optimized Hero Section as a component
-const Hero = ({ onBookingClick }) => (
+const Hero = ({ onBookingClick, bookingError }) => (
   <section
     id="home"
     className="hero-section"
@@ -91,55 +92,95 @@ const Hero = ({ onBookingClick }) => (
       >
         Book Now
       </button>
+      {bookingError && (
+        <div className="alert alert-danger text-center" style={{ margin: '16px auto', maxWidth: 380, fontSize: '1.1rem' }}>{bookingError}</div>
+      )}
     </div>
   </section>
 );
 
 // Contact Section
-const ContactSection = () => (
-  <section id="contact" className="py-5 contact-section" style={{ background: '#ffffff' }}>
-    <style>{`
-      /* Hide scrollbar for Chrome, Safari and Opera */
-      .contact-section::-webkit-scrollbar {
-        display: none;
+const ContactSection = () => {
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setSuccess('');
+    setError('');
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setSuccess('');
+    setError('');
+    try {
+      const res = await fetch('http://localhost/Project-I/backend/addEnquiries.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(form).toString(),
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        setSuccess('Thank you for your enquiry! We will get back to you soon.');
+        setForm({ name: '', email: '', message: '' });
+      } else {
+        setError(data.message || 'Failed to submit enquiry.');
       }
-      /* Hide scrollbar for IE, Edge and Firefox */
-      .contact-section {
-        -ms-overflow-style: none;  /* IE and Edge */
-        scrollbar-width: none;     /* Firefox */
-      }
-    `}</style>
-    <div className="container">
-      <div className="text-center mb-5">
-        <h2 className="display-4 fw-bold text-dark mb-3">Contact Us</h2>
-        <p className="lead text-muted">Get in touch with us for your next adventure</p>
-      </div>
-      <div className="row justify-content-center">
-        <div className="col-lg-8">
-          <div className="card border-0 shadow">
-            <div className="card-body p-5">
-              <div className="row">
-                <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold">Name</label>
-                  <input type="text" className="form-control" placeholder="Your name" />
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold">Email</label>
-                  <input type="email" className="form-control" placeholder="Your email" />
-                </div>
+    } catch (err) {
+      setError('Failed to submit enquiry.');
+    }
+    setLoading(false);
+  };
+
+  return (
+    <section id="contact" className="py-5 contact-section" style={{ background: '#ffffff' }}>
+      <style>{`
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .contact-section::-webkit-scrollbar { display: none; }
+        .contact-section { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
+      <div className="container">
+        <div className="text-center mb-5">
+          <h2 className="display-4 fw-bold text-dark mb-3">Contact Us</h2>
+          <p className="lead text-muted">Get in touch with us for your next adventure</p>
+        </div>
+        <div className="row justify-content-center">
+          <div className="col-lg-8">
+            <div className="card border-0 shadow">
+              <div className="card-body p-5">
+                {success && <div className="alert alert-success">{success}</div>}
+                {error && <div className="alert alert-danger">{error}</div>}
+                <form onSubmit={handleSubmit}>
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label fw-semibold">Name</label>
+                      <input type="text" className="form-control" placeholder="Your name" name="name" value={form.name} onChange={handleChange} required />
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label fw-semibold">Email</label>
+                      <input type="email" className="form-control" placeholder="Your email" name="email" value={form.email} onChange={handleChange} required />
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">Message</label>
+                    <textarea className="form-control" rows="5" placeholder="Your message" name="message" value={form.message} onChange={handleChange} required></textarea>
+                  </div>
+                  <button className="btn btn-primary btn-lg w-100" type="submit" disabled={loading}>
+                    {loading ? 'Sending...' : 'Send Message'}
+                  </button>
+                </form>
               </div>
-              <div className="mb-3">
-                <label className="form-label fw-semibold">Message</label>
-                <textarea className="form-control" rows="5" placeholder="Your message"></textarea>
-              </div>
-              <button className="btn btn-primary btn-lg w-100">Send Message</button>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 // Footer
 const Footer = () => (
@@ -456,9 +497,23 @@ const DestinationsSection = () => (
 );
 
 const HomePage = ({ onBookingClick }) => {
+  const { isAuthenticated, currentUser } = useContext(AuthContext);
+  const [bookingError, setBookingError] = useState("");
+
+  const handleBookingClick = () => {
+    const role = currentUser?.role?.toLowerCase();
+    if (!isAuthenticated || role !== "customer") {
+      setBookingError("Please Login to the Website");
+      setTimeout(() => setBookingError(""), 3000);
+      return;
+    }
+    setBookingError("");
+    onBookingClick();
+  };
+
   return (
     <div style={{ width: '100%', overflow: 'hidden' }}>
-      <Hero onBookingClick={onBookingClick} />
+      <Hero onBookingClick={handleBookingClick} bookingError={bookingError} />
       <DestinationsSection />
       <FleetSection />
       <AboutSection />

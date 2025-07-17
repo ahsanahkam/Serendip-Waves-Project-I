@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { AuthContext } from "./App";
+import logo from './assets/logo.png'; // Added import for logo
 
 const cabinTypes = ["Interior", "Ocean view", "Balcony", "Suite"];
 const dietaryOptions = ["None", "Vegetarian", "Vegan", "Gluten-Free", "Kosher", "Halal"];
@@ -11,6 +12,14 @@ const addOns = [
 ];
 
 const steps = ["Add details", "Passenger details", "Payment"];
+
+// Cabin prices for adults and children
+const CABIN_PRICES = {
+  "Interior": { adult: 500, child: 250 },
+  "Ocean view": { adult: 1000, child: 500 },
+  "Balcony": { adult: 2000, child: 1000 },
+  "Suite": { adult: 4000, child: 2000 }
+};
 
 const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
   const { currentUser } = useContext(AuthContext);
@@ -37,8 +46,32 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [bookingId, setBookingId] = useState("");
   const [cabinNumber, setCabinNumber] = useState("");
+  // State for available destinations (arrival countries)
+  const [availableDestinations, setAvailableDestinations] = useState([]);
 
-  const totalAmount = 375; // Example static amount
+  // Fetch itineraries and extract unique destinations
+  useEffect(() => {
+    if (!isOpen) return;
+    fetch('http://localhost/Project-I/backend/getItineraries.php')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          const uniqueDest = [...new Set(data.map(item => item.route).filter(Boolean))];
+          setAvailableDestinations(uniqueDest);
+        } else {
+          setAvailableDestinations([]);
+        }
+      })
+      .catch(() => setAvailableDestinations([]));
+  }, [isOpen]);
+
+  // Calculate total price based on form values
+  const getTotalPrice = () => {
+    const { cabinType, adults, children } = form;
+    if (!cabinType || !CABIN_PRICES[cabinType]) return 0;
+    const price = CABIN_PRICES[cabinType];
+    return (Number(adults) * price.adult) + (Number(children) * price.child);
+  };
 
   // Set default country when modal opens
   useEffect(() => {
@@ -120,7 +153,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
           booking_date: today.toISOString().split('T')[0],
           departure_date: departureDate.toISOString().split('T')[0],
           return_date: returnDate.toISOString().split('T')[0],
-          total_price: totalAmount,
+          total_price: getTotalPrice(),
           special_requests: ""
         })
       });
@@ -313,9 +346,9 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
         style={{
           background: "rgba(255, 255, 255, 0.95)",
           backdropFilter: "blur(20px)",
-          borderRadius: "20px",
-          padding: "28px 20px 20px 20px",
-          maxWidth: "420px",
+          borderRadius: "48px",
+          padding: "56px 32px 32px 32px",
+          maxWidth: "900px",
           width: "98%",
           maxHeight: "90vh",
           overflowY: "auto",
@@ -354,7 +387,10 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
         <hr className="booking-modal-divider" />
         {step === 1 && (
           <form onSubmit={e => { e.preventDefault(); handleNext(); }}>
-            <h3 style={{ textAlign: "center", marginBottom: 24, color: '#7c4dff', fontWeight: 700 }}>Add details</h3>
+            <div style={{ textAlign: "center", marginBottom: 24 }}>
+              <img src={logo} alt="Logo" width="160" height="160" style={{ display: 'block', margin: '0 auto 16px auto' }} />
+            </div>
+            <h3 style={{ color: "#7c4dff", fontWeight: 700, marginBottom: 32, fontSize: 26, textAlign: 'center' }}>Add details</h3>
             <div style={{ marginBottom: 18 }}>
               <label style={{ fontWeight: 600 }}>Adults</label>
               <select
@@ -447,13 +483,9 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
                 required
               >
                 <option value="">Select destination</option>
-                <option value="Sri Lanka">Sri Lanka</option>
-                <option value="Australia">Australia</option>
-                <option value="Norway">Norway</option>
-                <option value="Greece">Greece</option>
-                <option value="Japan">Japan</option>
-                <option value="Caribbean">Caribbean</option>
-                <option value="Alaska">Alaska</option>
+                {availableDestinations.map(dest => (
+                  <option key={dest} value={dest}>{dest}</option>
+                ))}
               </select>
             </div>
             <div style={{ marginBottom: 8 }}>
@@ -496,21 +528,23 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
         )}
         {step === 3 && (
           <form onSubmit={handleSubmit}>
-            <h3 style={{ textAlign: "center", marginBottom: 24, color: '#7c4dff', fontWeight: 700 }}>Total amount <span style={{ color: '#7c4dff', fontWeight: 700, fontSize: 22, marginLeft: 8 }}>${totalAmount}</span></h3>
-            <div style={{ marginBottom: 14 }}>
-              <label style={{ fontWeight: 500 }}>Select card type</label>
-              <div style={{ display: 'flex', gap: 16, marginTop: 6 }}>
-                <label htmlFor="cardType-visa" className={`booking-modal-radio${form.cardType === 'Visa' ? ' selected' : ''}`}>
+            <div style={{ textAlign: 'center', marginBottom: 24 }}>
+              <span style={{ color: '#7c4dff', fontWeight: 700, fontSize: 32 }}>Total amount&nbsp;${getTotalPrice()}</span>
+            </div>
+            <div style={{ textAlign: 'center', marginBottom: 24 }}>
+              <div style={{ fontWeight: 700, marginBottom: 12, fontSize: 20 }}>Select card type</div>
+              <div style={{ display: 'flex', gap: 24, justifyContent: 'center' }}>
+                <label htmlFor="cardType-visa" className={`booking-modal-radio${form.cardType === 'Visa' ? ' selected' : ''}`} style={{ minWidth: 180 }}>
                   <input id="cardType-visa" type="radio" name="cardType" value="Visa" checked={form.cardType === 'Visa'} onChange={handleChange} style={{ cursor: 'pointer' }} />
                   <span className="booking-modal-radio-icon">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" style={{ height: '18px' }} />
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" style={{ height: '24px' }} />
                   </span>
                   Visa
                 </label>
-                <label htmlFor="cardType-master" className={`booking-modal-radio${form.cardType === 'Master Card' ? ' selected' : ''}`}>
+                <label htmlFor="cardType-master" className={`booking-modal-radio${form.cardType === 'Master Card' ? ' selected' : ''}`} style={{ minWidth: 220 }}>
                   <input id="cardType-master" type="radio" name="cardType" value="Master Card" checked={form.cardType === 'Master Card'} onChange={handleChange} style={{ cursor: 'pointer' }} />
                   <span className="booking-modal-radio-icon">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="MasterCard" style={{ height: '18px' }} />
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="MasterCard" style={{ height: '24px' }} />
                   </span>
                   Master Card
                 </label>
