@@ -80,9 +80,9 @@ const AdminDashboard = () => {
             src={logo}
             alt="Logo"
             style={{
-              height: "90px",
+              height: "80px",
               width: "auto",
-              maxWidth: "90px",
+              maxWidth: "100px",
               cursor: "pointer",
               objectFit: "contain"
             }}
