@@ -110,15 +110,6 @@ const Enquiries = () => {
                       <td>{enq.message}</td>
                       <td className="enquiries-action-buttons">
                         <button
-                          className="enquiries-icon-btn enquiries-edit-btn"
-                          title="Edit"
-                          disabled
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M15.502 1.94a1.5 1.5 0 0 1 0 2.12l-1.086 1.086-2.12-2.12 1.086-1.086a1.5 1.5 0 0 1 2.12 0zm-2.439 2.439-9.193 9.193a.5.5 0 0 0-.121.196l-1 3a.5.5 0 0 0 .633.633l3-1a.5.5 0 0 0 .196-.12l9.193-9.194-2.12-2.12z"/>
-                          </svg>
-                        </button>
-                        <button
                           className="enquiries-icon-btn enquiries-delete-btn"
                           onClick={() => handleDelete(enq.id)}
                           title="Delete"
