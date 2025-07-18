@@ -65,7 +65,7 @@ function PassengerDashboard() {
         <img
           src={logo}
           alt="Logo"
-          style={{ height: '90px', width: 'auto', maxWidth: '90px', cursor: 'pointer', objectFit: 'contain' }}
+          style={{ height: '80px', width: 'auto', maxWidth: '100px', cursor: 'pointer', objectFit: 'contain' }}
           onClick={() => navigate('/#top')}
         />
         <div style={{ fontWeight: 'bold', fontSize: '1.5rem', color: '#1a237e', letterSpacing: '1px' }}>
