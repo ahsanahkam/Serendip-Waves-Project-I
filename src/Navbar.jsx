@@ -403,6 +403,54 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
           )}
         </div>
       </nav>
+      {/* Mobile Menu Overlay */}
+      {!isLargeScreen && isMenuOpen && (
+        <div className="mobile-menu">
+          <button className="close-btn" onClick={toggleMenu} aria-label="Close menu">&times;</button>
+          <a href="#home" className="nav-link" onClick={e => { handleNavClick(e, 'home'); toggleMenu(); }}>Home</a>
+          <Link to="/destinations" className="nav-link" onClick={() => setIsMenuOpen(false)}>Destination</Link>
+          <Link to="/cruise-ships" className="nav-link" onClick={() => setIsMenuOpen(false)}>Cruises</Link>
+          <a href="#about" className="nav-link" onClick={e => { handleNavClick(e, 'about'); toggleMenu(); }}>About Us</a>
+          <a href="#contact" className="nav-link" onClick={e => { handleNavClick(e, 'contact'); toggleMenu(); }}>Contact</a>
+          {isAuthenticated && (!currentUser?.role || currentUser?.role === 'Customer') ? (
+            <>
+              <Link to="/customer-dashboard" className="nav-link" onClick={() => setIsMenuOpen(false)}>Customer Dashboard</Link>
+              <button
+                className="nav-link"
+                style={{ background: 'none', border: 'none', color: '#fff', fontWeight: 600, fontSize: '1.1rem', textAlign: 'center', width: '100%' }}
+                onClick={() => {
+                  if (setIsBookingModalOpen) {
+                    setIsBookingModalOpen(true);
+                  } else {
+                    setLocalBookingModalOpen(true);
+                  }
+                  setIsMenuOpen(false);
+                }}
+              >
+                New Booking
+              </button>
+              <button
+                className="nav-link"
+                style={{ background: 'none', border: 'none', color: '#e53935', fontWeight: 600, fontSize: '1.1rem', textAlign: 'center', width: '100%' }}
+                onClick={() => {
+                  setShowLogoutModal(true);
+                  setIsMenuOpen(false);
+                }}
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={handleLoginClick}
+              className="nav-link"
+              style={{ background: 'none', border: 'none', color: '#fff', fontWeight: 600, fontSize: '1.1rem', textAlign: 'center', width: '100%' }}
+            >
+              Login
+            </button>
+          )}
+        </div>
+      )}
       {(isBookingModalOpen !== undefined ? isBookingModalOpen : localBookingModalOpen) && (
         <BookingModal
           isOpen={isBookingModalOpen !== undefined ? isBookingModalOpen : localBookingModalOpen}
