@@ -332,12 +332,10 @@ function ItineraryDashboard() {
                 onChange={(e) => handleFilterChange('endDate', e.target.value)}
               />
             </div>
-            <div className="filter-group">
+            <div className="filter-group" style={{ display: 'flex', flexDirection: 'row', gap: '16px', alignItems: 'end' }}>
               <Button className="filter-btn" onClick={() => {}}>
                 <FaSearch /> Filter
               </Button>
-            </div>
-            <div className="filter-group">
               <Button className="clear-btn" onClick={clearFilters}>
                 <FaTimes /> Clear
               </Button>

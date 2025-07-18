@@ -351,7 +351,7 @@ function BookingOverviewPage() {
                   <Form.Control type="date" name="dateTo" value={filters.dateTo} onChange={handleFilterChange} />
                 </Col>
                 <Col md={1} className="d-flex align-items-end">
-                  <Button variant="secondary" onClick={clearFilters} className="w-100">Clear</Button>
+                  <Button variant="secondary" onClick={clearFilters} className="w-100 d-flex justify-content-center align-items-center text-center">Clear</Button>
                 </Col>
               </Row>
             </div>
