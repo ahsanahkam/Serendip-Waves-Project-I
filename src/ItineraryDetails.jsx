@@ -177,8 +177,10 @@ const ItineraryDetails = () => {
         <div className="table-section">
           <div className="table-header">
             <div className="table-title">Itinerary Details</div>
-            <button className="add-btn" type="button" onClick={handleAddDetail}>Add Detail</button>
-            <button onClick={fetchDetails} className="add-btn" type="button" style={{ marginLeft: 10 }}>Refresh</button>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={fetchDetails} className="add-btn" type="button">Refresh</button>
+              <button className="add-btn" type="button" onClick={handleAddDetail}>Add Detail</button>
+            </div>
           </div>
           {loading && <div style={{ padding: 18 }}>Loading...</div>}
           <div className="itinerary-details-table-container">

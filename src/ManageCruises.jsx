@@ -262,13 +262,7 @@ function ManageCruises() {
       {navbar}
       <div style={{ marginTop: '110px', width: '100%' }}>
         {/* Header */}
-        <div className="itinerary-header">
-          <h1 className="itinerary-title">Cruise Management</h1>
-          <div className="admin-info">
-            <div className="admin-name">Super Admin</div>
-            <div className="admin-role">Administrator</div>
-          </div>
-        </div>
+        <div className="itinerary-header"></div>
 
         {/* Filter Section */}
         <div className="filter-section">
