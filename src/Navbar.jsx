@@ -246,15 +246,7 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                 transition: 'color 0.3s ease',
                 flexShrink: 0
               }}
-              onClick={e => {
-                e.preventDefault();
-                if (location.pathname === '/') {
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                } else {
-                  navigate('/');
-                  setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                }
-              }}
+              onClick={e => handleNavClick(e, 'home')}
             >
               <img 
                 src="/logo.png" 

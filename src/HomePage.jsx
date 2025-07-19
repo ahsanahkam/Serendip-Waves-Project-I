@@ -5,7 +5,7 @@ import HeroImage from './assets/Hero.jpg';
 // Optimized Hero Section as a component
 import React, { useState, useEffect, useContext } from "react";
 import DestinationsPage from "./DestinationsPage";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import AboutSection from './AboutSection';
 import { AuthContext } from './App';
 
@@ -182,177 +182,196 @@ const ContactSection = () => {
 );
 };
 
-// Footer
-const Footer = () => (
-  <footer className="bg-dark text-white py-5">
-    <div className="container">
-      {/* Main Footer Content */}
-      <div className="row g-4">
-        {/* First Column - Logo and Brand */}
-        <div className="col-lg-4 col-md-6 text-center text-md-start">
-          <div className="d-flex align-items-center justify-content-center justify-content-md-start mb-3">
-            <img 
-              src="/logo.png" 
-              alt="Serendip Waves Logo" 
-              width="70" 
-              height="70" 
-              className="me-3"
-            />
-            <h5 className="fw-bold mb-0">Serendip Waves</h5>
-          </div>
-          <p className="text-muted mb-0" style={{ lineHeight: '1.6' }}>
-            Your journey to paradise starts here. We specialize in creating unforgettable cruise experiences that combine luxury, adventure, and discovery across the world's most beautiful destinations.
-          </p>
-        </div>
-
-        {/* Second Column - Quick Links */}
-        <div className="col-lg-4 col-md-6 text-center text-md-start">
-          <h6 className="fw-bold mb-3 text-uppercase" style={{ color: '#ffd600' }}>Quick Links</h6>
-          <ul className="list-unstyled">
-            <li className="mb-2">
-              <a 
-                href="#home" 
-                className="text-decoration-none text-light"
-                style={{ transition: 'color 0.3s ease' }}
-                onMouseEnter={(e) => e.target.style.color = '#ffd600'}
-                onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
-              >
-                <i className="bi bi-house me-2 text-white"></i>Home
+// Footer as a top-level component
+function Footer() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+  const handleFooterHomeClick = (e) => {
+    e.preventDefault();
+    if (location.pathname !== "/") {
+      navigate("/", { state: { scrollToTop: true } });
+    } else {
+      scrollToSection("home");
+    }
+  };
+  return (
+    <footer className="bg-dark text-white py-5">
+      <div className="container">
+        {/* Main Footer Content */}
+        <div className="row g-4">
+          {/* First Column - Logo and Brand */}
+          <div className="col-lg-4 col-md-6 text-center text-md-start">
+            <div className="d-flex align-items-center justify-content-center justify-content-md-start mb-3">
+              <a href="#home" onClick={handleFooterHomeClick} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+                <img 
+                  src="/logo.png" 
+                  alt="Serendip Waves Logo" 
+                  width="70" 
+                  height="70" 
+                  className="me-3"
+                />
+                <h5 className="fw-bold mb-0" style={{ color: 'white', marginBottom: 0, cursor: 'pointer' }}>Serendip Waves</h5>
               </a>
-            </li>
-            <li className="mb-2">
-              <a 
-                href="#about" 
-                className="text-decoration-none text-light"
-                style={{ transition: 'color 0.3s ease' }}
-                onMouseEnter={(e) => e.target.style.color = '#ffd600'}
-                onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
-              >
-                <i className="bi bi-info-circle me-2 text-white"></i>About Us
-              </a>
-            </li>
-            <li className="mb-2">
-              <a 
-                href="#contact" 
-                className="text-decoration-none text-light"
-                style={{ transition: 'color 0.3s ease' }}
-                onMouseEnter={(e) => e.target.style.color = '#ffd600'}
-                onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
-              >
-                <i className="bi bi-envelope me-2 text-white"></i>Contact
-              </a>
-            </li>
-            <li className="mb-2">
-              <a 
-                href="#destinations" 
-                className="text-decoration-none text-light"
-                style={{ transition: 'color 0.3s ease' }}
-                onMouseEnter={(e) => e.target.style.color = '#ffd600'}
-                onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
-              >
-                <i className="bi bi-geo-alt me-2 text-white"></i>Destinations
-              </a>
-            </li>
-            <li className="mb-2">
-              <a 
-                href="/cruise-ships" 
-                className="text-decoration-none text-light"
-                style={{ transition: 'color 0.3s ease' }}
-                onMouseEnter={(e) => e.target.style.color = '#ffd600'}
-                onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
-              >
-                <i className="bi bi-ship me-2 text-white"></i>Cruises
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        {/* Third Column - Contact Information */}
-        <div className="col-lg-4 col-md-6 text-center text-md-start">
-          <h6 className="fw-bold mb-3 text-uppercase" style={{ color: '#ffd600' }}>Contact Info</h6>
-          <ul className="list-unstyled">
-            <li className="mb-2">
-              <a 
-                href="mailto:info@serendipwaves.com"
-                className="text-decoration-none text-light"
-                style={{ transition: 'color 0.3s ease' }}
-                onMouseEnter={e => e.target.style.color = '#ffd600'}
-                onMouseLeave={e => e.target.style.color = '#f8f9fa'}
-              >
-                info@serendipwaves.com
-              </a>
-            </li>
-            <li className="mb-2">
-              <a 
-                href="tel:+94771234567"
-                className="text-decoration-none text-light"
-                style={{ transition: 'color 0.3s ease' }}
-                onMouseEnter={e => e.target.style.color = '#ffd600'}
-                onMouseLeave={e => e.target.style.color = '#f8f9fa'}
-              >
-                +94 77 123 4567
-              </a>
-            </li>
-            <li className="mb-2 text-light">
-              Colombo, Sri Lanka
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      {/* Bottom Section - Copyright and Social Media */}
-      <div className="border-top border-secondary pt-4 mt-4">
-        <div className="row align-items-center">
-          {/* Copyright */}
-          <div className="col-md-6 text-center text-md-start mb-3 mb-md-0">
-            <p className="text-light mb-0">
-              © 2025 Serendip Waves. All rights reserved.
+            </div>
+            <p className="text-muted mb-0" style={{ lineHeight: '1.6' }}>
+              Your journey to paradise starts here. We specialize in creating unforgettable cruise experiences that combine luxury, adventure, and discovery across the world's most beautiful destinations.
             </p>
           </div>
-          
-          {/* Social Media Icons */}
-          <div className="col-md-6 text-center text-md-end">
-            <div className="d-flex justify-content-center justify-content-md-end gap-3">
-              <a 
-                href="https://facebook.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-decoration-none"
-                style={{ transition: 'transform 0.3s ease' }}
-                onMouseEnter={(e) => e.target.style.transform = 'scale(1.2)'}
-                onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-              >
-                <i className="bi bi-facebook fs-5 text-white"></i>
-              </a>
-              <a 
-                href="https://instagram.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-decoration-none"
-                style={{ transition: 'transform 0.3s ease' }}
-                onMouseEnter={(e) => e.target.style.transform = 'scale(1.2)'}
-                onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-              >
-                <i className="bi bi-instagram fs-5 text-white"></i>
-              </a>
-              <a 
-                href="https://youtube.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-decoration-none"
-                style={{ transition: 'transform 0.3s ease' }}
-                onMouseEnter={(e) => e.target.style.transform = 'scale(1.2)'}
-                onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-              >
-                <i className="bi bi-youtube fs-5 text-white"></i>
-              </a>
+          {/* Second Column - Quick Links */}
+          <div className="col-lg-4 col-md-6 text-center text-md-start">
+            <h6 className="fw-bold mb-3 text-uppercase" style={{ color: '#ffd600' }}>Quick Links</h6>
+            <ul className="list-unstyled">
+              <li className="mb-2">
+                <a 
+                  href="#home" 
+                  className="text-decoration-none text-light"
+                  style={{ transition: 'color 0.3s ease' }}
+                  onMouseEnter={(e) => e.target.style.color = '#ffd600'}
+                  onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
+                >
+                  <i className="bi bi-house me-2 text-white"></i>Home
+                </a>
+              </li>
+              <li className="mb-2">
+                <a 
+                  href="#about" 
+                  className="text-decoration-none text-light"
+                  style={{ transition: 'color 0.3s ease' }}
+                  onMouseEnter={(e) => e.target.style.color = '#ffd600'}
+                  onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
+                >
+                  <i className="bi bi-info-circle me-2 text-white"></i>About Us
+                </a>
+              </li>
+              <li className="mb-2">
+                <a 
+                  href="#contact" 
+                  className="text-decoration-none text-light"
+                  style={{ transition: 'color 0.3s ease' }}
+                  onMouseEnter={(e) => e.target.style.color = '#ffd600'}
+                  onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
+                >
+                  <i className="bi bi-envelope me-2 text-white"></i>Contact
+                </a>
+              </li>
+              <li className="mb-2">
+                <a 
+                  href="#destinations" 
+                  className="text-decoration-none text-light"
+                  style={{ transition: 'color 0.3s ease' }}
+                  onMouseEnter={(e) => e.target.style.color = '#ffd600'}
+                  onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
+                >
+                  <i className="bi bi-geo-alt me-2 text-white"></i>Destinations
+                </a>
+              </li>
+              <li className="mb-2">
+                <a 
+                  href="/cruise-ships" 
+                  className="text-decoration-none text-light"
+                  style={{ transition: 'color 0.3s ease' }}
+                  onMouseEnter={(e) => e.target.style.color = '#ffd600'}
+                  onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
+                >
+                  <i className="bi bi-ship me-2 text-white"></i>Cruises
+                </a>
+              </li>
+            </ul>
+          </div>
+          {/* Third Column - Contact Information */}
+          <div className="col-lg-4 col-md-6 text-center text-md-start">
+            <h6 className="fw-bold mb-3 text-uppercase" style={{ color: '#ffd600' }}>Contact Info</h6>
+            <div className="mb-3">
+              <div className="d-flex align-items-center justify-content-start mb-2">
+                <i className="bi bi-envelope me-3 text-white" style={{ width: '20px' }}></i>
+                <a 
+                  href="mailto:info@serendipwaves.com" 
+                  className="text-decoration-none text-light"
+                  style={{ transition: 'color 0.3s ease' }}
+                  onMouseEnter={(e) => e.target.style.color = '#ffd600'}
+                  onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
+                >
+                  info@serendipwaves.com
+                </a>
+              </div>
+              <div className="d-flex align-items-center justify-content-start mb-2">
+                <i className="bi bi-telephone me-3 text-white" style={{ width: '20px' }}></i>
+                <a 
+                  href="tel:+94771234567" 
+                  className="text-decoration-none text-light"
+                  style={{ transition: 'color 0.3s ease' }}
+                  onMouseEnter={(e) => e.target.style.color = '#ffd600'}
+                  onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
+                >
+                  +94 77 123 4567
+                </a>
+              </div>
+              <div className="d-flex align-items-center justify-content-start">
+                <i className="bi bi-geo-alt me-3 text-white" style={{ width: '20px' }}></i>
+                <span className="text-light">Colombo, Sri Lanka</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Bottom Section - Copyright and Social Media */}
+        <div className="border-top border-secondary pt-4 mt-4">
+          <div className="row align-items-center">
+            {/* Copyright */}
+            <div className="col-md-6 text-center text-md-start mb-3 mb-md-0">
+              <p className="text-light mb-0">
+                © 2025 Serendip Waves. All rights reserved.
+              </p>
+            </div>
+            {/* Social Media Icons */}
+            <div className="col-md-6 text-center text-md-end">
+              <div className="d-flex justify-content-center justify-content-md-end gap-3">
+                <a 
+                  href="https://facebook.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-decoration-none"
+                  style={{ transition: 'transform 0.3s ease' }}
+                  onMouseEnter={(e) => e.target.style.transform = 'scale(1.2)'}
+                  onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                >
+                  <i className="bi bi-facebook fs-5 text-white"></i>
+                </a>
+                <a 
+                  href="https://instagram.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-decoration-none"
+                  style={{ transition: 'transform 0.3s ease' }}
+                  onMouseEnter={(e) => e.target.style.transform = 'scale(1.2)'}
+                  onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                >
+                  <i className="bi bi-instagram fs-5 text-white"></i>
+                </a>
+                <a 
+                  href="https://youtube.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-decoration-none"
+                  style={{ transition: 'transform 0.3s ease' }}
+                  onMouseEnter={(e) => e.target.style.transform = 'scale(1.2)'}
+                  onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                >
+                  <i className="bi bi-youtube fs-5 text-white"></i>
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </footer>
-);
+    </footer>
+  );
+}
 
 // After Destinations section, before About section
 const FleetSection = () => (
