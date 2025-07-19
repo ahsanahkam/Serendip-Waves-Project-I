@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import './ItineraryDetails.css';
 import logo from './assets/logo.png';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { FaEdit, FaTrash } from 'react-icons/fa';
+import { AuthContext } from './App';
 
 const API_BASE = 'http://localhost/Project-I/backend';
 
@@ -19,6 +20,7 @@ const initialForm = {
 };
 
 const ItineraryDetails = () => {
+  const { logout } = useContext(AuthContext);
   const [details, setDetails] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -30,6 +32,54 @@ const ItineraryDetails = () => {
   const [destinations, setDestinations] = useState([]);
   const [itineraries, setItineraries] = useState([]); // Store all itineraries
   const navigate = useNavigate();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const handleLogoutClick = () => setShowLogoutModal(true);
+  const handleCloseLogoutModal = () => setShowLogoutModal(false);
+  const handleConfirmLogout = () => {
+    logout();
+    navigate('/');
+    setShowLogoutModal(false);
+  };
+
+  // Custom Navbar (Admin Dashboard style)
+  const navbar = (
+    <div
+      style={{
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '2px 2px',
+        background: '#fff',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        zIndex: 10,
+        minHeight: '90px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+        borderBottom: '1px solid #eee'
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+        <img
+          src={logo}
+          alt="Logo"
+          style={{ height: '80px', width: 'auto', maxWidth: '100px', cursor: 'pointer', objectFit: 'contain' }}
+          onClick={() => navigate('/#top')}
+        />
+        <div style={{ fontWeight: 'bold', fontSize: '1.5rem', color: '#1a237e', letterSpacing: '1px' }}>
+          Itinerary Details
+        </div>
+      </div>
+      <button
+        onClick={handleLogoutClick}
+        className="superadmin-logout-btn"
+      >
+        Logout
+      </button>
+    </div>
+  );
 
   const fetchDetails = async () => {
     setLoading(true);
@@ -173,132 +223,152 @@ const ItineraryDetails = () => {
 
   return (
     <div className="itinerary-dashboard-bg">
-      <div className="itinerary-container">
-        <div className="table-section">
-          <div className="table-header">
-            <div className="table-title">Itinerary Details</div>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={fetchDetails} className="add-btn" type="button">Refresh</button>
-              <button className="add-btn" type="button" onClick={handleAddDetail}>Add Detail</button>
+      {navbar}
+      <div style={{ marginTop: '110px', width: '100%' }}>
+        <div className="itinerary-container">
+          <div className="table-section">
+            <div className="table-header">
+              <div className="table-title">Itinerary Details</div>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button onClick={fetchDetails} className="add-btn" type="button">Refresh</button>
+                <button className="add-btn" type="button" onClick={handleAddDetail}>Add Detail</button>
+              </div>
+            </div>
+            {loading && <div style={{ padding: 18 }}>Loading...</div>}
+            <div className="itinerary-details-table-container">
+              <table className="itinerary-details-table itinerary-table">
+                <thead>
+                  <tr>
+                    <th>Destination</th>
+                    <th>Image 1</th>
+                    <th>Image 2</th>
+                    <th>Image 3</th>
+                    <th>Image 4</th>
+                    <th>Image 5</th>
+                    <th>Schedule</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {details.length === 0 ? (
+                    <tr><td colSpan={10} style={{ textAlign: 'center', padding: 24 }}>No details found.</td></tr>
+                  ) : (
+                    details.map((detail, idx) => (
+                      <tr key={idx}>
+                        <td>
+                          <span
+                            style={{ color: '#1e3a8a', textDecoration: 'underline', cursor: 'pointer', fontWeight: 600 }}
+                            onClick={() => navigate(`/destination/${encodeURIComponent(detail.destination.toLowerCase())}`, { state: { destination: detail } })}
+                          >
+                            {detail.destination}
+                          </span>
+                        </td>
+                        {[1,2,3,4,5].map(i => (
+                          <td key={i}>
+                            {detail[`image${i}`] ? (
+                              <img src={`http://localhost/Project-I/backend/${detail[`image${i}`]}`} alt={`img${i}`} />
+                            ) : '-' }
+                          </td>
+                        ))}
+                        <td style={{ maxWidth: 200, whiteSpace: 'pre-wrap' }}>{detail.schedule}</td>
+                        <td>
+                          <div className="horizontal-action-buttons">
+                            <button
+                              className="action-rect-btn edit"
+                              title="Edit"
+                              onClick={() => handleEdit(detail)}
+                            >
+                              <FaEdit />
+                            </button>
+                            <button
+                              className="action-rect-btn delete"
+                              title="Delete"
+                              onClick={() => handleDelete(detail.detail_id)}
+                            >
+                              <FaTrash />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
-          {loading && <div style={{ padding: 18 }}>Loading...</div>}
-          <div className="itinerary-details-table-container">
-            <table className="itinerary-details-table itinerary-table">
-              <thead>
-                <tr>
-                  <th>Destination</th>
-                  <th>Image 1</th>
-                  <th>Image 2</th>
-                  <th>Image 3</th>
-                  <th>Image 4</th>
-                  <th>Image 5</th>
-                  <th>Schedule</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {details.length === 0 ? (
-                  <tr><td colSpan={10} style={{ textAlign: 'center', padding: 24 }}>No details found.</td></tr>
-                ) : (
-                  details.map((detail, idx) => (
-                    <tr key={idx}>
-                      <td>
-                        <span
-                          style={{ color: '#1e3a8a', textDecoration: 'underline', cursor: 'pointer', fontWeight: 600 }}
-                          onClick={() => navigate(`/destination/${encodeURIComponent(detail.destination.toLowerCase())}`, { state: { destination: detail } })}
-                        >
-                          {detail.destination}
-                        </span>
-                      </td>
-                      {[1,2,3,4,5].map(i => (
-                        <td key={i}>
-                          {detail[`image${i}`] ? (
-                            <img src={`http://localhost/Project-I/backend/${detail[`image${i}`]}`} alt={`img${i}`} />
-                          ) : '-' }
-                        </td>
-                      ))}
-                      <td style={{ maxWidth: 200, whiteSpace: 'pre-wrap' }}>{detail.schedule}</td>
-                      <td>
-                        <div className="horizontal-action-buttons">
-                          <button
-                            className="action-rect-btn edit"
-                            title="Edit"
-                            onClick={() => handleEdit(detail)}
-                          >
-                            <FaEdit />
-                          </button>
-                          <button
-                            className="action-rect-btn delete"
-                            title="Delete"
-                            onClick={() => handleDelete(detail.detail_id)}
-                          >
-                            <FaTrash />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <Modal show={showModal} onHide={handleCancelEdit} size="lg" centered>
-          <Modal.Header closeButton>
-            <Modal.Title>{editId ? 'Edit' : 'Add'} Itinerary Detail</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form onSubmit={handleSubmit}>
-              <div className="row">
-                <div className="col-md-6">
-                  <Form.Group className="form-group">
-                    <Form.Label>Destination*</Form.Label>
-                    <Form.Select name="destination" value={form.destination} onChange={handleInputChange} required>
-                      <option value="">Select destination</option>
-                      {destinations.map(dest => (
-                        <option key={dest} value={dest}>{dest}</option>
-                      ))}
-                    </Form.Select>
-                  </Form.Group>
-                </div>
-                <div className="col-md-6">
-                  <Form.Group className="form-group">
-                    <Form.Label>Description*</Form.Label>
-                    <Form.Control as="textarea" name="description" value={form.description} onChange={handleInputChange} required rows={2} />
-                  </Form.Group>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-md-12">
-                  <Form.Group className="form-group">
-                    <Form.Label>Schedule</Form.Label>
-                    <Form.Control as="textarea" name="schedule" value={form.schedule} onChange={handleInputChange} rows={2} />
-                  </Form.Group>
-                </div>
-              </div>
-              <div className="row">
-                {[1,2,3,4,5].map(i => (
-                  <div className="col-md-4" key={i} style={{ marginBottom: 12 }}>
+          <Modal show={showModal} onHide={handleCancelEdit} size="lg" centered>
+            <Modal.Header closeButton>
+              <Modal.Title>{editId ? 'Edit' : 'Add'} Itinerary Detail</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form onSubmit={handleSubmit}>
+                <div className="row">
+                  <div className="col-md-6">
                     <Form.Group className="form-group">
-                      <Form.Label>Image {i}</Form.Label>
-                      <Form.Control type="file" name={`image${i}`} accept="image/*" onChange={handleInputChange} />
+                      <Form.Label>Destination*</Form.Label>
+                      <Form.Select name="destination" value={form.destination} onChange={handleInputChange} required>
+                        <option value="">Select destination</option>
+                        {destinations.map(dest => (
+                          <option key={dest} value={dest}>{dest}</option>
+                        ))}
+                      </Form.Select>
                     </Form.Group>
                   </div>
-                ))}
-              </div>
-              {success && <div className="itinerary-details-success">{success}</div>}
-              {error && <div className="itinerary-details-error">{error}</div>}
-            </Form>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCancelEdit}>Cancel</Button>
-            <Button variant="primary" onClick={handleSubmit} disabled={editLoading}>
-              {editId ? 'Update Detail' : 'Add Detail'}
-            </Button>
-          </Modal.Footer>
-        </Modal>
+                  <div className="col-md-6">
+                    <Form.Group className="form-group">
+                      <Form.Label>Description*</Form.Label>
+                      <Form.Control as="textarea" name="description" value={form.description} onChange={handleInputChange} required rows={2} />
+                    </Form.Group>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-12">
+                    <Form.Group className="form-group">
+                      <Form.Label>Schedule</Form.Label>
+                      <Form.Control as="textarea" name="schedule" value={form.schedule} onChange={handleInputChange} rows={2} />
+                    </Form.Group>
+                  </div>
+                </div>
+                <div className="row">
+                  {[1,2,3,4,5].map(i => (
+                    <div className="col-md-4" key={i} style={{ marginBottom: 12 }}>
+                      <Form.Group className="form-group">
+                        <Form.Label>Image {i}</Form.Label>
+                        <Form.Control type="file" name={`image${i}`} accept="image/*" onChange={handleInputChange} />
+                      </Form.Group>
+                    </div>
+                  ))}
+                </div>
+                {success && <div className="itinerary-details-success">{success}</div>}
+                {error && <div className="itinerary-details-error">{error}</div>}
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleCancelEdit}>Cancel</Button>
+              <Button variant="primary" onClick={handleSubmit} disabled={editLoading}>
+                {editId ? 'Update Detail' : 'Add Detail'}
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </div>
       </div>
+      {/* Logout Confirmation Modal */}
+      <Modal show={showLogoutModal} onHide={handleCloseLogoutModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Logout</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Do you want to logout?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseLogoutModal}>
+            No
+          </Button>
+          <Button variant="danger" onClick={handleConfirmLogout}>
+            Yes, Logout
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
