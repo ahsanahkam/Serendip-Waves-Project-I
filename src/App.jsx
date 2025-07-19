@@ -69,6 +69,8 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
     // Optionally, call backend to destroy session
     fetch('http://localhost/Project-I/backend/logout.php', { method: 'POST', credentials: 'include' });
+    localStorage.clear();
+    sessionStorage.clear();
   };
 
   return (
@@ -126,7 +128,8 @@ function AppRoutes(props) {
     '/passenger-management',
     '/itinerary-management',
     '/cabin-admin',
-    '/enquiries' // Hide navbar for Enquiries page
+    '/enquiries', // Hide navbar for Enquiries page
+    '/itinerary-details' // Hide navbar for Itinerary Details page
   ];
   const shouldShowNavbar = !hideNavbarRoutes.some(route => location.pathname.startsWith(route));
 
@@ -180,20 +183,20 @@ function AppRoutes(props) {
         <Route path="/cruise-ships" element={<CruiseShipsPage />} />
         <Route path="/destinations" element={<DestinationsPage />} />
         <Route path="/booking" element={<Navigate to="/" replace />} />
-        <Route path="/booking-overview" element={<BookingOverviewPage />} />
+        <Route path="/booking-overview" element={<ProtectedRoute><BookingOverviewPage /></ProtectedRoute>} />
         <Route path="/login" element={<LoginRouteHandler isAuthenticated={isAuthenticated} setIsLoginModalOpen={setIsLoginModalOpen} />} />
         <Route path="/signup" element={<SignupRouteHandler isAuthenticated={isAuthenticated} setIsSignupModalOpen={setIsSignupModalOpen} />} />
-        <Route path="/super-admin" element={<SuperAdminDashboard />} />
-        <Route path="/customer-dashboard" element={<CustomerDashboard />} />
-        <Route path="/food-inventory-management" element={<FoodInventoryDashboard />} />
-        <Route path="/itinerary-management" element={<ItineraryDashboard />} />
-        <Route path="/manage-cruises" element={<ManageCruises />} />
-        <Route path="/cabin-admin" element={<CabinAdminDashboard />} />
-        <Route path="/passenger-management" element={<PassengerDashboard />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/super-admin" element={<ProtectedRoute><SuperAdminDashboard /></ProtectedRoute>} />
+        <Route path="/customer-dashboard" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
+        <Route path="/food-inventory-management" element={<ProtectedRoute><FoodInventoryDashboard /></ProtectedRoute>} />
+        <Route path="/itinerary-management" element={<ProtectedRoute><ItineraryDashboard /></ProtectedRoute>} />
+        <Route path="/manage-cruises" element={<ProtectedRoute><ManageCruises /></ProtectedRoute>} />
+        <Route path="/cabin-admin" element={<ProtectedRoute><CabinAdminDashboard /></ProtectedRoute>} />
+        <Route path="/passenger-management" element={<ProtectedRoute><PassengerDashboard /></ProtectedRoute>} />
+        <Route path="/admin-dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
         <Route path="/destination/:country" element={<DestinationDetails />} />
-        <Route path="/itinerary-details" element={<ItineraryDetails />} />
-        <Route path="/enquiries" element={<Enquiries />} />
+        <Route path="/itinerary-details" element={<ProtectedRoute><ItineraryDetails /></ProtectedRoute>} />
+        <Route path="/enquiries" element={<ProtectedRoute><Enquiries /></ProtectedRoute>} />
       </Routes>
     </>
   );

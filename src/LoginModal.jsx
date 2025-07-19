@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from "react-toastify";
@@ -19,6 +19,23 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
   const [generatedOtp, setGeneratedOtp] = useState("");
   const navigate = useNavigate();
   const { isAuthenticated, logout, currentUser, setCurrentUser, setIsAuthenticated } = useContext(AuthContext);
+
+  // Reset fields when modal is opened
+  useEffect(() => {
+    if (isOpen) {
+      setForm({ email: '', password: '' });
+      setForgotEmail("");
+      setOtp("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setError("");
+      setSuccess("");
+      setIsLoading(false);
+      setPasswordError("");
+      setStep("login");
+      setGeneratedOtp("");
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -216,7 +233,10 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
               onChange={handleChange}
               placeholder="Enter your email"
               style={inputStyle}
-              autoComplete="username"
+              autoComplete="off"
+              inputMode="email"
+              autoCorrect="off"
+              spellCheck="false"
             />
           </div>
           <div className="mb-3">
@@ -229,7 +249,10 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
               onChange={handleChange}
               placeholder="Enter your password"
               style={inputStyle}
-              autoComplete="current-password"
+              autoComplete="new-password"
+              inputMode="text"
+              autoCorrect="off"
+              spellCheck="false"
             />
             <div className="form-text" style={{ color: 'rgba(255,255,255,0.7)' }}>
               Your password must be at least 6 characters long.
