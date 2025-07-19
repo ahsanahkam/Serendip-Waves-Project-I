@@ -137,49 +137,49 @@ const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="py-5 contact-section" style={{ background: '#ffffff' }}>
-      <style>{`
-        /* Hide scrollbar for Chrome, Safari and Opera */
+  <section id="contact" className="py-5 contact-section" style={{ background: '#ffffff' }}>
+    <style>{`
+      /* Hide scrollbar for Chrome, Safari and Opera */
         .contact-section::-webkit-scrollbar { display: none; }
         .contact-section { -ms-overflow-style: none; scrollbar-width: none; }
-      `}</style>
-      <div className="container">
-        <div className="text-center mb-5">
-          <h2 className="display-4 fw-bold text-dark mb-3">Contact Us</h2>
-          <p className="lead text-muted">Get in touch with us for your next adventure</p>
-        </div>
-        <div className="row justify-content-center">
-          <div className="col-lg-8">
-            <div className="card border-0 shadow">
-              <div className="card-body p-5">
+    `}</style>
+    <div className="container">
+      <div className="text-center mb-5">
+        <h2 className="display-4 fw-bold text-dark mb-3">Contact Us</h2>
+        <p className="lead text-muted">Get in touch with us for your next adventure</p>
+      </div>
+      <div className="row justify-content-center">
+        <div className="col-lg-8">
+          <div className="card border-0 shadow">
+            <div className="card-body p-5">
                 {success && <div className="alert alert-success">{success}</div>}
                 {error && <div className="alert alert-danger">{error}</div>}
                 <form onSubmit={handleSubmit}>
-                  <div className="row">
-                    <div className="col-md-6 mb-3">
-                      <label className="form-label fw-semibold">Name</label>
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label fw-semibold">Name</label>
                       <input type="text" className="form-control" placeholder="Your name" name="name" value={form.name} onChange={handleChange} required />
-                    </div>
-                    <div className="col-md-6 mb-3">
-                      <label className="form-label fw-semibold">Email</label>
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label fw-semibold">Email</label>
                       <input type="email" className="form-control" placeholder="Your email" name="email" value={form.email} onChange={handleChange} required />
-                    </div>
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label fw-semibold">Message</label>
+                </div>
+              </div>
+              <div className="mb-3">
+                <label className="form-label fw-semibold">Message</label>
                     <textarea className="form-control" rows="5" placeholder="Your message" name="message" value={form.message} onChange={handleChange} required></textarea>
-                  </div>
+              </div>
                   <button className="btn btn-primary btn-lg w-100" type="submit" disabled={loading}>
                     {loading ? 'Sending...' : 'Send Message'}
                   </button>
                 </form>
-              </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
-  );
+    </div>
+  </section>
+);
 };
 
 // Footer
@@ -268,38 +268,33 @@ const Footer = () => (
         </div>
 
         {/* Third Column - Contact Information */}
-        <div className="col-lg-4 col-md-6 text-start">
+        <div className="col-lg-4 col-md-6 text-center text-md-start">
           <h6 className="fw-bold mb-3 text-uppercase" style={{ color: '#ffd600' }}>Contact Info</h6>
           <ul className="list-unstyled">
             <li className="mb-2">
-              <a
+              <a 
                 href="mailto:info@serendipwaves.com"
                 className="text-decoration-none text-light"
                 style={{ transition: 'color 0.3s ease' }}
                 onMouseEnter={e => e.target.style.color = '#ffd600'}
                 onMouseLeave={e => e.target.style.color = '#f8f9fa'}
               >
-                <i className="bi bi-envelope me-2 text-white"></i>
                 info@serendipwaves.com
               </a>
             </li>
             <li className="mb-2">
-              <a
+              <a 
                 href="tel:+94771234567"
                 className="text-decoration-none text-light"
                 style={{ transition: 'color 0.3s ease' }}
                 onMouseEnter={e => e.target.style.color = '#ffd600'}
                 onMouseLeave={e => e.target.style.color = '#f8f9fa'}
               >
-                <i className="bi bi-telephone me-2 text-white"></i>
                 +94 77 123 4567
               </a>
             </li>
-            <li className="mb-2">
-              <span className="text-light">
-                <i className="bi bi-geo-alt me-2 text-white"></i>
-                Colombo, Sri Lanka
-              </span>
+            <li className="mb-2 text-light">
+              Colombo, Sri Lanka
             </li>
           </ul>
         </div>
