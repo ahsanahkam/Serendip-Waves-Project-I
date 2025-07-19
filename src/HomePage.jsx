@@ -268,38 +268,40 @@ const Footer = () => (
         </div>
 
         {/* Third Column - Contact Information */}
-        <div className="col-lg-4 col-md-6 text-center text-md-start">
+        <div className="col-lg-4 col-md-6 text-start">
           <h6 className="fw-bold mb-3 text-uppercase" style={{ color: '#ffd600' }}>Contact Info</h6>
-          <div className="mb-3">
-            <div className="d-flex align-items-center justify-content-center justify-content-md-start mb-2">
-              <i className="bi bi-envelope me-3 text-white" style={{ width: '20px' }}></i>
-              <a 
-                href="mailto:info@serendipwaves.com" 
+          <ul className="list-unstyled">
+            <li className="mb-2">
+              <a
+                href="mailto:info@serendipwaves.com"
                 className="text-decoration-none text-light"
                 style={{ transition: 'color 0.3s ease' }}
-                onMouseEnter={(e) => e.target.style.color = '#ffd600'}
-                onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
+                onMouseEnter={e => e.target.style.color = '#ffd600'}
+                onMouseLeave={e => e.target.style.color = '#f8f9fa'}
               >
+                <i className="bi bi-envelope me-2 text-white"></i>
                 info@serendipwaves.com
               </a>
-            </div>
-            <div className="d-flex align-items-center justify-content-center justify-content-md-start mb-2">
-              <i className="bi bi-telephone me-3 text-white" style={{ width: '20px' }}></i>
-              <a 
-                href="tel:+94771234567" 
+            </li>
+            <li className="mb-2">
+              <a
+                href="tel:+94771234567"
                 className="text-decoration-none text-light"
                 style={{ transition: 'color 0.3s ease' }}
-                onMouseEnter={(e) => e.target.style.color = '#ffd600'}
-                onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
+                onMouseEnter={e => e.target.style.color = '#ffd600'}
+                onMouseLeave={e => e.target.style.color = '#f8f9fa'}
               >
+                <i className="bi bi-telephone me-2 text-white"></i>
                 +94 77 123 4567
               </a>
-            </div>
-            <div className="d-flex align-items-center justify-content-center justify-content-md-start">
-              <i className="bi bi-geo-alt me-3 text-white" style={{ width: '20px' }}></i>
-              <span className="text-light">Colombo, Sri Lanka</span>
-            </div>
-          </div>
+            </li>
+            <li className="mb-2">
+              <span className="text-light">
+                <i className="bi bi-geo-alt me-2 text-white"></i>
+                Colombo, Sri Lanka
+              </span>
+            </li>
+          </ul>
         </div>
       </div>
 
