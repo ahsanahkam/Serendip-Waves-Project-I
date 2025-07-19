@@ -5,7 +5,7 @@ import HeroImage from './assets/Hero.jpg';
 // Optimized Hero Section as a component
 import React, { useState, useEffect, useContext } from "react";
 import DestinationsPage from "./DestinationsPage";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import AboutSection from './AboutSection';
 import { AuthContext } from './App';
 
@@ -499,6 +499,16 @@ const DestinationsSection = () => (
 const HomePage = ({ onBookingClick }) => {
   const { isAuthenticated, currentUser } = useContext(AuthContext);
   const [bookingError, setBookingError] = useState("");
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.state && location.state.scrollToTop) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Remove scrollToTop from state so it doesn't trigger again
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   const handleBookingClick = () => {
     const role = currentUser?.role?.toLowerCase();
