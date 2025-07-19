@@ -115,24 +115,24 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
         // Save user info for dashboard
         localStorage.setItem("currentUser", JSON.stringify(user));
         localStorage.setItem("role", role);
-        setCurrentUser(user);
+        // Normalize role to lowercase for consistency
+        const normalizedUser = { ...user, role: user.role ? user.role.toLowerCase() : undefined };
+        setCurrentUser(normalizedUser);
         setIsAuthenticated(true); // Ensure Navbar updates
 
-        setTimeout(() => {
-          toast.dismiss();
-          onClose();
+        onClose(); // Close the modal immediately after login
 
-          // Redirection logic
-          if (user.email === "sadmin@gmail.com") {
-            navigate("/super-admin");
-          } else if (user.email === "admin2@gmail.com" && form.password === "admin123") {
-            window.location.href = "/food-inventory-management";
-          } else if (user.email === "admin3@gmail.com"  && form.password === "dadmin123") {
-            navigate("/admin-dashboard");
-          }
-          // Customers: do not redirect, just close modal and update Navbar
-          setIsLoading(false); // Stop loading after navigation
-        }, 2000);
+        // Redirection logic (if any) can follow here
+        if (user.email === "sadmin@gmail.com") {
+          navigate("/super-admin");
+        } else if (user.email === "admin2@gmail.com" && form.password === "admin123") {
+          navigate("/food-inventory-management");
+        } else if (user.email === "admin3@gmail.com"  && form.password === "dadmin123") {
+          navigate("/admin-dashboard");
+        }
+        // Customers: do not redirect, just close modal and update Navbar
+        setIsLoading(false); // Stop loading after navigation
+        return;
       } else {
         setError(response.data.message || "Invalid username or password.");
         toast.error(response.data.message || "Invalid username or password.");

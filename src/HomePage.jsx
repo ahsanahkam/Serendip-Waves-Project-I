@@ -285,38 +285,35 @@ function Footer() {
             </ul>
           </div>
           {/* Third Column - Contact Information */}
-          <div className="col-lg-4 col-md-6 text-center text-md-start">
+          <div className="col-lg-4 col-md-6 text-md-start">
             <h6 className="fw-bold mb-3 text-uppercase" style={{ color: '#ffd600' }}>Contact Info</h6>
-            <div className="mb-3">
-              <div className="d-flex align-items-center justify-content-start mb-2">
-                <i className="bi bi-envelope me-3 text-white" style={{ width: '20px' }}></i>
-                <a 
-                  href="mailto:info@serendipwaves.com" 
-                  className="text-decoration-none text-light"
+            <ul className="list-unstyled">
+              <li className="mb-2">
+                <a
+                  href="mailto:info@serendipwaves.com"
+                  className="text-decoration-none text-light fw-semibold"
                   style={{ transition: 'color 0.3s ease' }}
-                  onMouseEnter={(e) => e.target.style.color = '#ffd600'}
-                  onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
+                  onMouseEnter={e => e.target.style.color = '#ffd600'}
+                  onMouseLeave={e => e.target.style.color = '#f8f9fa'}
                 >
                   info@serendipwaves.com
                 </a>
-              </div>
-              <div className="d-flex align-items-center justify-content-start mb-2">
-                <i className="bi bi-telephone me-3 text-white" style={{ width: '20px' }}></i>
-                <a 
-                  href="tel:+94771234567" 
-                  className="text-decoration-none text-light"
+              </li>
+              <li className="mb-2 text-light fw-semibold">
+                <a
+                  href="tel:+94771234567"
+                  className="text-decoration-none text-light fw-semibold"
                   style={{ transition: 'color 0.3s ease' }}
-                  onMouseEnter={(e) => e.target.style.color = '#ffd600'}
-                  onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
+                  onMouseEnter={e => e.target.style.color = '#ffd600'}
+                  onMouseLeave={e => e.target.style.color = '#f8f9fa'}
                 >
                   +94 77 123 4567
                 </a>
-              </div>
-              <div className="d-flex align-items-center justify-content-start">
-                <i className="bi bi-geo-alt me-3 text-white" style={{ width: '20px' }}></i>
-                <span className="text-light">Colombo, Sri Lanka</span>
-              </div>
-            </div>
+              </li>
+              <li className="mb-2 text-light fw-semibold">
+                Colombo, Sri Lanka
+              </li>
+            </ul>
           </div>
         </div>
         {/* Bottom Section - Copyright and Social Media */}
