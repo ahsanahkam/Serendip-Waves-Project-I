@@ -6,8 +6,16 @@ const CruiseShipsPage = () => {
   const [cruiseShips, setCruiseShips] = useState([]);
   const [activeSection, setActiveSection] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Responsive: update windowWidth on resize
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Fetch cruise ships from backend
   useEffect(() => {
@@ -79,27 +87,118 @@ const CruiseShipsPage = () => {
     }
   };
 
+  // Responsive helper for section style
+  const getSectionStyle = (index) => {
+    if (windowWidth > 991) {
+      // Desktop
+      if (window.innerHeight < 650) {
+        // Short, wide screens: don't vertically center, use minHeight
+        return {
+          minHeight: '100vh',
+          padding: 0,
+          background: index % 2 === 0 ? '#f8f9fa' : '#ffffff',
+          display: 'block',
+          position: 'relative',
+        };
+      }
+      return {
+        height: '100vh',
+        padding: 0,
+        background: index % 2 === 0 ? '#f8f9fa' : '#ffffff',
+        display: 'flex',
+        alignItems: 'center',
+        position: 'relative',
+      };
+    } else if (windowWidth > 575) {
+      // Tablet
+      return {
+        minHeight: 'auto',
+        padding: '48px 0 32px 0',
+        background: index % 2 === 0 ? '#f8f9fa' : '#ffffff',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        position: 'relative',
+      };
+    } else {
+      // Mobile
+      return {
+        minHeight: 'auto',
+        padding: '32px 0 24px 0',
+        background: index % 2 === 0 ? '#f8f9fa' : '#ffffff',
+        display: 'block',
+        position: 'relative',
+      };
+    }
+  };
+
   return (
     <div style={{ minHeight: '100vh', background: '#fff', paddingTop: '80px' }}>
       {/* Hero Section */}
-      <section style={{
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
+      <section
+        style={
+          windowWidth > 991
+            ? window.innerHeight < 650
+              ? {
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  minHeight: '100vh',
+                  display: 'block',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }
+              : {
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  minHeight: '100vh',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }
+            : windowWidth > 575
+            ? {
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                minHeight: 'auto',
+                padding: '48px 0 32px 0',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                position: 'relative',
+                overflow: 'hidden',
+              }
+            : {
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                minHeight: 'auto',
+                padding: '40px 0 24px 0',
+                position: 'relative',
+                overflow: 'hidden',
+              }
+        }
+      >
         <div className="container text-center text-white">
-          <h1 className="display-3 fw-bold mb-4">
+          <h1
+            className="display-3 fw-bold mb-4"
+            style={windowWidth <= 575 ? { fontSize: '2rem' } : windowWidth <= 991 ? { fontSize: '2.5rem' } : {}}
+          >
             Our Fleet
           </h1>
-          <p className="lead mb-5">
-            Discover our magnificent fleet of luxury cruise ships, each designed to provide 
+          <p
+            className="lead mb-5"
+            style={windowWidth <= 575 ? { fontSize: '1rem' } : windowWidth <= 991 ? { fontSize: '1.1rem' } : {}}
+          >
+            Discover our magnificent fleet of luxury cruise ships, each designed to provide
             unforgettable experiences across the world's most beautiful waters.
           </p>
-          <div className="mt-5" style={{ display: 'flex', flexDirection: 'row', gap: 16, justifyContent: 'center' }}>
+          <div
+            className="mt-5"
+            style={{
+              display: 'flex',
+              flexDirection: windowWidth <= 575 ? 'column' : 'row',
+              gap: 16,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
             <Link to="/" style={{
               color: '#fff',
               fontWeight: 700,
@@ -109,9 +208,11 @@ const CruiseShipsPage = () => {
               borderRadius: '10px',
               background: 'transparent',
               border: '2px solid #fff',
-              marginRight: 8,
+              marginRight: windowWidth <= 575 ? 0 : 8,
+              marginBottom: windowWidth <= 575 ? 10 : 0,
               display: 'inline-block',
               transition: 'background 0.2s, color 0.2s',
+              width: windowWidth <= 575 ? '100%' : windowWidth <= 991 ? 'auto' : 'auto',
             }}>
               ← Back to Home
             </Link>
@@ -122,7 +223,7 @@ const CruiseShipsPage = () => {
               fontSize: '1.1rem',
               borderRadius: '10px',
               padding: 0,
-              minWidth: '180px',
+              minWidth: windowWidth <= 575 ? '100%' : windowWidth <= 991 ? '180px' : '180px',
               height: '48px',
               display: 'flex',
               alignItems: 'center',
@@ -132,6 +233,7 @@ const CruiseShipsPage = () => {
               border: 'none',
               margin: 0,
               transition: 'background 0.2s, color 0.2s',
+              width: windowWidth <= 575 ? '100%' : windowWidth <= 991 ? 'auto' : 'auto',
             }}>
               View Destinations
             </Link>
@@ -175,14 +277,7 @@ const CruiseShipsPage = () => {
         <section
           key={ship.ship_name || ship.id || index}
           className="cruise-ship-section"
-          style={{
-            height: '100vh',
-            padding: '0',
-            background: index % 2 === 0 ? '#f8f9fa' : '#ffffff',
-            display: 'flex',
-            alignItems: 'center',
-            position: 'relative'
-          }}
+          style={getSectionStyle(index)}
         >
           <div className="container h-100">
             <div className="row align-items-center h-100">
