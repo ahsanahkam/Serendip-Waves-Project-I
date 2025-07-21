@@ -114,24 +114,27 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
 
         // Save user info for dashboard
         localStorage.setItem("currentUser", JSON.stringify(user));
-        localStorage.setItem("role", role);
         // Normalize role to lowercase for consistency
         const normalizedUser = { ...user, role: user.role ? user.role.toLowerCase() : undefined };
         setCurrentUser(normalizedUser);
         setIsAuthenticated(true); // Ensure Navbar updates
 
-        onClose(); // Close the modal immediately after login
+        // Delay closing the modal by 2 seconds
+        setTimeout(() => {
+          onClose(); // Close the modal after delay
+          setIsLoading(false); // Stop loading after modal closes
+          // Navigate after modal closes
+          if (user.email === "sadmin@gmail.com") {
+            navigate("/super-admin");
+          } else if (user.email === "admin2@gmail.com" && form.password === "admin123") {
+            navigate("/food-inventory-management");
+          } else if (user.email === "admin3@gmail.com"  && form.password === "dadmin123") {
+            navigate("/admin-dashboard");
+          }
+          // No redirect for customers
+        }, 2000);
 
         // Redirection logic (if any) can follow here
-        if (user.email === "sadmin@gmail.com") {
-          navigate("/super-admin");
-        } else if (user.email === "admin2@gmail.com" && form.password === "admin123") {
-          navigate("/food-inventory-management");
-        } else if (user.email === "admin3@gmail.com"  && form.password === "dadmin123") {
-          navigate("/admin-dashboard");
-        }
-        // Customers: do not redirect, just close modal and update Navbar
-        setIsLoading(false); // Stop loading after navigation
         return;
       } else {
         setError(response.data.message || "Invalid username or password.");
@@ -222,34 +225,36 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
           <h2 className="fw-bold mb-0 text-white">Login to Serendip Waves</h2>
         </div>
         {error && <div className="alert alert-danger text-center">{error}</div>}
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} autoComplete="off">
           <div className="mb-3">
-            <label className="form-label fw-semibold text-white">Email Address</label>
+            <label htmlFor="login-email" className="form-label fw-semibold text-white">Email Address</label>
             <input
               type="email"
               className="form-control form-control-lg"
+              id="login-email"
               name="email"
               value={form.email}
               onChange={handleChange}
               placeholder="Enter your email"
               style={inputStyle}
-              autoComplete="off"
+              autoComplete="username"
               inputMode="email"
               autoCorrect="off"
               spellCheck="false"
             />
           </div>
           <div className="mb-3">
-            <label className="form-label fw-semibold text-white">Password</label>
+            <label htmlFor="login-password" className="form-label fw-semibold text-white">Password</label>
             <input
               type="password"
               className="form-control form-control-lg"
+              id="login-password"
               name="password"
               value={form.password}
               onChange={handleChange}
               placeholder="Enter your password"
               style={inputStyle}
-              autoComplete="new-password"
+              autoComplete="current-password"
               inputMode="text"
               autoCorrect="off"
               spellCheck="false"
@@ -312,16 +317,21 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
         </div>
         {error && <div className="alert alert-danger text-center">{error}</div>}
         {success && <div className="alert alert-success text-center">{success}</div>}
-        <form onSubmit={handleForgotPassword}>
+        <form onSubmit={handleForgotPassword} autoComplete="off">
           <div className="mb-4">
-            <label className="form-label fw-semibold text-white">Email Address</label>
+            <label htmlFor="forgot-email" className="form-label fw-semibold text-white">Email Address</label>
             <input 
               type="email" 
               className="form-control form-control-lg" 
+              id="forgot-email"
               value={forgotEmail} 
               onChange={e => setForgotEmail(e.target.value)} 
               placeholder="Enter your email" 
               style={inputStyle} 
+              autoComplete="username"
+              inputMode="email"
+              autoCorrect="off"
+              spellCheck="false"
             />
           </div>
           <div className="d-grid mb-4">
@@ -364,16 +374,21 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
           <h2 className="fw-bold mb-0 text-white">Enter OTP</h2>
         </div>
         {error && <div className="alert alert-danger text-center">{error}</div>}
-        <form onSubmit={handleOtpSubmit}>
+        <form onSubmit={handleOtpSubmit} autoComplete="off">
           <div className="mb-4">
-            <label className="form-label fw-semibold text-white">OTP</label>
+            <label htmlFor="otp-input" className="form-label fw-semibold text-white">OTP</label>
             <input
               type="text"
               className="form-control form-control-lg"
+              id="otp-input"
               value={otp}
               onChange={e => setOtp(e.target.value)}
               placeholder="Enter the OTP you received"
               style={inputStyle}
+              autoComplete="one-time-code"
+              inputMode="numeric"
+              autoCorrect="off"
+              spellCheck="false"
             />
           </div>
           <div className="d-grid mb-4">
@@ -395,27 +410,37 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
           <img src="/logo.png" alt="Serendip Waves Logo" width="80" height="80" className="mb-3" />
           <h2 className="fw-bold mb-0 text-white">Set New Password</h2>
         </div>
-        <form onSubmit={handleNewPasswordSubmit}>
+        <form onSubmit={handleNewPasswordSubmit} autoComplete="off">
           <div className="mb-3">
-            <label className="form-label fw-semibold text-white">New Password</label>
+            <label htmlFor="new-password" className="form-label fw-semibold text-white">New Password</label>
             <input
               type="password"
               className="form-control form-control-lg"
+              id="new-password"
               value={newPassword}
               onChange={e => setNewPassword(e.target.value)}
               placeholder="Enter new password"
               style={inputStyle}
+              autoComplete="new-password"
+              inputMode="text"
+              autoCorrect="off"
+              spellCheck="false"
             />
           </div>
           <div className="mb-4">
-            <label className="form-label fw-semibold text-white">Confirm Password</label>
+            <label htmlFor="confirm-password" className="form-label fw-semibold text-white">Confirm Password</label>
             <input
               type="password"
               className="form-control form-control-lg"
+              id="confirm-password"
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
               placeholder="Confirm new password"
               style={inputStyle}
+              autoComplete="new-password"
+              inputMode="text"
+              autoCorrect="off"
+              spellCheck="false"
             />
           </div>
           {passwordError && <div className="alert alert-danger text-center">{passwordError}</div>}
@@ -457,6 +482,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
           border-color: #ffd600 !important;
           box-shadow: 0 0 0 0.2rem rgba(255, 214, 0, 0.25) !important;
           color: #fff !important;
+          -webkit-backdrop-filter: blur(15px) !important;
           backdrop-filter: blur(15px) !important;
         }
         .form-control::placeholder { color: rgba(255,255,255,0.6) !important; }
