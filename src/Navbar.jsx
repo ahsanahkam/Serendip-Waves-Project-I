@@ -16,6 +16,9 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
   const profileRef = useRef(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
+  // Debug: Log context values on every render
+  console.log("Navbar render: isAuthenticated =", isAuthenticated, "currentUser =", currentUser);
+
   useEffect(() => {
     const handleResize = () => {
       setIsLargeScreen(window.innerWidth >= 992);
@@ -305,7 +308,7 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
                   padding: '8px 20px',
                   fontWeight: 500
                 }}>Contact</a>
-                {isAuthenticated && (!currentUser?.role || currentUser?.role === 'Customer') ? (
+                {isAuthenticated && (!currentUser?.role || currentUser?.role.toLowerCase() === 'customer') ? (
                   <div className="position-relative" ref={profileRef}>
                     <button
                       className="btn btn-outline-light"
@@ -404,7 +407,7 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
           <Link to="/cruise-ships" className="nav-link" onClick={() => setIsMenuOpen(false)}>Cruises</Link>
           <a href="#about" className="nav-link" onClick={e => { handleNavClick(e, 'about'); toggleMenu(); }}>About Us</a>
           <a href="#contact" className="nav-link" onClick={e => { handleNavClick(e, 'contact'); toggleMenu(); }}>Contact</a>
-          {isAuthenticated && (!currentUser?.role || currentUser?.role === 'Customer') ? (
+          {isAuthenticated && (!currentUser?.role || currentUser?.role.toLowerCase() === 'customer') ? (
             <>
               <Link to="/customer-dashboard" className="nav-link" onClick={() => setIsMenuOpen(false)}>Customer Dashboard</Link>
               <button
