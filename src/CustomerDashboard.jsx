@@ -44,7 +44,7 @@ const CustomerDashboard = () => {
         },
         body: JSON.stringify({
           action: 'get_bookings',
-          user_id: currentUser.id
+          email: currentUser.email
         })
       });
       const data = await response.json();
@@ -212,8 +212,10 @@ const CustomerDashboard = () => {
                     <thead>
                       <tr>
                         <th>Cruise</th>
-                        <th>Departure Date</th>
+                        <th>Destination</th>
                         <th>Cabin Type</th>
+                        <th title="Itinerary Start Date">Departure</th>
+                        <th title="Itinerary End Date">Return</th>
                         <th>Guests</th>
                         <th>Total Price</th>
                         <th>Status</th>
@@ -221,16 +223,26 @@ const CustomerDashboard = () => {
                     </thead>
                     <tbody>
                       {bookings.map(b => (
-                        <tr key={b.id}>
-                          <td>{b.cruise_title}</td>
-                          <td>{new Date(b.departure_date).toLocaleDateString()}</td>
-                          <td>{b.cabin_type}</td>
-                          <td>{b.total_guests}</td>
+                        <tr key={b.booking_id || b.id}>
+                          <td>{b.cruise_title || b.ship_name || '-'}</td>
+                          <td>{b.destination || '-'}</td>
+                          <td>{b.cabin_type || b.room_type}</td>
+                          <td title="Itinerary Start Date">{b.departure_date ? new Date(b.departure_date).toLocaleDateString() : '-'}</td>
+                          <td title="Itinerary End Date">{b.return_date ? new Date(b.return_date).toLocaleDateString() : '-'}</td>
+                          <td>{b.total_guests || b.number_of_guests}</td>
                           <td>${parseFloat(b.total_price).toLocaleString()}</td>
                           <td>
-                            <span className={`booking-status status-${b.booking_status}`}>
-                              {b.booking_status}
-                            </span>
+                            {(() => {
+                              const now = new Date();
+                              const dep = b.departure_date ? new Date(b.departure_date) : null;
+                              const ret = b.return_date ? new Date(b.return_date) : null;
+                              if (dep && ret) {
+                                if (now < dep) return <span className="booking-status upcoming">Upcoming</span>;
+                                if (now > ret) return <span className="booking-status completed">Completed</span>;
+                                if (now >= dep && now <= ret) return <span className="booking-status ongoing">Ongoing</span>;
+                              }
+                              return <span className={`booking-status status-${b.booking_status}`}>{b.booking_status}</span>;
+                            })()}
                           </td>
                         </tr>
                       ))}
