@@ -147,12 +147,12 @@ const CruiseShipsPage = () => {
                   overflow: 'hidden',
                 }
               : {
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  minHeight: '100vh',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  position: 'relative',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
                   overflow: 'hidden',
                 }
             : windowWidth > 575
@@ -186,7 +186,7 @@ const CruiseShipsPage = () => {
             className="lead mb-5"
             style={windowWidth <= 575 ? { fontSize: '1rem' } : windowWidth <= 991 ? { fontSize: '1.1rem' } : {}}
           >
-            Discover our magnificent fleet of luxury cruise ships, each designed to provide
+            Discover our magnificent fleet of luxury cruise ships, each designed to provide 
             unforgettable experiences across the world's most beautiful waters.
           </p>
           <div
