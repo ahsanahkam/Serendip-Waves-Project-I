@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import passengerBookings from './data/passengerBookings.json';
+// import passengerBookings from './data/passengerBookings.json'; // No longer needed, now using backend
 import './PassengerDashboard.css';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import logo from './assets/logo.png';
@@ -13,25 +13,123 @@ function PassengerDashboard() {
   const { logout } = useContext(AuthContext);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = (to) => { window.location.href = to; };
-  const [data, setData] = useState(passengerBookings);
+  const [data, setData] = useState([]);
+  // Fetch passengers from backend
+  React.useEffect(() => {
+    fetch('http://localhost/Project-I/backend/getPassengersDirect.php')
+      .then(res => res.json())
+      .then(result => {
+        if (result.success && Array.isArray(result.passengers)) {
+          setData(result.passengers);
+        } else {
+          setData([]);
+        }
+      })
+      .catch(() => setData([]));
+  }, []);
   const [search, setSearch] = useState('');
   const [shipFilter, setShipFilter] = useState('All Ships');
 
   // Get unique ship names for dropdown
-  const shipNames = Array.from(new Set(passengerBookings.map(b => b.shipName)));
+  const shipNames = Array.from(new Set(data.map(b => b.ship_name)));
 
-  const handleDelete = (idx) => {
-    setData(prev => prev.filter((_, i) => i !== idx));
+  // CRUD State
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editPassenger, setEditPassenger] = useState(null);
+  const [newPassenger, setNewPassenger] = useState({
+    booking_id: '', passenger_name: '', phone_number: '', email: '', ship_name: '', route: '', cabin_id: '', age: '', gender: '', citizenship: ''
+  });
+  const [crudError, setCrudError] = useState('');
+
+  // Add Passenger
+  const handleAdd = () => {
+    setCrudError('');
+    fetch('http://localhost/Project-I/backend/createPassenger.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newPassenger)
+    })
+      .then(res => res.json())
+      .then(result => {
+        if (result.success) {
+          setShowAddModal(false);
+          setNewPassenger({ booking_id: '', passenger_name: '', phone_number: '', email: '', ship_name: '', route: '', cabin_id: '', age: '', gender: '', citizenship: '' });
+          refreshPassengers();
+        } else {
+          setCrudError(result.message || 'Failed to add passenger');
+        }
+      })
+      .catch(() => setCrudError('Network error'));
   };
+
+  // Edit Passenger
   const handleEdit = (row) => {
-    console.log('Edit row:', row);
+    setEditPassenger(row);
+    setShowEditModal(true);
+    setCrudError('');
   };
-  // Filter by search and ship name
+  const handleEditSave = () => {
+    setCrudError('');
+    fetch('http://localhost/Project-I/backend/updatePassenger.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editPassenger)
+    })
+      .then(res => res.json())
+      .then(result => {
+        if (result.success) {
+          setShowEditModal(false);
+          setEditPassenger(null);
+          refreshPassengers();
+        } else {
+          setCrudError(result.message || 'Failed to update passenger');
+        }
+      })
+      .catch(() => setCrudError('Network error'));
+  };
+
+  // Delete Passenger
+  const handleDelete = (idx) => {
+    const passenger = filtered[idx];
+    if (!window.confirm('Delete this passenger?')) return;
+    fetch('http://localhost/Project-I/backend/deletePassenger.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: passenger.id })
+    })
+      .then(res => res.json())
+      .then(result => {
+        if (result.success) {
+          refreshPassengers();
+        } else {
+          alert(result.message || 'Failed to delete passenger');
+        }
+      })
+      .catch(() => alert('Network error'));
+  };
+
+  // Refresh function
+  const refreshPassengers = () => {
+    fetch('http://localhost/Project-I/backend/getPassengersDirect.php')
+      .then(res => res.json())
+      .then(result => {
+        if (result.success && Array.isArray(result.passengers)) {
+          setData(result.passengers);
+        } else {
+          setData([]);
+        }
+      })
+      .catch(() => setData([]));
+  };
+
+  // Filter by search and ship name (using backend field names)
   const filtered = data.filter(row =>
-    (shipFilter === 'All Ships' || row.shipName === shipFilter) &&
-    (row.passengerName.toLowerCase().includes(search.toLowerCase()) ||
-      row.email.toLowerCase().includes(search.toLowerCase()) ||
-      row.nic.toLowerCase().includes(search.toLowerCase()))
+    (shipFilter === 'All Ships' || row.ship_name === shipFilter) &&
+    (
+      (row.passenger_name && row.passenger_name.toLowerCase().includes(search.toLowerCase())) ||
+      (row.email && row.email.toLowerCase().includes(search.toLowerCase()))
+    )
   );
 
   const handleLogoutClick = () => setShowLogoutModal(true);
@@ -121,7 +219,7 @@ function PassengerDashboard() {
               <InputGroup style={{ maxWidth: 340 }}>
                 <Form.Control
                   type="text"
-                  placeholder="Search by name, NIC, or email"
+                  placeholder="Search by name, email"
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   className="shadow-sm"
@@ -140,6 +238,7 @@ function PassengerDashboard() {
                   <option key={name} value={name}>{name}</option>
                 ))}
               </Form.Select>
+              <Button variant="success" className="rounded-pill px-4" style={{ minWidth: 180 }} onClick={() => setShowAddModal(true)}>Add Passenger</Button>
               <Button variant="outline-secondary" className="rounded-pill px-4" style={{ minWidth: 180 }} onClick={() => window.location.href='/booking-overview'}>View Booking Overview</Button>
             </div>
           </div>
@@ -151,7 +250,6 @@ function PassengerDashboard() {
                   <th>Passenger Name</th>
                   <th>Email</th>
                   <th>Phone Number</th>
-                  <th>NIC / Passport</th>
                   <th>Ship Name</th>
                   <th>Route</th>
                   <th>Cabin ID</th>
@@ -164,14 +262,13 @@ function PassengerDashboard() {
                 ) : (
                   filtered.map((row, idx) => (
                     <tr key={idx}>
-                      <td>{row.bookingId}</td>
-                      <td>{row.passengerName}</td>
+                      <td>{row.booking_id}</td>
+                      <td>{row.passenger_name}</td>
                       <td>{row.email}</td>
-                      <td>{row.phone}</td>
-                      <td>{row.nic}</td>
-                      <td><span className="badge bg-primary bg-opacity-75 rounded-pill px-3 py-2">{row.shipName}</span></td>
+                      <td>{row.phone_number}</td>
+                      <td><span className="badge bg-primary bg-opacity-75 rounded-pill px-3 py-2">{row.ship_name}</span></td>
                       <td><span className="badge bg-info bg-opacity-75 rounded-pill px-3 py-2">{row.route}</span></td>
-                      <td>{row.cabinId}</td>
+                      <td>{row.cabin_id}</td>
                       <td>
                         <div className="horizontal-action-buttons">
                           <button
@@ -198,6 +295,60 @@ function PassengerDashboard() {
           </div>
         </div>
       </div>
+      {/* Add Passenger Modal */}
+      <Modal show={showAddModal} onHide={() => setShowAddModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Passenger</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {crudError && <div className="alert alert-danger">{crudError}</div>}
+          {Object.keys(newPassenger).map(key => (
+            <Form.Group key={key} className="mb-2">
+              <Form.Label>{key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</Form.Label>
+              <Form.Control
+                type="text"
+                value={newPassenger[key]}
+                onChange={e => setNewPassenger({ ...newPassenger, [key]: e.target.value })}
+              />
+            </Form.Group>
+          ))}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowAddModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="success" onClick={handleAdd}>
+            Add
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {/* Edit Passenger Modal */}
+      <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Passenger</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {crudError && <div className="alert alert-danger">{crudError}</div>}
+          {editPassenger && Object.keys(newPassenger).map(key => (
+            <Form.Group key={key} className="mb-2">
+              <Form.Label>{key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</Form.Label>
+              <Form.Control
+                type="text"
+                value={editPassenger[key] || ''}
+                onChange={e => setEditPassenger({ ...editPassenger, [key]: e.target.value })}
+              />
+            </Form.Group>
+          ))}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleEditSave}>
+            Save
+          </Button>
+        </Modal.Footer>
+      </Modal>
       {/* Logout Confirmation Modal */}
       <Modal show={showLogoutModal} onHide={handleCloseLogoutModal} centered>
         <Modal.Header closeButton>
