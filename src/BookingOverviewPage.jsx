@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Row, Col, Table, InputGroup } from 'react-bootstrap';
 import { FaUser, FaShip, FaBed, FaUsers, FaCalendarAlt, FaDollarSign, FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -125,7 +125,7 @@ function BookingOverviewPage() {
   const { logout } = useContext(AuthContext);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = (to) => { window.location.href = to; };
-  const [bookings, setBookings] = useState(initialBookings);
+  const [bookings, setBookings] = useState([]);
   const [filters, setFilters] = useState({
     search: '',
     cruise: '',
@@ -147,15 +147,26 @@ function BookingOverviewPage() {
   });
   const [formError, setFormError] = useState('');
 
+  // Fetch bookings from backend on mount
+  useEffect(() => {
+    fetch('http://localhost/Project-I/backend/getAllBookings.php')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.bookings) {
+          setBookings(data.bookings);
+        }
+      });
+  }, []);
+
   // Filter bookings
   const filteredBookings = bookings.filter(b => {
     const matchesSearch =
-      b.passenger.toLowerCase().includes(filters.search.toLowerCase()) ||
-      b.id.toLowerCase().includes(filters.search.toLowerCase());
-    const matchesCruise = !filters.cruise || b.cruise === filters.cruise;
-    const matchesCabinType = !filters.cabinType || b.cabinType === filters.cabinType;
-    const matchesDateFrom = !filters.dateFrom || b.date >= filters.dateFrom;
-    const matchesDateTo = !filters.dateTo || b.date <= filters.dateTo;
+      (b.full_name?.toLowerCase().includes(filters.search.toLowerCase()) ||
+      String(b.booking_id).toLowerCase().includes(filters.search.toLowerCase()));
+    const matchesCruise = !filters.cruise || b.ship_name === filters.cruise;
+    const matchesCabinType = !filters.cabinType || b.room_type === filters.cabinType;
+    const matchesDateFrom = !filters.dateFrom || (b.booking_date && b.booking_date >= filters.dateFrom);
+    const matchesDateTo = !filters.dateTo || (b.booking_date && b.booking_date <= filters.dateTo);
     return matchesSearch && matchesCruise && matchesCabinType && matchesDateFrom && matchesDateTo;
   });
 
@@ -365,49 +376,30 @@ function BookingOverviewPage() {
           <Table striped hover bordered className="align-middle shadow-sm" style={{ background: '#fff', borderRadius: 15 }}>
             <thead className="table-dark">
               <tr>
-                <th><FaShip className="me-1" /> Booking ID</th>
-                <th><FaUser className="me-1" /> Passenger Name</th>
-                <th><FaShip className="me-1" /> Cruise Title</th>
-                <th><FaBed className="me-1" /> Cabin Number</th>
-                <th><FaBed className="me-1" /> Cabin Type</th>
-                <th><FaUsers className="me-1" /> Guests</th>
-                <th><FaCalendarAlt className="me-1" /> Booking Date</th>
-                <th><FaDollarSign className="me-1" /> Total Price</th>
-                <th>Actions</th>
+                <th>Booking ID</th>
+                <th>Passenger Name</th>
+                <th>Cruise Title</th>
+                <th>Cabin Number</th>
+                <th>Cabin Type</th>
+                <th>Guests</th>
+                <th>Booking Date</th>
+                <th>Total Price</th>
               </tr>
             </thead>
             <tbody>
               {filteredBookings.length === 0 ? (
-                <tr><td colSpan={9} className="text-center">No bookings found.</td></tr>
+                <tr><td colSpan={8} className="text-center">No bookings found.</td></tr>
               ) : (
                 filteredBookings.map(b => (
-                  <tr key={b.id}>
-                    <td>{b.id}</td>
-                    <td>{b.passenger}</td>
-                    <td>{b.cruise}</td>
-                    <td>{b.cabinNumber}</td>
-                    <td>{b.cabinType}</td>
-                    <td>{b.guests}</td>
-                    <td>{b.date}</td>
-                    <td>${b.price.toLocaleString()}</td>
-                    <td>
-                      <div className="horizontal-action-buttons">
-                        <button
-                          className="action-rect-btn edit"
-                          title="Edit"
-                          onClick={() => openEditModal(b)}
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          className="action-rect-btn delete"
-                          title="Delete"
-                          onClick={() => handleDelete(b.id)}
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </td>
+                  <tr key={b.booking_id}>
+                    <td>{b.booking_id}</td>
+                    <td>{b.full_name}</td>
+                    <td>{b.ship_name}</td>
+                    <td>{b.cabin_number}</td>
+                    <td>{b.room_type}</td>
+                    <td>{b.number_of_guests}</td>
+                    <td>{b.booking_date ? new Date(b.booking_date).toLocaleDateString() : ''}</td>
+                    <td>${parseFloat(b.total_price || 0).toLocaleString()}</td>
                   </tr>
                 ))
               )}

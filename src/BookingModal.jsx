@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, useContext } from "react";
 import { AuthContext } from "./App";
 import logo from './assets/logo.png'; // Added import for logo
 
-const cabinTypes = ["Interior", "Ocean view", "Balcony", "Suite"];
+const cabinTypes = ["Interior", "Ocean View", "Balcony", "Suit"];
 const dietaryOptions = ["None", "Vegetarian", "Vegan", "Gluten-Free", "Kosher", "Halal"];
 const addOns = [
   { label: "Snorkeling Excursion", value: "snorkeling" },
@@ -16,9 +16,9 @@ const steps = ["Add details", "Passenger details", "Payment"];
 // Cabin prices for adults and children
 const CABIN_PRICES = {
   "Interior": { adult: 500, child: 250 },
-  "Ocean view": { adult: 1000, child: 500 },
+  "Ocean View": { adult: 1000, child: 500 },
   "Balcony": { adult: 2000, child: 1000 },
-  "Suite": { adult: 4000, child: 2000 }
+  "Suit": { adult: 4000, child: 2000 }
 };
 
 const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
@@ -48,6 +48,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
   const [cabinNumber, setCabinNumber] = useState("");
   // State for available destinations (arrival countries)
   const [availableDestinations, setAvailableDestinations] = useState([]);
+  const [itineraries, setItineraries] = useState([]); // Store all itineraries for lookup
 
   // Fetch itineraries and extract unique destinations
   useEffect(() => {
@@ -56,6 +57,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
+          setItineraries(data);
           const uniqueDest = [...new Set(data.map(item => item.route).filter(Boolean))];
           setAvailableDestinations(uniqueDest);
         } else {
@@ -64,6 +66,17 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
       })
       .catch(() => setAvailableDestinations([]));
   }, [isOpen]);
+
+  // Helper to get ship_name for selected destination
+  const getShipNameForDestination = (destination) => {
+    const itinerary = itineraries.find(item => item.route === destination);
+    return itinerary ? itinerary.ship_name : '';
+  };
+
+  // Helper to get itinerary for selected destination
+  const getItineraryForDestination = (destination) => {
+    return itineraries.find(item => item.route === destination);
+  };
 
   // Calculate total price based on form values
   const getTotalPrice = () => {
@@ -80,6 +93,18 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
     }
     // eslint-disable-next-line
   }, [isOpen, defaultCountry]);
+
+  useEffect(() => {
+    if (isOpen && currentUser) {
+      setForm(prev => ({
+        ...prev,
+        fullName: currentUser.full_name || "",
+        gender: currentUser.gender || "",
+        email: currentUser.email || "",
+        age: currentUser.age || ""
+      }));
+    }
+  }, [isOpen, currentUser]);
 
   const handleChange = e => {
     const { name, value, type, checked } = e.target;
@@ -121,62 +146,114 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
       setSuccess("");
       return;
     }
-
-    if (!currentUser?.id) {
-      setError("Please log in to make a booking.");
+    // Card number validation: must be exactly 16 digits
+    if (!/^\d{16}$/.test(form.cardNumber)) {
+      setError("Card number must be exactly 16 digits.");
+      setSuccess("");
       return;
     }
-
     setError("");
     setLoading(true);
 
     try {
-      // Calculate dates (example: departure in 30 days, return in 37 days)
-      const today = new Date();
-      const departureDate = new Date(today.getTime() + (30 * 24 * 60 * 60 * 1000));
-      const returnDate = new Date(today.getTime() + (37 * 24 * 60 * 60 * 1000));
-
-      const response = await fetch('http://localhost/Project-I/backend/login.php', {
+      // Get the correct ship_name for the selected destination
+      const shipName = getShipNameForDestination(form.destination);
+      const response = await fetch('http://localhost/Project-I/backend/booking.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          action: 'create_booking',
-          user_id: currentUser.id,
           full_name: form.fullName,
+          gender: form.gender,
           email: form.email,
-          cruise_title: form.destination || "Serendip Dream",
-          cabin_type: form.cabinType,
+          citizenship: form.citizenship,
+          age: form.age,
+          room_type: form.cabinType,
           adults: parseInt(form.adults),
           children: parseInt(form.children),
-          booking_date: today.toISOString().split('T')[0],
-          departure_date: departureDate.toISOString().split('T')[0],
-          return_date: returnDate.toISOString().split('T')[0],
-          total_price: getTotalPrice(),
-          special_requests: ""
+          number_of_guests: parseInt(form.adults) + parseInt(form.children),
+          card_type: form.cardType,
+          card_number: form.cardNumber,
+          ship_name: shipName, // Use looked-up ship name
+          destination: form.destination,
+          total_price: getTotalPrice()
         })
       });
 
       const data = await response.json();
+      if (!data.success) {
+        setError(data.message + (data.error ? `: ${data.error}` : ""));
+        setSuccess("");
+        setLoading(false);
+        return;
+      }
 
       if (data.success) {
         setBookingSuccess(true);
         setBookingId(data.booking_id);
         setCabinNumber(data.cabin_number);
-    setSuccess("Booking successful! Thank you for booking with Serendip Waves.");
-    setTimeout(() => {
-      onClose();
-      setStep(1);
+        setSuccess("Booking successful! Thank you for booking with Serendip Waves.");
+
+        // Get departure and return dates from itinerary
+        const itinerary = getItineraryForDestination(form.destination);
+        const departureDate = itinerary?.start_date || '';
+        const returnDate = itinerary?.end_date || '';
+
+        // Send confirmation email
+        try {
+          const emailRes = await fetch('http://localhost/Project-I/backend/sendBookingConfirmation.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: form.email,
+              full_name: form.fullName,
+              booking_id: data.booking_id,
+              cruise_title: form.destination, // or the correct cruise title if available
+              cabin_type: form.cabinType,
+              cabin_number: data.cabin_number,
+              adults: form.adults,
+              children: form.children,
+              departure_date: departureDate,
+              return_date: returnDate,
+              total_price: getTotalPrice(),
+              ship_name: getShipNameForDestination(form.destination),
+              destination: form.destination,
+              special_requests: form.specialRequests || 'None'
+            })
+          });
+          const emailData = await emailRes.json();
+          if (!emailData.success) {
+            setError("Booking succeeded, but confirmation email failed to send: " + emailData.message);
+          } else {
+            setSuccess("Booking successful! Confirmation email sent. Thank you for booking with Serendip Waves.");
+          }
+        } catch (e) {
+          setError("Booking succeeded, but confirmation email could not be sent due to a network error.");
+        }
+      } else {
+        setError(data.message || "Booking failed.");
+      }
+    } catch (error) {
+      setError("Booking failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  // Reset form and booking state when popup closes
+  useEffect(() => {
+    if (!isOpen) {
       setForm({
         adults: 1,
         children: 0,
-            cabinType: "Interior",
-            fullName: currentUser?.full_name || "",
-            gender: currentUser?.gender || "",
+        cabinType: "",
+        fullName: currentUser?.full_name || "",
+        gender: currentUser?.gender || "",
         citizenship: "",
-            destination: "",
-            email: currentUser?.email || "",
+        destination: "",
+        email: currentUser?.email || "",
         age: "",
         cardType: "Visa",
         cardNumber: "",
@@ -184,21 +261,14 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
         cvv: ""
       });
       setSuccess("");
-          // Trigger refresh of bookings in parent component
-          if (onBookingCreated) {
-            onBookingCreated();
-          }
-    }, 2000);
-      } else {
-        setError(data.message || "Failed to create booking");
-      }
-    } catch (error) {
-      setError("An error occurred. Please try again.");
-      console.error('Booking error:', error);
-    } finally {
-      setLoading(false);
+      setError("");
+      setGuestCountError("");
+      setBookingSuccess(false);
+      setBookingId("");
+      setCabinNumber("");
+      setStep(1);
     }
-  };
+  }, [isOpen, currentUser]);
 
   if (!isOpen) return null;
 
@@ -395,7 +465,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
               <label style={{ fontWeight: 600 }}>Adults</label>
               <select
                 name="adults"
-                  value={form.adults}
+                value={form.adults}
                 onChange={handleAdultsChange}
                 className="booking-modal-select"
                 style={{ width: 90, borderRadius: 6, border: '1px solid #ccc', padding: 6, marginTop: 8, marginRight: 12 }}
@@ -408,7 +478,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
               <label style={{ fontWeight: 600, marginLeft: 10 }}>Children</label>
               <select
                 name="children"
-                  value={form.children}
+                value={form.children}
                 onChange={handleChildrenChange}
                 className="booking-modal-select"
                 style={{ width: 90, borderRadius: 6, border: '1px solid #ccc', padding: 6, marginTop: 8 }}
@@ -423,24 +493,18 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
               )}
             </div>
             <div style={{ marginBottom: 18 }}>
-              <label style={{ fontWeight: 600 }}>Cabin type</label>
+              <label style={{ fontWeight: 600 }}>Destination</label>
               <select
-                name="cabinType"
-                value={form.cabinType}
+                name="destination"
+                value={form.destination}
                 onChange={handleChange}
                 className="booking-modal-select"
-                style={{
-                  width: '100%',
-                  borderRadius: 8,
-                  border: '1px solid #ccc',
-                  padding: 8,
-                  marginTop: 8
-                }}
+                style={{ width: '100%', borderRadius: 8, border: '1px solid #ccc', padding: 8, marginTop: 8 }}
                 required
               >
-                <option value="">Select cabin type</option>
-                {cabinTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
+                <option value="">Select destination</option>
+                {availableDestinations.map(dest => (
+                  <option key={dest} value={dest}>{dest}</option>
                 ))}
               </select>
             </div>
@@ -473,18 +537,18 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
               </select>
             </div>
             <div style={{ marginBottom: 8 }}>
-              <label>Destination</label>
+              <label>Cabin type</label>
               <select
-                name="destination"
-                value={form.destination}
+                name="cabinType"
+                value={form.cabinType}
                 onChange={handleChange}
                 className="booking-modal-select"
-                style={{ width: '100%', borderRadius: 6, border: '1px solid #ccc', padding: 6, marginTop: 2 }}
+                style={{ width: '100%', borderRadius: 8, border: '1px solid #ccc', padding: 8, marginTop: 8 }}
                 required
               >
-                <option value="">Select destination</option>
-                {availableDestinations.map(dest => (
-                  <option key={dest} value={dest}>{dest}</option>
+                <option value="">Select cabin type</option>
+                {cabinTypes.map(type => (
+                  <option key={type} value={type}>{type}</option>
                 ))}
               </select>
             </div>
@@ -552,7 +616,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
             </div>
             <div style={{ marginBottom: 14 }}>
               <label>CARD NUMBER</label>
-              <input type="text" name="cardNumber" value={form.cardNumber} onChange={handleChange} className="booking-modal-input" style={{ width: '100%', borderRadius: 6, border: '1px solid #ccc', padding: 6, marginTop: 4 }} required />
+              <input type="text" name="cardNumber" value={form.cardNumber} onChange={handleChange} className="booking-modal-input" style={{ width: '100%', borderRadius: 6, border: '1px solid #ccc', padding: 6, marginTop: 4 }} required maxLength={16} pattern="\d{16}" placeholder="Enter 16-digit card number" />
             </div>
             <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
               <div style={{ flex: 1 }}>
@@ -566,7 +630,9 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 24 }}>
               <button type="button" onClick={handleBack} className="booking-modal-btn secondary">Cancel</button>
-              <button type="submit" className="booking-modal-btn">Make Payment</button>
+              {!bookingSuccess && (
+                <button type="submit" className="booking-modal-btn" id="managePaymentBtn">Make Payment</button>
+              )}
             </div>
           </form>
         )}
