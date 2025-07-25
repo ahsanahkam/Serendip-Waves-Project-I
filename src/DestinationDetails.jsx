@@ -6,7 +6,7 @@ const API_BASE = 'http://localhost/Project-I/backend';
 
 const DestinationDetails = () => {
   const { country } = useParams();
-  const { isAuthenticated, setIsBookingModalOpen, setDefaultBookingCountry } = useContext(AuthContext);
+  const { isAuthenticated, currentUser, setIsBookingModalOpen, setDefaultBookingCountry } = useContext(AuthContext);
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -113,7 +113,7 @@ const DestinationDetails = () => {
               </div>
             )}
             {/* Book Now button - only for logged in users */}
-            {isAuthenticated && (
+            {isAuthenticated && currentUser?.role === 'customer' && (
               <button
                 style={{ background: '#ffe066', color: '#222', fontWeight: 700, fontSize: '1.25rem', border: 'none', borderRadius: 30, padding: '12px 38px', marginTop: 10, boxShadow: '0 2px 8px #0001', letterSpacing: 1, cursor: 'pointer', transition: 'background 0.2s' }}
                 onClick={() => {
