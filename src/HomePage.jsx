@@ -112,11 +112,20 @@ const ContactSection = () => {
     setError('');
   };
 
+  const { isAuthenticated, currentUser } = useContext(AuthContext);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setSuccess('');
     setError('');
+    // Require login as customer
+    const role = currentUser?.role?.toLowerCase();
+    if (!isAuthenticated || role !== 'customer') {
+      setError('Please login to the website as a customer to submit an enquiry.');
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch('http://localhost/Project-I/backend/addEnquiries.php', {
         method: 'POST',
@@ -137,9 +146,9 @@ const ContactSection = () => {
   };
 
   return (
-  <section id="contact" className="py-5 contact-section" style={{ background: '#ffffff' }}>
-    <style>{`
-      /* Hide scrollbar for Chrome, Safari and Opera */
+    <section id="contact" className="py-5 contact-section" style={{ background: '#ffffff' }}>
+      <style>{`
+        /* Hide scrollbar for Chrome, Safari and Opera */
         .contact-section::-webkit-scrollbar { display: none; }
         .contact-section { -ms-overflow-style: none; scrollbar-width: none; }
     `}</style>

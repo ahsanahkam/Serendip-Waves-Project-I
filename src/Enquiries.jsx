@@ -15,6 +15,11 @@ const Enquiries = () => {
   const [error, setError] = useState('');
   const [deleteLoading, setDeleteLoading] = useState(null); // id of deleting row
   const { logout } = useContext(AuthContext);
+  const [replyModal, setReplyModal] = useState({ show: false, email: '', name: '', id: null });
+  const [replyMessage, setReplyMessage] = useState('');
+  const [replyLoading, setReplyLoading] = useState(false);
+  const [replyError, setReplyError] = useState('');
+  const [replySuccess, setReplySuccess] = useState('');
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   // Fetch all enquiries
@@ -29,7 +34,7 @@ const Enquiries = () => {
       } else {
         setError(data.message || 'Failed to fetch enquiries.');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to fetch enquiries.');
     }
     setLoading(false);
@@ -38,6 +43,54 @@ const Enquiries = () => {
   useEffect(() => {
     fetchEnquiries();
   }, []);
+
+  const handleOpenReply = (enq) => {
+    setReplyModal({ show: true, email: enq.email, name: enq.name, id: enq.id });
+    setReplyMessage('');
+    setReplyError('');
+    setReplySuccess('');
+  };
+  const handleCloseReply = () => {
+    setReplyModal({ show: false, email: '', name: '', id: null });
+    setReplyMessage('');
+    setReplyError('');
+    setReplySuccess('');
+  };
+  const handleSendReply = async () => {
+    setReplyLoading(true);
+    setReplyError("");
+    setReplySuccess("");
+    try {
+      // Debug: log payload to ensure 'to' is set
+      const payload = {
+        to: replyModal.email,
+        subject: 'Reply to your enquiry at Serendip Waves',
+        message: replyMessage,
+        name: replyModal.name
+      };
+      console.log('Reply payload:', payload);
+      const res = await fetch('http://localhost/Project-I/backend/replyEnquiry.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setReplySuccess('Message sent successfully!');
+        setReplyMessage('');
+        // Keep modal open for a moment to show success
+        setTimeout(() => {
+          setReplyModal({ show: false, email: '', name: '', id: null });
+          setReplySuccess('');
+        }, 1500);
+      } else {
+        setReplyError(data.message || 'Failed to send reply.');
+      }
+    } catch (e) {
+      setReplyError('Network error. Please try again.');
+    }
+    setReplyLoading(false);
+  };
 
   // Delete an enquiry
   const handleDelete = async (id) => {
@@ -124,6 +177,15 @@ const Enquiries = () => {
                             </svg>
                           )}
                         </button>
+                        <button
+                          className="enquiries-icon-btn enquiries-reply-btn ms-2"
+                          onClick={() => handleOpenReply(enq)}
+                          title="Reply"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M5.854 4.146a.5.5 0 0 0-.708.708L7.293 7H2.5A1.5 1.5 0 0 0 1 8.5v3A1.5 1.5 0 0 0 2.5 13h11A1.5 1.5 0 0 0 15 11.5v-3A1.5 1.5 0 0 0 13.5 7h-4.793l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L8.707 8H13.5A.5.5 0 0 1 14 8.5v3a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-3A.5.5 0 0 1 2.5 8H7.293l-1.147-1.146a.5.5 0 0 0-.708 0z"/>
+                          </svg>
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -133,6 +195,38 @@ const Enquiries = () => {
           )}
         </div>
       </div>
+      {/* Reply Modal */}
+      <Modal show={replyModal.show} onHide={handleCloseReply} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Reply to {replyModal.name}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="mb-3">
+            <label className="form-label">To:</label>
+            <input type="email" className="form-control" value={replyModal.email} disabled />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Message:</label>
+            <textarea
+              className="form-control"
+              rows="5"
+              value={replyMessage}
+              onChange={e => setReplyMessage(e.target.value)}
+              placeholder="Type your reply here..."
+            />
+          </div>
+          {replyError && <Alert variant="danger">{replyError}</Alert>}
+          {replySuccess && <Alert variant="success">{replySuccess}</Alert>}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseReply} disabled={replyLoading}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleSendReply} disabled={replyLoading || !replyMessage}>
+            {replyLoading ? 'Sending...' : 'Send Reply'}
+          </Button>
+        </Modal.Footer>
+      </Modal>
       {/* Logout Modal */}
       <Modal show={showLogoutModal} onHide={handleCloseLogoutModal} centered>
         <Modal.Header closeButton>
@@ -154,4 +248,4 @@ const Enquiries = () => {
   );
 };
 
-export default Enquiries; 
+export default Enquiries;
