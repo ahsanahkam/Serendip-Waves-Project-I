@@ -8,8 +8,13 @@ import "./CustomerDashboard.css";
 import { Modal, Button } from "react-bootstrap";
 
 const CustomerDashboard = () => {
-  const { currentUser, logout, setIsBookingModalOpen, setCurrentUser } = useContext(AuthContext);
+  const { isAuthenticated, currentUser, logout, setIsBookingModalOpen, setCurrentUser } = useContext(AuthContext);
   const navigate = useNavigate();
+  useEffect(() => {
+    if (!isAuthenticated || currentUser?.role !== 'customer') {
+      navigate('/login');
+    }
+  }, [isAuthenticated, currentUser, navigate]);
   const [activeSection, setActiveSection] = useState("my-booking");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [bookings, setBookings] = useState([]);
