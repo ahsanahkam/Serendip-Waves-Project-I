@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }) => {
   const [defaultBookingCountry, setDefaultBookingCountry] = useState("");
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
+  const [loading, setLoading] = useState(true);
   // On mount, check session with backend
   useEffect(() => {
     fetch('http://localhost/Project-I/backend/login.php?action=session_user', {
@@ -56,7 +57,8 @@ export const AuthProvider = ({ children }) => {
       .catch(() => {
         setCurrentUser(null);
         setIsAuthenticated(false);
-      });
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const login = (userData) => {
@@ -74,7 +76,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, currentUser, setCurrentUser, login, logout, defaultBookingCountry, setDefaultBookingCountry, isBookingModalOpen, setIsBookingModalOpen }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, currentUser, setCurrentUser, login, logout, defaultBookingCountry, setDefaultBookingCountry, isBookingModalOpen, setIsBookingModalOpen, loading }}>
       {children}
     </AuthContext.Provider>
   );
@@ -98,7 +100,9 @@ function LoginRouteHandler({ isAuthenticated, setIsLoginModalOpen }) {
 }
 
 const ProtectedRoute = ({ allowedRoles, children }) => {
-  const { isAuthenticated, currentUser } = useContext(AuthContext);
+  const { isAuthenticated, currentUser, loading } = useContext(AuthContext);
+
+  if (loading) return <div>Loading...</div>;
   if (!isAuthenticated) return <Navigate to="/login" />;
   if (allowedRoles && !allowedRoles.includes(currentUser?.role)) return <Navigate to="/" />;
   return children;
