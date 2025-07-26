@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { FaBook, FaUtensils, FaBed, FaRoute, FaUsers, FaShip, FaInfoCircle } from "react-icons/fa";
+import { FaBook, FaUtensils, FaBed, FaRoute, FaUsers, FaShip, FaInfoCircle, FaDollarSign } from "react-icons/fa";
 import "./SuperAdminDashboard.css";
 import { useContext } from "react";
 import { AuthContext } from "./App";
@@ -54,6 +54,12 @@ const dashboardButtons = [
     label: "Passenger Management",
     icon: <FaUsers size={28} />,
     route: "/passenger-management",
+    active: true,
+  },
+  {
+    label: "Dynamic Pricing",
+    icon: <FaDollarSign size={28} />,
+    route: "/dynamic-pricing",
     active: true,
   },
   {

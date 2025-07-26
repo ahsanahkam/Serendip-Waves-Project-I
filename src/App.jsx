@@ -28,6 +28,7 @@ import ItineraryDetails from './ItineraryDetails';
 import Enquiries from './Enquiries';
 import './App.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import DynamicPricing from './DynamicPricing';
 
 
 export const AuthContext = createContext();
@@ -201,6 +202,7 @@ function AppRoutes(props) {
         <Route path="/destination/:country" element={<DestinationDetails />} />
         <Route path="/itinerary-details" element={<ProtectedRoute><ItineraryDetails /></ProtectedRoute>} />
         <Route path="/enquiries" element={<ProtectedRoute><Enquiries /></ProtectedRoute>} />
+        <Route path="/dynamic-pricing" element={<ProtectedRoute><DynamicPricing /></ProtectedRoute>} />
       </Routes>
     </>
   );

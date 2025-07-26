@@ -1,74 +1,44 @@
 import React, { useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { AuthContext } from "./App";
-import { FaBars, FaMinus, FaUser, FaEnvelope, FaPhone, FaCalendar, FaVenusMars, FaPassport } from "react-icons/fa";
-import BookingModal from "./BookingModal";
+
 import Navbar from "./Navbar";
 import "./CustomerDashboard.css";
-import { Modal, Button } from "react-bootstrap";
 
 const CustomerDashboard = () => {
-  const { isAuthenticated, currentUser, logout, setIsBookingModalOpen, setCurrentUser } = useContext(AuthContext);
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (!isAuthenticated || currentUser?.role !== 'customer') {
-      navigate('/login');
-    }
-  }, [isAuthenticated, currentUser, navigate]);
+  const { currentUser, loading, setCurrentUser } = useContext(AuthContext);
+
   const [activeSection, setActiveSection] = useState("my-booking");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [showBookingModal, setShowBookingModal] = useState(false);
   const [editForm, setEditForm] = useState(null);
   const [editError, setEditError] = useState("");
   const [editSuccess, setEditSuccess] = useState("");
   const [editLoading, setEditLoading] = useState(false);
   const [profileSuccessMsg, setProfileSuccessMsg] = useState("");
 
-  const user = currentUser || JSON.parse(localStorage.getItem("currentUser"));
 
 
 
-  // Debug: Log user data to see what's available
-  console.log('Current User Data:', currentUser);
-  console.log('User Full Name:', currentUser?.full_name);
-  console.log('User Email:', currentUser?.email);
-  console.log('All User Fields:', Object.keys(currentUser || {}));
 
-  // Fetch user bookings from database
-  const fetchBookings = async () => {
-    if (!currentUser?.id) return;
-    
-    setLoading(true);
-    try {
-      const response = await fetch('http://localhost/Project-I/backend/login.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'get_bookings',
-          email: currentUser.email
-        })
-      });
-      const data = await response.json();
-      
-      if (data.success) {
-        setBookings(data.bookings);
-      } else {
-        console.error('Failed to fetch bookings:', data.message);
-      }
-    } catch (error) {
-      console.error('Error fetching bookings:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
+    const fetchBookings = async () => {
+      if (!currentUser?.id) return;
+      try {
+        const response = await fetch('http://localhost/Project-I/backend/login.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ action: 'get_bookings', email: currentUser.email })
+        });
+        const data = await response.json();
+        setBookings(data.bookings || []);
+      } catch {
+        setBookings([]);
+      }
+    };
     fetchBookings();
-  }, [currentUser?.id]);
+  }, [currentUser]);
 
   // When switching to edit-profile, initialize form
   useEffect(() => {
@@ -133,7 +103,7 @@ const CustomerDashboard = () => {
       } else {
         setEditError(updateData.message || "Failed to update profile.");
       }
-    } catch (err) {
+    } catch {
       setEditError("An error occurred. Please try again.");
     } finally {
       setEditLoading(false);
