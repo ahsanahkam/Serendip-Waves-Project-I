@@ -13,15 +13,11 @@ const addOns = [
 
 const steps = ["Add details", "Passenger details", "Payment"];
 
-// Cabin prices for adults and children
-const CABIN_PRICES = {
-  "Interior": { adult: 500, child: 250 },
-  "Ocean View": { adult: 1000, child: 500 },
-  "Balcony": { adult: 2000, child: 1000 },
-  "Suit": { adult: 4000, child: 2000 }
-};
+// Cabin prices will be fetched dynamically from backend
+
 
 const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
+  const [cabinPricing, setCabinPricing] = useState([]);
   const { currentUser } = useContext(AuthContext);
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
@@ -98,6 +94,17 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
         }
       })
       .catch(() => setAvailableDestinations([]));
+    // Fetch dynamic pricing
+    fetch('http://localhost/Project-I/backend/getCabinTypePricing.php')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.pricing)) {
+          setCabinPricing(data.pricing);
+        } else {
+          setCabinPricing([]);
+        }
+      })
+      .catch(() => setCabinPricing([]));
   }, [isOpen]);
 
   const getShipNameForDestination = (destination) => {
@@ -109,12 +116,24 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
     return itineraries.find(item => item.route === destination);
   };
 
+  // Calculate total price using fetched pricing
   const getTotalPrice = () => {
-    const { cabinType, adults, children } = form;
-    if (!cabinType || !CABIN_PRICES[cabinType]) return 0;
-    const price = CABIN_PRICES[cabinType];
-    return (Number(adults) * price.adult) + (Number(children) * price.child);
+    const { cabinType, adults, children, destination } = form;
+    if (!cabinType || !destination) return 0;
+    // Find matching pricing for ship and route
+    const itinerary = itineraries.find(i => i.route === destination);
+    if (!itinerary) return 0;
+    const ship_name = itinerary.ship_name;
+    const pricing = cabinPricing.find(p => p.ship_name === ship_name && p.route === destination);
+    if (!pricing) return 0;
+    let price = 0;
+    if (cabinType === 'Interior') price = Number(pricing.interior_price);
+    else if (cabinType === 'Ocean View') price = Number(pricing.ocean_view_price);
+    else if (cabinType === 'Balcony') price = Number(pricing.balcony_price);
+    else if (cabinType === 'Suit') price = Number(pricing.suit_price);
+    return (Number(adults) * price) + (Number(children) * price * 0.5);
   };
+
 
   useEffect(() => {
     if (isOpen && defaultCountry && !form.destination) {
