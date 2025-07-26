@@ -32,92 +32,57 @@ const cruiseNames = [
 const cabinTypes = ["Interior", "Ocean View", "Balcony", "Suite"];
 const statusOptions = ["Available", "Booked", "Maintenance"];
 
-const initialCabins = [
-  {
-    passenger: "Alice Johnson",
-    contact: "+1 202-555-0173",
-    cruise: "Serendip Dream",
-    type: "Suite",
-    id: "SUI-101",
-    number: "101",
-    guests: 2,
-    date: "2024-07-01",
-    price: 2500,
-    status: "Booked",
-  },
-  {
-    passenger: "Rajesh Kumar",
-    contact: "+91 98765 43210",
-    cruise: "Serendip Majesty",
-    type: "Ocean View",
-    id: "OCV-102",
-    number: "102",
-    guests: 3,
-    date: "2024-07-02",
-    price: 1800,
-    status: "Available",
-  },
-  {
-    passenger: "Maria Garcia",
-    contact: "+34 612 345 678",
-    cruise: "Serendip Explorer",
-    type: "Balcony",
-    id: "BAL-103",
-    number: "103",
-    guests: 4,
-    date: "2024-07-03",
-    price: 3200,
-    status: "Maintenance",
-  },
-  {
-    passenger: "Liam O'Connor",
-    contact: "+353 85 123 4567",
-    cruise: "Serendip Serenade",
-    type: "Suite",
-    id: "SUI-104",
-    number: "104",
-    guests: 2,
-    date: "2024-07-04",
-    price: 2700,
-    status: "Booked",
-  },
-  {
-    passenger: "Sophie Dubois",
-    contact: "+33 6 12 34 56 78",
-    cruise: "Serendip Adventurer",
-    type: "Interior",
-    id: "INT-105",
-    number: "105",
-    guests: 1,
-    date: "2024-07-05",
-    price: 1200,
-    status: "Available",
-  },
-  {
-    passenger: "Chen Wei",
-    contact: "+86 138 0013 8000",
-    cruise: "Serendip Harmony",
-    type: "Balcony",
-    id: "BAL-106",
-    number: "106",
-    guests: 2,
-    date: "2024-07-06",
-    price: 2100,
-    status: "Booked",
-  },
-];
-
 function CabinAdminDashboard() {
   const { logout } = useContext(AuthContext);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = (to) => { window.location.href = to; };
-  const [cabins, setCabins] = useState(initialCabins);
+  const [cabins, setCabins] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [cruise, setCruise] = useState("All Cruises");
   const [type, setType] = useState("All Types");
   const [status, setStatus] = useState("All Status");
   const [editIdx, setEditIdx] = useState(null);
   const [editStatus, setEditStatus] = useState("");
+
+  // Fetch cabins from backend
+  const fetchCabins = () => {
+    setLoading(true);
+    setError("");
+    fetch("http://localhost/Project-I/backend/getCabins.php")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setCabins(
+            data.cabins.map((c) => ({
+              id: c.cabin_id,
+              passenger: c.passenger_name,
+              cruise: c.cruise_name,
+              type: c.cabin_type,
+              number: c.cabin_number,
+              guests: c.guests_count,
+              date: c.booking_date,
+              price: parseFloat(c.total_cost),
+              status: c.status || "Booked",
+              tripStart: c.start_date,
+              tripEnd: c.end_date,
+            }))
+          );
+        } else {
+          setError(data.message || "Failed to fetch cabins");
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError("Error fetching cabins");
+        setLoading(false);
+      });
+  };
+
+  React.useEffect(() => {
+    fetchCabins();
+  }, []);
 
   const handleClear = () => {
     setSearch("");
@@ -365,18 +330,36 @@ function CabinAdminDashboard() {
                       <td>{cabin.date}</td>
                       <td>${cabin.price.toLocaleString()}</td>
                       <td>
-                        <span
-                          className={
-                            "badge rounded-pill " +
-                            (cabin.status === "Booked"
-                              ? "bg-success"
-                              : cabin.status === "Available"
-                              ? "bg-primary"
-                              : "bg-warning text-dark")
+                        {(() => {
+                          // Use tripStart/tripEnd if present, else fallback
+                          const today = new Date('2025-07-25');
+                          let statusLabel = cabin.status;
+                          let badgeClass = "bg-warning text-dark";
+                          if (cabin.tripStart && cabin.tripEnd) {
+                            const start = new Date(cabin.tripStart);
+                            const end = new Date(cabin.tripEnd);
+                            if (today < start) {
+                              statusLabel = "Upcoming";
+                              badgeClass = "bg-info text-dark";
+                            } else if (today > end) {
+                              statusLabel = "Completed";
+                              badgeClass = "bg-secondary";
+                            } else if (today >= start && today <= end) {
+                              statusLabel = "Occupied";
+                              badgeClass = "bg-success";
+                            }
+                          } else {
+                            // fallback to legacy status
+                            if (cabin.status === "Booked") badgeClass = "bg-success";
+                            else if (cabin.status === "Available") badgeClass = "bg-primary";
                           }
-                        >
-                          {cabin.status}
-                        </span>
+                          return (
+                            <span className={`badge rounded-pill ${badgeClass}`}>
+                              {statusLabel}
+                            </span>
+                          );
+                        })()}
+
                       </td>
                       <td>
                         <div className="horizontal-action-buttons">

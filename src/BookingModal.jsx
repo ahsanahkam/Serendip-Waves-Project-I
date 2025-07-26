@@ -232,6 +232,23 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
       setError("Card number must be exactly 16 digits.");
       return;
     }
+    // Validate expiry is in the future
+    const expiryMatch = form.expiry.match(/^(0[1-9]|1[0-2])\/(\d{2})$/);
+    if (!expiryMatch) {
+      setError("Expiry must be in MM/YY format.");
+      return;
+    }
+    const now = new Date();
+    const expMonth = parseInt(expiryMatch[1], 10);
+    const expYear = 2000 + parseInt(expiryMatch[2], 10); // 2-digit year
+    const expDate = new Date(expYear, expMonth - 1, 1);
+    // Set to end of the expiry month
+    expDate.setMonth(expDate.getMonth() + 1);
+    expDate.setDate(0);
+    if (expDate < now) {
+      setError("Card expiry date must be in the future.");
+      return;
+    }
     
     setError("");
     setLoading(true);
@@ -820,7 +837,11 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 24 }}>
-              <button type="button" onClick={handleBack} className="booking-modal-btn secondary">Cancel</button>
+              {!bookingSuccess ? (
+                <button type="button" onClick={handleBack} className="booking-modal-btn secondary">Cancel</button>
+              ) : (
+                <button type="button" onClick={onClose} className="booking-modal-btn secondary">Back</button>
+              )}
               {!bookingSuccess && (
                 <button type="submit" className="booking-modal-btn" id="managePaymentBtn">Make Payment</button>
               )}
