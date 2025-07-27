@@ -553,14 +553,101 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
           ×
         </button>
         {/* Step Indicator */}
-        <div className="booking-modal-steps">
+        <div className="booking-modal-steps-horizontal">
           {steps.map((label, idx) => (
-            <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div className={`booking-modal-step${step === idx + 1 ? ' active' : ''}`}>{idx + 1}</div>
-              <div className="booking-modal-step-label" style={{ color: step === idx + 1 ? '#7c4dff' : '#bdbdbd' }}>{label}</div>
-            </div>
+            <React.Fragment key={label}>
+              <div className="booking-modal-stepper-item">
+                <div className={`booking-modal-stepper-circle${step === idx + 1 ? ' active' : ''}${step > idx + 1 ? ' completed' : ''}`}>{idx + 1}</div>
+                <div className="booking-modal-stepper-label">{label}</div>
+              </div>
+              {idx < steps.length - 1 && (
+                <div className={`booking-modal-stepper-line${step > idx + 1 ? ' completed' : ''}`}></div>
+              )}
+            </React.Fragment>
           ))}
         </div>
+        <style>{`
+          .booking-modal-steps-horizontal {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 24px 0 16px 0;
+            width: 100%;
+            gap: 0;
+          }
+          .booking-modal-stepper-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 90px;
+          }
+          .booking-modal-stepper-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #bdbdbd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            border: 2.5px solid #e0e0e0;
+            transition: all 0.2s;
+            z-index: 1;
+          }
+          .booking-modal-stepper-circle.active {
+            background: #7c4dff;
+            color: #fff;
+            border: 2.5px solid #7c4dff;
+            box-shadow: 0 2px 8px rgba(124,77,255,0.15);
+          }
+          .booking-modal-stepper-circle.completed {
+            background: #fff;
+            color: #7c4dff;
+            border: 2.5px solid #7c4dff;
+          }
+          .booking-modal-stepper-label {
+            margin-top: 8px;
+            font-size: 1rem;
+            color: #bdbdbd;
+            text-align: center;
+            font-weight: 500;
+            min-width: 80px;
+          }
+          .booking-modal-stepper-circle.active + .booking-modal-stepper-label,
+          .booking-modal-stepper-circle.completed + .booking-modal-stepper-label {
+            color: #7c4dff;
+            font-weight: 700;
+          }
+          .booking-modal-stepper-line {
+            height: 3px;
+            width: 48px;
+            background: #e0e0e0;
+            margin: 0 2px 0 2px;
+            border-radius: 2px;
+            z-index: 0;
+            transition: background 0.2s;
+          }
+          .booking-modal-stepper-line.completed {
+            background: #7c4dff;
+          }
+          @media (max-width: 600px) {
+            .booking-modal-steps-horizontal {
+              flex-direction: column;
+              gap: 0;
+            }
+            .booking-modal-stepper-line {
+              width: 3px;
+              height: 32px;
+              margin: 2px 0;
+            }
+            .booking-modal-stepper-item {
+              min-width: 0;
+              margin-bottom: 0;
+            }
+          }
+        `}</style>
         <hr className="booking-modal-divider" />
         {step === 1 && (
           <form onSubmit={e => { e.preventDefault(); handleNext(); }}>
