@@ -45,7 +45,7 @@ const CustomerDashboard = () => {
     if (activeSection === "edit-profile" && currentUser) {
       setEditForm({
         full_name: currentUser.full_name || currentUser.name || "",
-        email: currentUser.email || "",
+        
         date_of_birth: currentUser.date_of_birth || currentUser.dob || "",
         gender: currentUser.gender || "",
         phone_number: currentUser.phone_number || currentUser.phone || "",
@@ -334,10 +334,7 @@ const CustomerDashboard = () => {
                     <label>Full Name</label>
                     <input type="text" name="full_name" className="form-control" value={editForm?.full_name || ""} onChange={handleEditFormChange} required />
                   </div>
-                  <div className="form-group mb-3">
-                    <label>Email</label>
-                    <input type="email" name="email" className="form-control" value={editForm?.email || ""} onChange={handleEditFormChange} required />
-                  </div>
+                  
                   <div className="form-group mb-3">
                     <label>Date of Birth</label>
                     <input type="date" name="date_of_birth" className="form-control" value={editForm?.date_of_birth ? editForm.date_of_birth.slice(0,10) : ""} onChange={handleEditFormChange} />
