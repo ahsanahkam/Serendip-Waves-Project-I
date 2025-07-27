@@ -134,7 +134,8 @@ function AppRoutes(props) {
     '/itinerary-management',
     '/cabin-admin',
     '/enquiries', // Hide navbar for Enquiries page
-    '/itinerary-details' // Hide navbar for Itinerary Details page
+    '/itinerary-details', // Hide navbar for Itinerary Details page
+    '/dynamic-pricing' // Hide navbar for Dynamic Pricing page
   ];
   const shouldShowNavbar = !hideNavbarRoutes.some(route => location.pathname.startsWith(route));
 
