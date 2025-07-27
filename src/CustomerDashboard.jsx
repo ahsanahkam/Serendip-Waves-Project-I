@@ -72,6 +72,8 @@ const CustomerDashboard = () => {
       Object.entries(editForm).forEach(([key, value]) => {
         formData.append(key, value);
       });
+      // Always include current email for backend
+      formData.append("email", currentUser.email);
       // Update profile
       const response = await fetch("http://localhost/Project-I/backend/updateProfile.php", {
         method: "POST",
