@@ -63,14 +63,12 @@ function PassengerDashboard() {
 
   // Edit Passenger
   const handleEdit = (row) => {
-    console.log('Editing passenger:', row); // Debug log
     setEditPassenger(row);
     setShowEditModal(true);
     setCrudError('');
   };
   const handleEditSave = () => {
     setCrudError('');
-    console.log('Saving passenger:', editPassenger); // Debug log
     
     fetch('http://localhost/Project-I/backend/updatePassenger.php', {
       method: 'POST',
@@ -94,8 +92,6 @@ function PassengerDashboard() {
   const handleDelete = (idx) => {
     const passenger = filtered[idx];
     if (!window.confirm('Delete this passenger?')) return;
-    
-    console.log('Deleting passenger:', passenger); // Debug log
     
     fetch('http://localhost/Project-I/backend/deletePassenger.php', {
       method: 'POST',
@@ -243,7 +239,6 @@ function PassengerDashboard() {
                 ))}
               </Form.Select>
               <Button variant="success" className="rounded-pill px-4" style={{ minWidth: 180 }} onClick={() => setShowAddModal(true)}>Add Passenger</Button>
-              <Button variant="outline-secondary" className="rounded-pill px-4" style={{ minWidth: 180 }} onClick={() => window.location.href='/booking-overview'}>View Booking Overview</Button>
             </div>
           </div>
           <div className="table-responsive passenger-table-wrapper">
