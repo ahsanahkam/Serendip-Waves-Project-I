@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { FaBook, FaUtensils, FaBed, FaRoute, FaUsers, FaShip, FaInfoCircle, FaDollarSign } from "react-icons/fa";
+import { FaBook, FaUtensils, FaBed, FaRoute, FaUsers, FaShip, FaInfoCircle, FaDollarSign, FaSwimmingPool } from "react-icons/fa";
 import "./SuperAdminDashboard.css";
 import { useContext } from "react";
 import { AuthContext } from "./App";
@@ -68,6 +68,24 @@ const dashboardButtons = [
     route: "/enquiries",
     active: true,
   },
+  {
+    label: "Meals Dashboard",
+    icon: <FaUtensils size={28} />,
+    route: "/meals-dashboard",
+    active: true,
+  },
+  {
+    label: "Facilities Dashboard", 
+    icon: <FaSwimmingPool size={28} />,
+    route: "/facilities-dashboard",
+    active: true,
+  },
+  {
+    label: "Facility Management", 
+    icon: <FaSwimmingPool size={28} />,
+    route: "/facility-management",
+    active: true,
+  },
 ];
 
 function SuperAdminDashboard() {
@@ -126,7 +144,7 @@ function SuperAdminDashboard() {
       <div className="container py-5">
         <h1 className="text-center mb-5 superadmin-title">Welcome Super Admin...!</h1>
         <div className="row justify-content-center g-4">
-          {dashboardButtons.map((btn, idx) => (
+          {dashboardButtons.map((btn) => (
             <div
               className="col-12 col-md-6 col-lg-4 d-flex justify-content-center"
               key={btn.label}
@@ -135,7 +153,17 @@ function SuperAdminDashboard() {
                 className={`dashboard-btn${
                   btn.active ? " active" : " disabled"
                 }`}
-                onClick={() => btn.active && navigate(btn.route)}
+                onClick={() => {
+                  if (btn.active) {
+                    if (btn.route === "/facility-management") {
+                      navigate("/facility-management?from=super-admin");
+                    } else if (btn.route === "/facilities-dashboard") {
+                      navigate("/facilities-dashboard?from=super-admin");
+                    } else {
+                      navigate(btn.route);
+                    }
+                  }
+                }}
                 disabled={!btn.active}
               >
                 <div className="dashboard-btn-icon mb-2">{btn.icon}</div>

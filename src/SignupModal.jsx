@@ -1,11 +1,9 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const SignupModal = ({ isOpen, onClose, openLoginModal }) => {
-  const navigate = useNavigate();
   const [form, setForm] = useState({
     fullName: "",
     phone: "",
@@ -45,7 +43,7 @@ const SignupModal = ({ isOpen, onClose, openLoginModal }) => {
       } else {
         toast.error(res.data.message || "Failed to send OTP.");
       }
-    } catch (err) {
+    } catch {
       toast.error("Error sending OTP.");
     }
   };
@@ -220,7 +218,7 @@ const SignupModal = ({ isOpen, onClose, openLoginModal }) => {
                     </span>
                   </div>
                   <div className="text-white small mt-1" style={{opacity:0.85}}>
-                    Password must be at least 8 characters long, include uppercase and lowercase letters, at least one number, and one special character.
+                    Password must be at least 6 characters long, include uppercase and lowercase letters, at least one number, and one special character.
                   </div>
                   {errors.password && <div className="text-danger small mt-1">{errors.password}</div>}
                 </div>

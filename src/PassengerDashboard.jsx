@@ -7,8 +7,6 @@ import { AuthContext } from './App';
 import { useContext } from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 
-const adminName = 'Super Admin';
-
 function PassengerDashboard() {
   const { logout } = useContext(AuthContext);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -38,7 +36,7 @@ function PassengerDashboard() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editPassenger, setEditPassenger] = useState(null);
   const [newPassenger, setNewPassenger] = useState({
-    booking_id: '', passenger_name: '', phone_number: '', email: '', ship_name: '', route: '', cabin_id: '', age: '', gender: '', citizenship: ''
+    booking_id: '', passenger_name: '', email: '', ship_name: '', route: '', cabin_id: '', age: '', gender: '', citizenship: ''
   });
   const [crudError, setCrudError] = useState('');
 
@@ -54,7 +52,7 @@ function PassengerDashboard() {
       .then(result => {
         if (result.success) {
           setShowAddModal(false);
-          setNewPassenger({ booking_id: '', passenger_name: '', phone_number: '', email: '', ship_name: '', route: '', cabin_id: '', age: '', gender: '', citizenship: '' });
+          setNewPassenger({ booking_id: '', passenger_name: '', email: '', ship_name: '', route: '', cabin_id: '', age: '', gender: '', citizenship: '' });
           refreshPassengers();
         } else {
           setCrudError(result.message || 'Failed to add passenger');
@@ -65,12 +63,15 @@ function PassengerDashboard() {
 
   // Edit Passenger
   const handleEdit = (row) => {
+    console.log('Editing passenger:', row); // Debug log
     setEditPassenger(row);
     setShowEditModal(true);
     setCrudError('');
   };
   const handleEditSave = () => {
     setCrudError('');
+    console.log('Saving passenger:', editPassenger); // Debug log
+    
     fetch('http://localhost/Project-I/backend/updatePassenger.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -93,10 +94,13 @@ function PassengerDashboard() {
   const handleDelete = (idx) => {
     const passenger = filtered[idx];
     if (!window.confirm('Delete this passenger?')) return;
+    
+    console.log('Deleting passenger:', passenger); // Debug log
+    
     fetch('http://localhost/Project-I/backend/deletePassenger.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: passenger.id })
+      body: JSON.stringify({ passenger_id: passenger.passenger_id })
     })
       .then(res => res.json())
       .then(result => {
@@ -249,7 +253,6 @@ function PassengerDashboard() {
                   <th>Booking ID</th>
                   <th>Passenger Name</th>
                   <th>Email</th>
-                  <th>Phone Number</th>
                   <th>Ship Name</th>
                   <th>Route</th>
                   <th>Cabin ID</th>
@@ -258,14 +261,13 @@ function PassengerDashboard() {
               </thead>
               <tbody>
                 {filtered.length === 0 ? (
-                  <tr><td colSpan={9} className="text-center">No passengers found.</td></tr>
+                  <tr><td colSpan={7} className="text-center">No passengers found.</td></tr>
                 ) : (
                   filtered.map((row, idx) => (
                     <tr key={idx}>
                       <td>{row.booking_id}</td>
                       <td>{row.passenger_name}</td>
                       <td>{row.email}</td>
-                      <td>{row.phone_number}</td>
                       <td><span className="badge bg-primary bg-opacity-75 rounded-pill px-3 py-2">{row.ship_name}</span></td>
                       <td><span className="badge bg-info bg-opacity-75 rounded-pill px-3 py-2">{row.route}</span></td>
                       <td>{row.cabin_id}</td>

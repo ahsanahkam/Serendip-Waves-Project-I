@@ -109,7 +109,7 @@ function BookingOverviewPage() {
     setFormError('');
     setShowModal(true);
   };
-  const openEditModal = booking => {
+  const _openEditModal = booking => {
     setModalMode('edit');
     setForm({ ...booking });
     setFormError('');
@@ -197,7 +197,7 @@ function BookingOverviewPage() {
   };
 
   // Delete booking
-  const handleDelete = id => {
+  const _handleDelete = id => {
     if (window.confirm('Are you sure you want to delete this booking?')) {
       setBookings(prev => prev.filter(b => b.id !== id));
     }

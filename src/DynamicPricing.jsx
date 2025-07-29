@@ -5,7 +5,7 @@ import logo from './assets/logo.png';
 const DynamicPricing = () => {
   const [pricing, setPricing] = useState([]);
   const [filteredPricing, setFilteredPricing] = useState([]);
-  const [itineraries, setItineraries] = useState([]);
+  const [_itineraries, setItineraries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -71,7 +71,7 @@ const DynamicPricing = () => {
       const res = await fetch('http://localhost/Project-I/backend/getItineraries.php');
       const data = await res.json();
       setItineraries(data);
-    } catch (err) {
+    } catch {
       setItineraries([]);
     }
   };
@@ -93,7 +93,7 @@ const DynamicPricing = () => {
       } else {
         setError(data.message || 'Failed to fetch pricing');
       }
-    } catch (err) {
+    } catch {
       setError('Error fetching pricing');
     }
     setLoading(false);
@@ -123,7 +123,7 @@ const DynamicPricing = () => {
       } else {
         setError(data.message || 'Failed to update pricing');
       }
-    } catch (err) {
+    } catch {
       setError('Error updating pricing');
     }
   };
@@ -142,7 +142,7 @@ const DynamicPricing = () => {
         } else {
           setError(data.message || 'Failed to delete pricing');
         }
-      } catch (err) {
+      } catch {
         setError('Error deleting pricing');
       }
     }

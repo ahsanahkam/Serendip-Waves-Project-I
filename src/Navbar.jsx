@@ -5,7 +5,7 @@ import BookingModal from "./BookingModal";
 import GreeceImg from './assets/Greece.jpg';
 import { Modal, Button } from 'react-bootstrap';
 
-const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
+const Navbar = ({ onLoginClick, onSignupClick }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 992);
   const location = useLocation();
@@ -47,7 +47,7 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const handleNavLinkClick = () => {
+  const _handleNavLinkClick = () => {
     setIsMenuOpen(false);
   };
 
@@ -58,7 +58,7 @@ const Navbar = ({ isScrolled, onLoginClick, onSignupClick }) => {
     }
   };
 
-  const handleSignupClick = () => {
+  const _handleSignupClick = () => {
     console.log('handleSignupClick called');
     setIsMenuOpen(false);
     if (onSignupClick) {

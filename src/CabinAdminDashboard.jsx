@@ -37,8 +37,8 @@ function CabinAdminDashboard() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = (to) => { window.location.href = to; };
   const [cabins, setCabins] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [_loading, setLoading] = useState(true);
+  const [_error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [cruise, setCruise] = useState("All Cruises");
   const [type, setType] = useState("All Types");
@@ -74,7 +74,7 @@ function CabinAdminDashboard() {
         }
         setLoading(false);
       })
-      .catch((err) => {
+      .catch(() => {
         setError("Error fetching cabins");
         setLoading(false);
       });
@@ -108,16 +108,71 @@ function CabinAdminDashboard() {
     setEditIdx(idx);
     setEditStatus(filteredCabins[idx].status);
   };
-  const handleDelete = (idx) => {
-    const toDelete = filteredCabins[idx].id;
-    setCabins(cabins.filter((c) => c.id !== toDelete));
+  const handleDelete = async (idx) => {
+    const cabin = filteredCabins[idx];
+    const cabinId = cabin.id;
+    
+    if (!window.confirm(`Are you sure you want to delete cabin ${cabin.number} for ${cabin.passenger}?`)) {
+      return;
+    }
+    
+    try {
+      const response = await fetch('http://localhost/Project-I/backend/cabinManagement.php', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          cabin_id: cabinId
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Remove from local state only after successful backend deletion
+        setCabins(cabins.filter((c) => c.id !== cabinId));
+        alert('Cabin deleted successfully!');
+      } else {
+        alert('Failed to delete cabin: ' + (result.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error deleting cabin:', error);
+      alert('Error deleting cabin. Please try again.');
+    }
   };
-  const handleSave = () => {
-    const id = filteredCabins[editIdx].id;
-    setCabins(
-      cabins.map((c) => (c.id === id ? { ...c, status: editStatus } : c))
-    );
-    setEditIdx(null);
+  const handleSave = async () => {
+    const cabin = filteredCabins[editIdx];
+    const cabinId = cabin.id;
+    
+    try {
+      const response = await fetch('http://localhost/Project-I/backend/cabinManagement.php', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          cabin_id: cabinId,
+          status: editStatus
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Update local state only after successful backend update
+        setCabins(
+          cabins.map((c) => (c.id === cabinId ? { ...c, status: editStatus } : c))
+        );
+        setEditIdx(null);
+        alert('Cabin status updated successfully!');
+      } else {
+        alert('Failed to update cabin: ' + (result.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error updating cabin:', error);
+      alert('Error updating cabin. Please try again.');
+    }
   };
 
   const handleLogoutClick = () => setShowLogoutModal(true);

@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { AuthContext } from "./App";
 
 import Navbar from "./Navbar";
@@ -7,6 +7,7 @@ import "./CustomerDashboard.css";
 
 const CustomerDashboard = () => {
   const { currentUser, loading, setCurrentUser } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [activeSection, setActiveSection] = useState("my-booking");
   const [bookings, setBookings] = useState([]);
@@ -152,6 +153,26 @@ const CustomerDashboard = () => {
                 My Profile
               </a>
             </li>
+            <li>
+              <a 
+                href="#meal-preferences" 
+                className={activeSection === "meal-preferences" ? "active" : ""}
+                onClick={() => setActiveSection("meal-preferences")}
+              >
+                <i className="fas fa-utensils"></i>
+                Meal Preferences
+              </a>
+            </li>
+            <li>
+              <a 
+                href="#facility-preferences" 
+                className={activeSection === "facility-preferences" ? "active" : ""}
+                onClick={() => setActiveSection("facility-preferences")}
+              >
+                <i className="fas fa-swimming-pool"></i>
+                Facility Preferences
+              </a>
+            </li>
           </ul>
         </div>
 
@@ -196,6 +217,7 @@ const CustomerDashboard = () => {
                         <th>Guests</th>
                         <th>Total Price</th>
                         <th>Status</th>
+                        <th>Preferences</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -221,10 +243,110 @@ const CustomerDashboard = () => {
                               return <span className={`booking-status status-${b.booking_status}`}>{b.booking_status}</span>;
                             })()}
                           </td>
+                          <td>
+                            <div className="preference-buttons">
+                              <button 
+                                className="pref-btn meal-btn"
+                                onClick={() => navigate(`/meals/${b.booking_id || b.id}`)}
+                                title="Meal Preferences"
+                              >
+                                🍽️ Meals
+                              </button>
+                              <button 
+                                className="pref-btn facility-btn"
+                                onClick={() => navigate(`/facilities/${b.booking_id || b.id}`)}
+                                title="Facility Preferences"
+                              >
+                                🏊 Facilities
+                              </button>
+                            </div>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
+                )}
+              </div>
+            )}
+
+            {activeSection === "meal-preferences" && (
+              <div>
+                <h2 className="section-title">Meal Preferences</h2>
+                {bookings.length === 0 ? (
+                  <div className="no-bookings-message">
+                    <p>No bookings found. Make a booking first to set meal preferences!</p>
+                    <button 
+                      className="btn btn-primary"
+                      onClick={() => navigate('/')}
+                    >
+                      Browse Cruises
+                    </button>
+                  </div>
+                ) : (
+                  <div className="preferences-grid">
+                    <p className="mb-4">Select a booking to set your meal preferences:</p>
+                    {bookings.map(b => (
+                      <div key={b.booking_id || b.id} className="preference-card">
+                        <div className="card-header">
+                          <h5>{b.cruise_title || b.ship_name || 'Cruise Booking'}</h5>
+                          <small className="text-muted">Booking ID: {b.booking_id || b.id}</small>
+                        </div>
+                        <div className="card-body">
+                          <p><strong>Destination:</strong> {b.destination || '-'}</p>
+                          <p><strong>Departure:</strong> {b.departure_date ? new Date(b.departure_date).toLocaleDateString() : '-'}</p>
+                          <p><strong>Guests:</strong> {b.total_guests || b.number_of_guests}</p>
+                          <button 
+                            className="btn btn-primary"
+                            onClick={() => navigate(`/meals/${b.booking_id || b.id}`)}
+                          >
+                            <i className="fas fa-utensils me-2"></i>
+                            Set Meal Preferences
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeSection === "facility-preferences" && (
+              <div>
+                <h2 className="section-title">Facility Preferences</h2>
+                {bookings.length === 0 ? (
+                  <div className="no-bookings-message">
+                    <p>No bookings found. Make a booking first to set facility preferences!</p>
+                    <button 
+                      className="btn btn-primary"
+                      onClick={() => navigate('/')}
+                    >
+                      Browse Cruises
+                    </button>
+                  </div>
+                ) : (
+                  <div className="preferences-grid">
+                    <p className="mb-4">Select a booking to set your facility preferences:</p>
+                    {bookings.map(b => (
+                      <div key={b.booking_id || b.id} className="preference-card">
+                        <div className="card-header">
+                          <h5>{b.cruise_title || b.ship_name || 'Cruise Booking'}</h5>
+                          <small className="text-muted">Booking ID: {b.booking_id || b.id}</small>
+                        </div>
+                        <div className="card-body">
+                          <p><strong>Destination:</strong> {b.destination || '-'}</p>
+                          <p><strong>Departure:</strong> {b.departure_date ? new Date(b.departure_date).toLocaleDateString() : '-'}</p>
+                          <p><strong>Guests:</strong> {b.total_guests || b.number_of_guests}</p>
+                          <button 
+                            className="btn btn-info"
+                            onClick={() => navigate(`/facilities/${b.booking_id || b.id}`)}
+                          >
+                            <i className="fas fa-swimming-pool me-2"></i>
+                            Set Facility Preferences
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             )}
@@ -332,6 +454,7 @@ const CustomerDashboard = () => {
                 <h2 className="section-title">Edit Profile</h2>
                 <form className="edit-profile-form" onSubmit={handleEditProfileSubmit} style={{ maxWidth: 500, margin: "0 auto" }}>
                   {editSuccess && <div className="alert alert-success">{editSuccess}</div>}
+                  {editError && <div className="alert alert-danger">{editError}</div>}
                   <div className="form-group mb-3">
                     <label>Full Name</label>
                     <input type="text" name="full_name" className="form-control" value={editForm?.full_name || ""} onChange={handleEditFormChange} required />

@@ -18,7 +18,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
   const [step, setStep] = useState("login"); // 'login', 'forgot', 'otp', 'newPassword'
   const [generatedOtp, setGeneratedOtp] = useState("");
   const navigate = useNavigate();
-  const { isAuthenticated, logout, currentUser, setCurrentUser, setIsAuthenticated } = useContext(AuthContext);
+  const { setCurrentUser, setIsAuthenticated } = useContext(AuthContext);
 
   // Reset fields when modal is opened
   useEffect(() => {
@@ -84,7 +84,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
       } else {
         setError(data.message || "Failed to send OTP.");
       }
-    } catch (err) {
+    } catch {
       setError("An error occurred. Please try again.");
     }
     setIsLoading(false);
@@ -109,7 +109,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
         { withCredentials: true }
       );
       if (response.data.success) {
-        const { role, user } = response.data;
+        const { user } = response.data;
         toast.success(response.data.message, { autoClose: 2000 });
 
         // Save user info for dashboard
@@ -209,7 +209,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
       } else {
         setPasswordError(data.message || "Failed to reset password.");
       }
-    } catch (err) {
+    } catch {
       setPasswordError("An error occurred. Please try again.");
     }
     setIsLoading(false);

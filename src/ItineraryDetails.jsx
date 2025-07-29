@@ -89,7 +89,7 @@ const ItineraryDetails = () => {
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
       setDetails(data);
-    } catch (err) {
+    } catch {
       setError('Error fetching itinerary details');
     } finally {
       setLoading(false);
@@ -105,7 +105,7 @@ const ItineraryDetails = () => {
       setItineraries(data); // Store all itineraries
       const uniqueDest = [...new Set(data.map(item => item.route).filter(Boolean))];
       setDestinations(uniqueDest);
-    } catch (err) {
+    } catch {
       setDestinations([]);
       setItineraries([]);
     }
@@ -158,7 +158,7 @@ const ItineraryDetails = () => {
       } else {
         setError(data.message || 'Error saving detail');
       }
-    } catch (err) {
+    } catch {
       setError('Error saving detail');
     } finally {
       setEditLoading(false);
@@ -200,7 +200,7 @@ const ItineraryDetails = () => {
       } else {
         setError(data.message || 'Error deleting detail');
       }
-    } catch (err) {
+    } catch {
       setError('Error deleting detail');
     }
   };
