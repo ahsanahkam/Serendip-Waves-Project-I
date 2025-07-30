@@ -10,7 +10,7 @@ const Navbar = ({ onLoginClick, onSignupClick }) => {
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 992);
   const location = useLocation();
   const navigate = useNavigate();
-  const { currentUser, isAuthenticated, logout, setIsBookingModalOpen, isBookingModalOpen } = useContext(AuthContext);
+  const { currentUser, isAuthenticated, logout, setIsBookingModalOpen, isBookingModalOpen, defaultBookingCountry } = useContext(AuthContext);
   const [localBookingModalOpen, setLocalBookingModalOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
@@ -456,6 +456,7 @@ const Navbar = ({ onLoginClick, onSignupClick }) => {
               setLocalBookingModalOpen(false);
             }
           }}
+          defaultCountry={defaultBookingCountry}
         />
       )}
       {showLogoutModal && (
