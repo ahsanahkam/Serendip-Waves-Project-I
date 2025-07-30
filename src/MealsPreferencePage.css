@@ -1,0 +1,91 @@
+.meals-preference-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px 0;
+}
+
+.meals-preference-page .card {
+  border: none;
+  border-radius: 15px;
+}
+
+.meals-preference-page .card-header {
+  border-radius: 15px 15px 0 0 !important;
+  padding: 20px;
+}
+
+.meals-preference-page .card-body {
+  padding: 30px;
+}
+
+.meal-times-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.meal-times-grid .form-check {
+  margin-bottom: 0;
+}
+
+.meal-times-grid .form-check-input:checked {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+.action-buttons {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #dee2e6;
+}
+
+.action-buttons .btn {
+  min-width: 150px;
+  padding: 10px 20px;
+  font-weight: 500;
+}
+
+.cost-summary-table {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cost-summary-table .table {
+  margin-bottom: 0;
+}
+
+.cost-summary-table .table th {
+  background: #f8f9fa;
+  border-top: none;
+  font-weight: 600;
+}
+
+.status-badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .meals-preference-page .card-body {
+    padding: 20px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .action-buttons .btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .meal-times-grid {
+    grid-template-columns: 1fr;
+  }
+}

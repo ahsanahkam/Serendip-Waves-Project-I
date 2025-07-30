@@ -1,0 +1,158 @@
+.facilities-dashboard {
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+.facilities-dashboard .card {
+  border: none;
+  border-radius: 12px;
+}
+
+.facilities-dashboard .card-header {
+  border-radius: 12px 12px 0 0 !important;
+  padding: 20px;
+}
+
+.facilities-table {
+  background: white;
+}
+
+.facilities-table th {
+  background: #17a2b8;
+  color: white;
+  font-weight: 600;
+  border: none;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.facilities-table td {
+  vertical-align: middle;
+  padding: 12px;
+}
+
+.facilities-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.facility-badge {
+  font-size: 0.8em;
+  padding: 6px 10px;
+  max-width: 200px;
+  word-wrap: break-word;
+  white-space: normal;
+  display: inline-block;
+  text-align: center;
+}
+
+.facility-name-badge {
+  font-size: 0.85em;
+  padding: 8px 12px;
+  max-width: 250px;
+  word-wrap: break-word;
+  white-space: normal;
+  display: inline-block;
+  line-height: 1.2;
+}
+
+.badge {
+  font-size: 0.85em;
+  padding: 6px 12px;
+}
+
+.filter-section {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.filter-section .form-label {
+  color: white;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.filter-section .form-control {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.export-btn {
+  background: linear-gradient(45deg, #28a745, #20c997);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.export-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.revenue-breakdown {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Multi-facility display styles */
+.facilities-list {
+  min-width: 300px;
+}
+
+.facility-item {
+  padding: 8px;
+  border-left: 3px solid #17a2b8;
+  background: #f8f9fa;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.facility-item:last-child {
+  margin-bottom: 0;
+}
+
+.facility-cost {
+  min-width: 70px;
+  text-align: right;
+}
+
+.quantity-badge {
+  font-size: 0.75em;
+  padding: 4px 8px;
+}
+
+.total-cost-cell {
+  min-width: 100px;
+}
+
+.total-badge {
+  font-size: 0.9em;
+  padding: 8px 12px;
+}
+
+@media (max-width: 768px) {
+  .facilities-dashboard .container-fluid {
+    padding: 15px;
+  }
+  
+  .facilities-table {
+    font-size: 0.9em;
+  }
+  
+  .facility-badge,
+  .facility-name-badge {
+    font-size: 0.75em;
+    padding: 4px 8px;
+    max-width: 150px;
+  }
+  
+  .badge {
+    font-size: 0.75em;
+    padding: 4px 8px;
+  }
+}
