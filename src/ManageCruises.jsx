@@ -46,7 +46,7 @@ function ManageCruises() {
       setShips(res.data);
       setFilteredShips(res.data);
       setAvailableShipNames([...new Set(res.data.map(s => s.ship_name))]);
-    } catch (err) {
+    } catch {
       setShips([]);
       setFilteredShips([]);
       setAvailableShipNames([]);
@@ -184,7 +184,7 @@ function ManageCruises() {
       }
       handleCloseModal();
       fetchShips();
-    } catch (err) {
+    } catch {
       alert('Failed to save ship.');
     }
   };
@@ -194,7 +194,7 @@ function ManageCruises() {
       try {
         await axios.post('http://localhost/Project-I/backend/deleteShipDetails.php', { ship_name: shipName });
         fetchShips();
-      } catch (err) {
+      } catch {
         alert('Failed to delete ship.');
       }
     }

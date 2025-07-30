@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { FaBook, FaUsers, FaRoute, FaBed, FaShip, FaInfoCircle } from "react-icons/fa";
+import { FaBook, FaUsers, FaRoute, FaBed, FaShip, FaInfoCircle, FaSwimmingPool, FaUtensils, FaDollarSign } from "react-icons/fa";
 import { AuthContext } from './App';
 import logo from './assets/logo.png';
 import { Modal, Button } from 'react-bootstrap';
 
-const cardStyle = {
+const _cardStyle = {
   background: "#ece9f6",
   borderRadius: "32px",
   boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.13)",
@@ -145,6 +145,22 @@ const AdminDashboard = () => {
           <Link to="/cabin-admin" className="admin-dashboard-btn">
             <FaBed style={iconStyle} />
             Cabin Management
+          </Link>
+          <Link to="/facilities-dashboard?from=admin-dashboard" className="admin-dashboard-btn">
+            <FaSwimmingPool style={iconStyle} />
+            Facilities Dashboard
+          </Link>
+          <Link to="/facility-management?from=admin-dashboard" className="admin-dashboard-btn">
+            <FaSwimmingPool style={iconStyle} />
+            Facility Management
+          </Link>
+          <Link to="/meals-dashboard" className="admin-dashboard-btn">
+            <FaUtensils style={iconStyle} />
+            Meals Dashboard
+          </Link>
+          <Link to="/dynamic-pricing" className="admin-dashboard-btn">
+            <FaDollarSign style={iconStyle} />
+            Dynamic Pricing
           </Link>
           <Link to="/enquiries" className="admin-dashboard-btn">
             <FaInfoCircle style={iconStyle} />

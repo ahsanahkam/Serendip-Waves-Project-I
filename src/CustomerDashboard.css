@@ -835,4 +835,160 @@
   }
 }
 
+/* Preference Buttons */
+.preference-buttons {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+}
+
+.pref-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  min-width: 90px;
+}
+
+.pref-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  color: white;
+}
+
+.meal-btn {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+}
+
+.meal-btn:hover {
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.facility-btn {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.facility-btn:hover {
+  box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+}
+
+@media (max-width: 768px) {
+  .preference-buttons {
+    flex-direction: row;
+    gap: 4px;
+  }
+  
+  .pref-btn {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    min-width: 70px;
+  }
+}
+
+/* Preferences Grid Styles */
+.preferences-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.preference-card {
+  background: white;
+  border: 1px solid #e3e6f0;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.preference-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+  border-color: #667eea;
+}
+
+.preference-card .card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1rem 1.25rem;
+  border-bottom: none;
+}
+
+.preference-card .card-header h5 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.preference-card .card-header small {
+  opacity: 0.9;
+  font-size: 0.85rem;
+}
+
+.preference-card .card-body {
+  padding: 1.25rem;
+}
+
+.preference-card .card-body p {
+  margin-bottom: 0.5rem;
+  color: #5a5c69;
+  font-size: 0.9rem;
+}
+
+.preference-card .btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.preference-card .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.no-bookings-message {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: #f8f9fc;
+  border-radius: 12px;
+  border: 2px dashed #d1d3e2;
+}
+
+.no-bookings-message p {
+  font-size: 1.1rem;
+  color: #5a5c69;
+  margin-bottom: 1.5rem;
+}
+
+.no-bookings-message .btn {
+  padding: 0.75rem 2rem;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .preferences-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .preference-card .card-body {
+    padding: 1rem;
+  }
+  
+  .no-bookings-message {
+    padding: 2rem 1rem;
+  }
+}
+
  

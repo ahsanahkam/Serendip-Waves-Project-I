@@ -86,7 +86,7 @@ const Enquiries = () => {
       } else {
         setReplyError(data.message || 'Failed to send reply.');
       }
-    } catch (e) {
+    } catch {
       setReplyError('Network error. Please try again.');
     }
     setReplyLoading(false);
@@ -109,7 +109,7 @@ const Enquiries = () => {
       } else {
         setError(data.message || 'Failed to delete enquiry.');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to delete enquiry.');
     }
     setDeleteLoading(null);

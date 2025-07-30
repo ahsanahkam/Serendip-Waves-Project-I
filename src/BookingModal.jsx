@@ -1,10 +1,10 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "./App";
 import logo from './assets/logo.png';
 
-const cabinTypes = ["Interior", "Ocean View", "Balcony", "Suit"];
-const dietaryOptions = ["None", "Vegetarian", "Vegan", "Gluten-Free", "Kosher", "Halal"];
-const addOns = [
+const cabinTypes = ["Interior", "Ocean View", "Balcony", "Suite"];
+const _dietaryOptions = ["None", "Vegetarian", "Vegan", "Gluten-Free", "Kosher", "Halal"];
+const _addOns = [
   { label: "Snorkeling Excursion", value: "snorkeling" },
   { label: "City Tour", value: "citytour" },
   { label: "Spa Package", value: "spa" },
@@ -13,13 +13,18 @@ const addOns = [
 
 const steps = ["Add details", "Passenger details", "Payment"];
 
-// Cabin prices will be fetched dynamically from backend
-
+// Dynamic cabin pricing will be fetched from the database
+// const CABIN_PRICES = {
+//   "Interior": { adult: 500, child: 250 },
+//   "Ocean View": { adult: 1000, child: 500 },
+//   "Balcony": { adult: 2000, child: 1000 },
+//   "Suit": { adult: 4000, child: 2000 }
+// };
 
 const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
-  const [cabinPricing, setCabinPricing] = useState([]);
   const { currentUser } = useContext(AuthContext);
   const [step, setStep] = useState(1);
+  const [cabinPricing, setCabinPricing] = useState([]);
   const [form, setForm] = useState({
     adults: 1,
     children: 0,
@@ -45,10 +50,10 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [guestCountError, setGuestCountError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
-  const [bookingId, setBookingId] = useState("");
-  const [cabinNumber, setCabinNumber] = useState("");
+  const [_bookingId, setBookingId] = useState("");
+  const [_cabinNumber, setCabinNumber] = useState("");
   const [availableDestinations, setAvailableDestinations] = useState([]);
   const [itineraries, setItineraries] = useState([]);
 
@@ -77,9 +82,9 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
         additionalPassengers: prev.additionalPassengers.slice(0, totalPassengers - 1)
       }));
     }
-  }, [form.adults, form.children]);
+  }, [form.adults, form.children, form.additionalPassengers.length]);
 
-  // Fetch itineraries and extract unique destinations
+  // Fetch itineraries and dynamic pricing
   useEffect(() => {
     if (!isOpen) return;
     fetch('http://localhost/Project-I/backend/getItineraries.php')
@@ -107,6 +112,23 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
       .catch(() => setCabinPricing([]));
   }, [isOpen]);
 
+  // Fetch itineraries and extract unique destinations
+  useEffect(() => {
+    if (!isOpen) return;
+    fetch('http://localhost/Project-I/backend/getItineraries.php')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setItineraries(data);
+          const uniqueDest = [...new Set(data.map(item => item.route).filter(Boolean))];
+          setAvailableDestinations(uniqueDest);
+        } else {
+          setAvailableDestinations([]);
+        }
+      })
+      .catch(() => setAvailableDestinations([]));
+  }, [isOpen]);
+
   const getShipNameForDestination = (destination) => {
     const itinerary = itineraries.find(item => item.route === destination);
     return itinerary ? itinerary.ship_name : '';
@@ -130,16 +152,15 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
     if (cabinType === 'Interior') price = Number(pricing.interior_price);
     else if (cabinType === 'Ocean View') price = Number(pricing.ocean_view_price);
     else if (cabinType === 'Balcony') price = Number(pricing.balcony_price);
-    else if (cabinType === 'Suit') price = Number(pricing.suit_price);
+    else if (cabinType === 'Suite') price = Number(pricing.suite_price);
     return (Number(adults) * price) + (Number(children) * price * 0.5);
   };
-
 
   useEffect(() => {
     if (isOpen && defaultCountry && !form.destination) {
       setForm(prev => ({ ...prev, destination: defaultCountry }));
     }
-  }, [isOpen, defaultCountry]);
+  }, [isOpen, defaultCountry, form.destination]);
 
   useEffect(() => {
     if (isOpen && currentUser) {
@@ -251,23 +272,6 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
       setError("Card number must be exactly 16 digits.");
       return;
     }
-    // Validate expiry is in the future
-    const expiryMatch = form.expiry.match(/^(0[1-9]|1[0-2])\/(\d{2})$/);
-    if (!expiryMatch) {
-      setError("Expiry must be in MM/YY format.");
-      return;
-    }
-    const now = new Date();
-    const expMonth = parseInt(expiryMatch[1], 10);
-    const expYear = 2000 + parseInt(expiryMatch[2], 10); // 2-digit year
-    const expDate = new Date(expYear, expMonth - 1, 1);
-    // Set to end of the expiry month
-    expDate.setMonth(expDate.getMonth() + 1);
-    expDate.setDate(0);
-    if (expDate < now) {
-      setError("Card expiry date must be in the future.");
-      return;
-    }
     
     setError("");
     setLoading(true);
@@ -279,7 +283,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
         ...form.additionalPassengers
       ];
 
-      const response = await fetch('http://localhost/Project-I/backend/booking.php', {
+      const response = await fetch('http://localhost/Project-I/backend/addBooking.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -297,6 +301,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
           number_of_guests: parseInt(form.adults) + parseInt(form.children),
           card_type: form.cardType,
           card_number: form.cardNumber,
+          card_expiry: form.expiry,
           ship_name: shipName,
           destination: form.destination,
           total_price: getTotalPrice()
@@ -348,7 +353,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
         if (!passData.success) {
           setError('Booking succeeded, but failed to store passenger details: ' + (passData.message || 'Unknown error'));
         }
-      } catch (e) {
+      } catch {
         setError('Booking succeeded, but a network error occurred while storing passenger details.');
       }
 
@@ -379,10 +384,10 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
         if (!emailData.success) {
           setError("Booking succeeded, but confirmation email failed to send: " + emailData.message);
         }
-      } catch (e) {
+      } catch {
         setError("Booking succeeded, but confirmation email could not be sent due to a network error.");
       }
-    } catch (error) {
+    } catch {
       setError("Booking failed. Please try again.");
     } finally {
       setLoading(false);
@@ -553,101 +558,14 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
           ×
         </button>
         {/* Step Indicator */}
-        <div className="booking-modal-steps-horizontal">
+        <div className="booking-modal-steps">
           {steps.map((label, idx) => (
-            <React.Fragment key={label}>
-              <div className="booking-modal-stepper-item">
-                <div className={`booking-modal-stepper-circle${step === idx + 1 ? ' active' : ''}${step > idx + 1 ? ' completed' : ''}`}>{idx + 1}</div>
-                <div className="booking-modal-stepper-label">{label}</div>
-              </div>
-              {idx < steps.length - 1 && (
-                <div className={`booking-modal-stepper-line${step > idx + 1 ? ' completed' : ''}`}></div>
-              )}
-            </React.Fragment>
+            <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div className={`booking-modal-step${step === idx + 1 ? ' active' : ''}`}>{idx + 1}</div>
+              <div className="booking-modal-step-label" style={{ color: step === idx + 1 ? '#7c4dff' : '#bdbdbd' }}>{label}</div>
+            </div>
           ))}
         </div>
-        <style>{`
-          .booking-modal-steps-horizontal {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 24px 0 16px 0;
-            width: 100%;
-            gap: 0;
-          }
-          .booking-modal-stepper-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 90px;
-          }
-          .booking-modal-stepper-circle {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: #e0e0e0;
-            color: #bdbdbd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.2rem;
-            border: 2.5px solid #e0e0e0;
-            transition: all 0.2s;
-            z-index: 1;
-          }
-          .booking-modal-stepper-circle.active {
-            background: #7c4dff;
-            color: #fff;
-            border: 2.5px solid #7c4dff;
-            box-shadow: 0 2px 8px rgba(124,77,255,0.15);
-          }
-          .booking-modal-stepper-circle.completed {
-            background: #fff;
-            color: #7c4dff;
-            border: 2.5px solid #7c4dff;
-          }
-          .booking-modal-stepper-label {
-            margin-top: 8px;
-            font-size: 1rem;
-            color: #bdbdbd;
-            text-align: center;
-            font-weight: 500;
-            min-width: 80px;
-          }
-          .booking-modal-stepper-circle.active + .booking-modal-stepper-label,
-          .booking-modal-stepper-circle.completed + .booking-modal-stepper-label {
-            color: #7c4dff;
-            font-weight: 700;
-          }
-          .booking-modal-stepper-line {
-            height: 3px;
-            width: 48px;
-            background: #e0e0e0;
-            margin: 0 2px 0 2px;
-            border-radius: 2px;
-            z-index: 0;
-            transition: background 0.2s;
-          }
-          .booking-modal-stepper-line.completed {
-            background: #7c4dff;
-          }
-          @media (max-width: 600px) {
-            .booking-modal-steps-horizontal {
-              flex-direction: column;
-              gap: 0;
-            }
-            .booking-modal-stepper-line {
-              width: 3px;
-              height: 32px;
-              margin: 2px 0;
-            }
-            .booking-modal-stepper-item {
-              min-width: 0;
-              margin-bottom: 0;
-            }
-          }
-        `}</style>
         <hr className="booking-modal-divider" />
         {step === 1 && (
           <form onSubmit={e => { e.preventDefault(); handleNext(); }}>
@@ -943,11 +861,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 24 }}>
-              {!bookingSuccess ? (
-                <button type="button" onClick={handleBack} className="booking-modal-btn secondary">Cancel</button>
-              ) : (
-                <button type="button" onClick={onClose} className="booking-modal-btn secondary">Back</button>
-              )}
+              <button type="button" onClick={handleBack} className="booking-modal-btn secondary">Cancel</button>
               {!bookingSuccess && (
                 <button type="submit" className="booking-modal-btn" id="managePaymentBtn">Make Payment</button>
               )}

@@ -26,6 +26,11 @@ import DestinationDetails from './DestinationDetails';
 import ManageCruises from './ManageCruises';
 import ItineraryDetails from './ItineraryDetails';
 import Enquiries from './Enquiries';
+import MealsPreferencePage from './MealsPreferencePage';
+import FacilitiesPreferencePage from './FacilitiesPreferencePage';
+import MealsDashboard from './MealsDashboard';
+import FacilitiesDashboard from './FacilitiesDashboard';
+import FacilityManagement from './FacilityManagement';
 import './App.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import DynamicPricing from './DynamicPricing';
@@ -135,15 +140,19 @@ function AppRoutes(props) {
     '/cabin-admin',
     '/enquiries', // Hide navbar for Enquiries page
     '/itinerary-details', // Hide navbar for Itinerary Details page
-    '/dynamic-pricing' // Hide navbar for Dynamic Pricing page
+    '/dynamic-pricing', // Hide navbar for Dynamic Pricing page
+    '/meals', // Hide navbar for Meal Preferences pages
+    '/facilities', // Hide navbar for Facility Preferences pages
+    '/meals-dashboard', // Hide navbar for Meals Dashboard
+    '/facilities-dashboard' // Hide navbar for Facilities Dashboard
   ];
   const shouldShowNavbar = !hideNavbarRoutes.some(route => location.pathname.startsWith(route));
 
-  const sectionRef = useRef(null);
+  const _sectionRef = useRef(null);
 
-  const handleScroll = () => {
-    if (sectionRef.current) {
-      sectionRef.current.scrollIntoView({ behavior: "smooth" });
+  const _handleScroll = () => {
+    if (_sectionRef.current) {
+      _sectionRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -204,6 +213,11 @@ function AppRoutes(props) {
         <Route path="/itinerary-details" element={<ProtectedRoute><ItineraryDetails /></ProtectedRoute>} />
         <Route path="/enquiries" element={<ProtectedRoute><Enquiries /></ProtectedRoute>} />
         <Route path="/dynamic-pricing" element={<ProtectedRoute><DynamicPricing /></ProtectedRoute>} />
+        <Route path="/meals/:bookingId" element={<ProtectedRoute><MealsPreferencePage /></ProtectedRoute>} />
+        <Route path="/facilities/:bookingId" element={<ProtectedRoute><FacilitiesPreferencePage /></ProtectedRoute>} />
+        <Route path="/meals-dashboard" element={<ProtectedRoute><MealsDashboard /></ProtectedRoute>} />
+        <Route path="/facilities-dashboard" element={<ProtectedRoute><FacilitiesDashboard /></ProtectedRoute>} />
+        <Route path="/facility-management" element={<ProtectedRoute><FacilityManagement /></ProtectedRoute>} />
       </Routes>
     </>
   );
@@ -212,7 +226,7 @@ function AppRoutes(props) {
 const App = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
-  const [defaultBookingCountry, setDefaultBookingCountry] = useState("");
+  const [defaultBookingCountry, _setDefaultBookingCountry] = useState("");
 
   return (
     <AuthProvider>

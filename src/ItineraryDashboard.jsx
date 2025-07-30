@@ -10,7 +10,7 @@ import { AuthContext } from './App';
 // const shipNames = [ ... ];
 
 // Common countries for dropdown
-const countries = [
+const _countries = [
   'Sri Lanka',
   'Maldives',
   'India',
@@ -24,7 +24,7 @@ const countries = [
 ];
 
 // Common ports for dropdown
-const commonPorts = [
+const _commonPorts = [
   'Colombo',
   'Galle',
   'Trincomalee',
@@ -88,7 +88,7 @@ function ItineraryDashboard() {
       try {
         const res = await axios.get('http://localhost/Project-I/backend/getShipDetails.php');
         setAvailableShipNames(res.data.map(ship => ship.ship_name));
-      } catch (err) {
+      } catch {
         setAvailableShipNames([]);
       }
     }
@@ -541,7 +541,7 @@ function ItineraryDashboard() {
 }
 
 // Modal Component
-function ItineraryModal({ show, onHide, itinerary, onSave, shipNames, countries, ports, setShipNames, setCountries, setPorts, setShowAddShipModal, setShowAddRouteModal, setNewShipName, setNewRouteData }) {
+function ItineraryModal({ show, onHide, itinerary, onSave, shipNames }) {
   const [formData, setFormData] = useState({
     shipName: '',
     departurePort: '',

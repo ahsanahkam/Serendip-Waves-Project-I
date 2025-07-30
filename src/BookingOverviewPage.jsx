@@ -9,7 +9,7 @@ import { useContext } from 'react';
 
 // Mock cruise and booking data
 const cruiseTitles = ['Caribbean Adventure', 'Mediterranean Escape', 'Alaskan Expedition', 'Asian Discovery'];
-const cabinTypes = ['Suite', 'Balcony', 'Oceanview', 'Interior'];
+const cabinTypes = ['Interior', 'Ocean View', 'Balcony', 'Suite'];
 
 function BookingOverviewPage() {
   const { logout } = useContext(AuthContext);
@@ -109,7 +109,7 @@ function BookingOverviewPage() {
     setFormError('');
     setShowModal(true);
   };
-  const openEditModal = booking => {
+  const _openEditModal = booking => {
     setModalMode('edit');
     setForm({ ...booking });
     setFormError('');
@@ -197,7 +197,7 @@ function BookingOverviewPage() {
   };
 
   // Delete booking
-  const handleDelete = id => {
+  const _handleDelete = id => {
     if (window.confirm('Are you sure you want to delete this booking?')) {
       setBookings(prev => prev.filter(b => b.id !== id));
     }

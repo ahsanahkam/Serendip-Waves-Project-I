@@ -63,6 +63,8 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
   const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState('add');
+  const [showDetails, setShowDetails] = useState(false);
+  const [detailsItem, setDetailsItem] = useState(null);
   const [form, setForm] = useState({
     id: '',
     itemName: '',
@@ -217,9 +219,7 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
   const lowStockCount = data.filter(item => getStatus(item) === STATUS.LOW).length;
   const expiredCount = data.filter(item => getStatus(item) === STATUS.EXPIRED).length;
 
-  const [showDetails, setShowDetails] = useState(false);
-  const [detailsItem, setDetailsItem] = useState(null);
-  const handleShowDetails = (item) => {
+  const _handleShowDetails = (item) => {
     setDetailsItem(item);
     setShowDetails(true);
   };

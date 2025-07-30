@@ -3,7 +3,7 @@
 import HeroImage from './assets/Hero.jpg';
 
 // Optimized Hero Section as a component
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import DestinationsPage from "./DestinationsPage";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AboutSection from './AboutSection';
@@ -139,7 +139,7 @@ const ContactSection = () => {
       } else {
         setError(data.message || 'Failed to submit enquiry.');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to submit enquiry.');
     }
     setLoading(false);
