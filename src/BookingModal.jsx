@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { AuthContext } from "./App";
 import logo from './assets/logo.png';
 
@@ -25,6 +25,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
   const { currentUser } = useContext(AuthContext);
   const [step, setStep] = useState(1);
   const [cabinPricing, setCabinPricing] = useState([]);
+  const [cabinAvailability, setCabinAvailability] = useState([]);
   const [form, setForm] = useState({
     adults: 1,
     children: 0,
@@ -112,6 +113,42 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
       .catch(() => setCabinPricing([]));
   }, [isOpen]);
 
+  const getShipNameForDestination = useCallback((destination) => {
+    const itinerary = itineraries.find(item => item.route === destination);
+    return itinerary ? itinerary.ship_name : '';
+  }, [itineraries]);
+
+  // Fetch cabin availability when ship and destination are selected
+  useEffect(() => {
+    const fetchCabinAvailability = async () => {
+      console.log('Cabin availability fetch triggered:', { destination: form.destination });
+      if (!form.destination) return;
+      
+      const shipName = getShipNameForDestination(form.destination);
+      console.log('Ship name for destination:', shipName);
+      if (!shipName) return;
+      
+      try {
+        const response = await fetch(
+          `http://localhost/Project-I/backend/getCabinAvailability.php?ship_name=${encodeURIComponent(shipName)}&route=${encodeURIComponent(form.destination)}`
+        );
+        const data = await response.json();
+        console.log('Cabin availability response:', data);
+        
+        if (data.success && Array.isArray(data.cabin_availability)) {
+          setCabinAvailability(data.cabin_availability);
+        } else {
+          setCabinAvailability([]);
+        }
+      } catch (error) {
+        console.error('Error fetching cabin availability:', error);
+        setCabinAvailability([]);
+      }
+    };
+
+    fetchCabinAvailability();
+  }, [form.destination, itineraries, getShipNameForDestination]);
+
   // Fetch itineraries and extract unique destinations
   useEffect(() => {
     if (!isOpen) return;
@@ -128,11 +165,6 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
       })
       .catch(() => setAvailableDestinations([]));
   }, [isOpen]);
-
-  const getShipNameForDestination = (destination) => {
-    const itinerary = itineraries.find(item => item.route === destination);
-    return itinerary ? itinerary.ship_name : '';
-  };
 
   const getItineraryForDestination = (destination) => {
     return itineraries.find(item => item.route === destination);
@@ -800,7 +832,44 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
 
             {/* Cabin Type Selection */}
             <div style={{ marginTop: 24, marginBottom: 24 }}>
-              <label style={{ fontWeight: 600 }}>Cabin type</label>
+              <label style={{ fontWeight: 600, marginBottom: 8, display: 'block' }}>Cabin type</label>
+              
+              {/* Debug info */}
+              {console.log('Cabin availability data:', cabinAvailability)}
+              
+              {/* Show cabin availability if data is loaded */}
+              {cabinAvailability.length > 0 && (
+                <div style={{ 
+                  backgroundColor: '#f8f9fa', 
+                  border: '1px solid #e9ecef', 
+                  borderRadius: 8, 
+                  padding: 12, 
+                  marginBottom: 12 
+                }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8, color: '#495057' }}>
+                    Available Cabins {console.log('Rendering cabin availability UI:', cabinAvailability)}
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 8 }}>
+                    {cabinAvailability.map(cabin => (
+                      <div key={cabin.cabin_type} style={{ 
+                        textAlign: 'center', 
+                        fontSize: 12,
+                        padding: 6,
+                        backgroundColor: cabin.available > 0 ? '#d4edda' : '#f8d7da',
+                        color: cabin.available > 0 ? '#155724' : '#721c24',
+                        borderRadius: 4
+                      }}>
+                        <div style={{ fontWeight: 600 }}>{cabin.cabin_type}</div>
+                        <div>{cabin.available}/{cabin.total_capacity}</div>
+                        <div style={{ fontSize: 10 }}>
+                          {cabin.available > 0 ? 'Available' : 'Full'}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <select
                 name="cabinType"
                 value={form.cabinType}
@@ -810,9 +879,22 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
                 required
               >
                 <option value="">Select cabin type</option>
-                {cabinTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
+                {cabinTypes.map(type => {
+                  const availabilityInfo = cabinAvailability.find(cabin => cabin.cabin_type === type);
+                  const isAvailable = !availabilityInfo || availabilityInfo.available > 0;
+                  const availableText = availabilityInfo ? ` (${availabilityInfo.available} available)` : '';
+                  
+                  return (
+                    <option 
+                      key={type} 
+                      value={type} 
+                      disabled={!isAvailable}
+                      style={{ color: isAvailable ? 'inherit' : '#999' }}
+                    >
+                      {type}{availableText}
+                    </option>
+                  );
+                })}
               </select>
             </div>
 

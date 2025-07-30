@@ -31,6 +31,7 @@ const DynamicPricing = () => {
   useEffect(() => {
     fetchPricing();
     fetchItineraries();
+    fetchAvailableShips();
   }, []);
 
   // Filter functionality
@@ -71,8 +72,29 @@ const DynamicPricing = () => {
       const res = await fetch('http://localhost/Project-I/backend/getItineraries.php');
       const data = await res.json();
       setItineraries(data);
+      
+      // Extract unique routes from itineraries
+      if (data && Array.isArray(data)) {
+        const routes = [...new Set(data.map(item => item.route).filter(route => route && route.trim() !== ''))];
+        setAvailableRoutes(routes.sort());
+      }
     } catch {
       setItineraries([]);
+    }
+  };
+
+  const fetchAvailableShips = async () => {
+    try {
+      const res = await fetch('http://localhost/Project-I/backend/getShipDetails.php');
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        const ships = [...new Set(data.map(ship => ship.ship_name))];
+        setAvailableShips(ships.sort());
+      }
+    } catch (error) {
+      console.error('Error fetching ship details:', error);
+      // Fallback to ships from pricing data
+      setAvailableShips([]);
     }
   };
 
@@ -85,11 +107,20 @@ const DynamicPricing = () => {
       if (data.success) {
         setPricing(data.pricing);
         setFilteredPricing(data.pricing);
-        // Extract unique ships and routes for filter dropdowns
-        const ships = [...new Set(data.pricing.map(item => item.ship_name))];
-        const routes = [...new Set(data.pricing.map(item => item.route))];
-        setAvailableShips(ships);
-        setAvailableRoutes(routes);
+        
+        // Merge ships from pricing with ships from ship details (avoid duplicates)
+        const pricingShips = [...new Set(data.pricing.map(item => item.ship_name))];
+        setAvailableShips(prev => {
+          const merged = [...new Set([...prev, ...pricingShips])];
+          return merged.sort();
+        });
+        
+        // Merge routes from pricing with routes from itineraries (avoid duplicates)  
+        const pricingRoutes = [...new Set(data.pricing.map(item => item.route))];
+        setAvailableRoutes(prev => {
+          const merged = [...new Set([...prev, ...pricingRoutes])];
+          return merged.sort();
+        });
       } else {
         setError(data.message || 'Failed to fetch pricing');
       }
@@ -99,6 +130,10 @@ const DynamicPricing = () => {
     setLoading(false);
   };
 
+  const resetModalState = () => {
+    setForm({ ship_name: '', route: '', interior_price: '', ocean_view_price: '', balcony_price: '', suite_price: '' });
+  };
+
   const handleEdit = (item) => {
     setEditItem(item);
     setForm({ ...item });
@@ -106,25 +141,43 @@ const DynamicPricing = () => {
   };
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
   };
 
   const handleSave = async () => {
     try {
-      const res = await fetch('http://localhost/Project-I/backend/updateCabinTypePricing.php', {
+      const endpoint = editItem 
+        ? 'http://localhost/Project-I/backend/updateCabinTypePricing.php'
+        : 'http://localhost/Project-I/backend/addCabinTypePricing.php';
+      
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
       });
       const data = await res.json();
       if (data.success) {
-        fetchPricing();
+        // Immediately update available options if we're adding new ones
+        if (!editItem) {
+          if (form.ship_name && !availableShips.includes(form.ship_name)) {
+            setAvailableShips(prev => [...prev, form.ship_name].sort());
+          }
+          if (form.route && !availableRoutes.includes(form.route)) {
+            setAvailableRoutes(prev => [...prev, form.route].sort());
+          }
+        }
+        
+        fetchPricing(); // This will also refresh the options
         setShowModal(false);
+        resetModalState();
       } else {
-        setError(data.message || 'Failed to update pricing');
+        setError(data.message || 'Failed to save pricing');
+        console.error('Save failed:', data.message); // Debug log
       }
-    } catch {
-      setError('Error updating pricing');
+    } catch (error) {
+      setError('Error saving pricing');
+      console.error('Save error:', error); // Debug log
     }
   };
 
@@ -341,7 +394,7 @@ const DynamicPricing = () => {
         {error && <Alert variant="danger">{error}</Alert>}
         <Button variant="success" className="mb-3" onClick={() => {
           setEditItem(null);
-          setForm({ ship_name: '', route: '', interior_price: '', ocean_view_price: '', balcony_price: '', suite_price: '' });
+          resetModalState();
           setShowModal(true);
         }}>
           Add Pricing
@@ -437,7 +490,10 @@ const DynamicPricing = () => {
             </tbody>
           </Table>
         )}
-        <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal show={showModal} onHide={() => {
+          setShowModal(false);
+          resetModalState();
+        }}>
           <Modal.Header closeButton>
             <Modal.Title>{editItem ? 'Edit Pricing' : 'Add Pricing'}</Modal.Title>
           </Modal.Header>
@@ -446,20 +502,30 @@ const DynamicPricing = () => {
               <Form.Group className="mb-3">
                 <Form.Label>Ship Name</Form.Label>
                 <Form.Control
-                  type="text"
+                  as="select"
                   name="ship_name"
                   value={form.ship_name}
                   onChange={handleChange}
-                />
+                >
+                  <option value="">Select Ship Name</option>
+                  {availableShips.map((ship, index) => (
+                    <option key={index} value={ship}>{ship}</option>
+                  ))}
+                </Form.Control>
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Route</Form.Label>
                 <Form.Control
-                  type="text"
+                  as="select"
                   name="route"
                   value={form.route}
                   onChange={handleChange}
-                />
+                >
+                  <option value="">Select Route</option>
+                  {availableRoutes.map((route, index) => (
+                    <option key={index} value={route}>{route}</option>
+                  ))}
+                </Form.Control>
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Interior Price</Form.Label>
@@ -500,7 +566,10 @@ const DynamicPricing = () => {
             </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowModal(false)}>
+            <Button variant="secondary" onClick={() => {
+              setShowModal(false);
+              resetModalState();
+            }}>
               Cancel
             </Button>
             <Button variant="primary" onClick={handleSave}>
