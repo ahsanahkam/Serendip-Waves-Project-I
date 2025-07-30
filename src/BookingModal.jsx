@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "./App";
 import logo from './assets/logo.png';
 
-const cabinTypes = ["Interior", "Ocean View", "Balcony", "Suit"];
+const cabinTypes = ["Interior", "Ocean View", "Balcony", "Suite"];
 const _dietaryOptions = ["None", "Vegetarian", "Vegan", "Gluten-Free", "Kosher", "Halal"];
 const _addOns = [
   { label: "Snorkeling Excursion", value: "snorkeling" },
@@ -152,7 +152,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
     if (cabinType === 'Interior') price = Number(pricing.interior_price);
     else if (cabinType === 'Ocean View') price = Number(pricing.ocean_view_price);
     else if (cabinType === 'Balcony') price = Number(pricing.balcony_price);
-    else if (cabinType === 'Suit') price = Number(pricing.suit_price);
+    else if (cabinType === 'Suite') price = Number(pricing.suite_price);
     return (Number(adults) * price) + (Number(children) * price * 0.5);
   };
 
@@ -301,6 +301,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
           number_of_guests: parseInt(form.adults) + parseInt(form.children),
           card_type: form.cardType,
           card_number: form.cardNumber,
+          card_expiry: form.expiry,
           ship_name: shipName,
           destination: form.destination,
           total_price: getTotalPrice()

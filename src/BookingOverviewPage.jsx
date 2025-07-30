@@ -9,7 +9,7 @@ import { useContext } from 'react';
 
 // Mock cruise and booking data
 const cruiseTitles = ['Caribbean Adventure', 'Mediterranean Escape', 'Alaskan Expedition', 'Asian Discovery'];
-const cabinTypes = ['Suite', 'Balcony', 'Oceanview', 'Interior'];
+const cabinTypes = ['Interior', 'Ocean View', 'Balcony', 'Suite'];
 
 function BookingOverviewPage() {
   const { logout } = useContext(AuthContext);

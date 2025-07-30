@@ -25,7 +25,7 @@ const DynamicPricing = () => {
     interior_price: '',
     ocean_view_price: '',
     balcony_price: '',
-    suit_price: ''
+    suite_price: ''
   });
 
   useEffect(() => {
@@ -341,7 +341,7 @@ const DynamicPricing = () => {
         {error && <Alert variant="danger">{error}</Alert>}
         <Button variant="success" className="mb-3" onClick={() => {
           setEditItem(null);
-          setForm({ ship_name: '', route: '', interior_price: '', ocean_view_price: '', balcony_price: '', suit_price: '' });
+          setForm({ ship_name: '', route: '', interior_price: '', ocean_view_price: '', balcony_price: '', suite_price: '' });
           setShowModal(true);
         }}>
           Add Pricing
@@ -357,7 +357,7 @@ const DynamicPricing = () => {
                 <th>Interior</th>
                 <th>Ocean View</th>
                 <th>Balcony</th>
-                <th>Suit</th>
+                <th>Suite</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -369,7 +369,7 @@ const DynamicPricing = () => {
                   <td>{item.interior_price}</td>
                   <td>{item.ocean_view_price}</td>
                   <td>{item.balcony_price}</td>
-                  <td>{item.suit_price}</td>
+                  <td>{item.suite_price}</td>
                   <td>
                     <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
                       <button
@@ -489,11 +489,11 @@ const DynamicPricing = () => {
                 />
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>Suit Price</Form.Label>
+                <Form.Label>Suite Price</Form.Label>
                 <Form.Control
                   type="number"
-                  name="suit_price"
-                  value={form.suit_price}
+                  name="suite_price"
+                  value={form.suite_price}
                   onChange={handleChange}
                 />
               </Form.Group>
