@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "./App";
 import BookingModal from "./BookingModal";
-import GreeceImg from './assets/Greece.jpg';
 import { Modal, Button } from 'react-bootstrap';
 
 const Navbar = ({ onLoginClick, onSignupClick }) => {

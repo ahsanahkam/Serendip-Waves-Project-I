@@ -175,7 +175,6 @@ const CustomerDashboard = () => {
             </li>
           </ul>
         </div>
-
         {/* Content Area */}
         <div className="content-area">
           {/* Header */}
