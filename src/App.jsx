@@ -31,6 +31,7 @@ import FacilitiesPreferencePage from './FacilitiesPreferencePage';
 import MealsDashboard from './MealsDashboard';
 import FacilitiesDashboard from './FacilitiesDashboard';
 import FacilityManagement from './FacilityManagement';
+import ThingsToDo from './ThingstoDo';
 import './App.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import DynamicPricing from './DynamicPricing';
@@ -197,6 +198,7 @@ function AppRoutes(props) {
         <Route path="/" element={<HomePage onBookingClick={() => setIsBookingModalOpen(true)} />} />
         <Route path="/cruise-ships" element={<CruiseShipsPage />} />
         <Route path="/destinations" element={<DestinationsPage />} />
+        <Route path="/things-to-do" element={<ThingsToDo />} />
         <Route path="/booking" element={<Navigate to="/" replace />} />
         <Route path="/booking-overview" element={<ProtectedRoute><BookingOverviewPage /></ProtectedRoute>} />
         <Route path="/login" element={<LoginRouteHandler isAuthenticated={isAuthenticated} setIsLoginModalOpen={setIsLoginModalOpen} />} />
