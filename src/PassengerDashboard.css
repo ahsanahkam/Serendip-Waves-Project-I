@@ -1,0 +1,132 @@
+/* Merged PassengerDashboard.css and passenger.css */
+body, .passenger-dashboard-bg {
+  font-family: 'Inter', system-ui, Arial, sans-serif;
+  background: linear-gradient(135deg, #e0e7ef 60%, #f8fafc 100%);
+}
+.passenger-dashboard-bg {
+  min-height: 100vh;
+  /* Use the more visually appealing gradient from passenger.css */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px 0;
+}
+.passenger-table-wrapper {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.10);
+  padding: 1.5rem 1rem;
+  margin: 20px auto 2rem auto;
+  max-width: 1400px;
+}
+.passenger-table {
+  width: 100%;
+  margin: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+}
+.passenger-table th {
+  background: #f8f9fa;
+  color: #333;
+  font-weight: 600;
+  padding: 15px 12px;
+  border-bottom: 2px solid #dee2e6;
+  text-align: left;
+}
+.table-primary th {
+  background: #2563eb !important;
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 1.08rem;
+  letter-spacing: 0.5px;
+}
+.passenger-table td {
+  padding: 15px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+.passenger-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+.badge.bg-primary {
+  background: #2563eb !important;
+  color: #fff !important;
+}
+.badge.bg-info {
+  background: #e3f0ff !important;
+  color: #2563eb !important;
+  font-weight: 600;
+}
+@media (max-width: 767.98px) {
+  .passenger-table-wrapper {
+    padding: 0.5rem 0.2rem;
+  }
+  .passenger-table {
+    font-size: 0.95rem;
+  }
+} 
+.dashboard-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #b8c6ff 0%, #6f86d6 100%) !important;
+  padding: 20px 0;
+}
+.cabin-card {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.10);
+  padding: 2rem 2.5rem;
+  margin: 0 auto 2rem auto;
+  max-width: 1200px;
+}
+
+/* Action buttons */
+.horizontal-action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.action-rect-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-rect-btn.edit {
+  background: #3b82f6;
+  color: white;
+}
+
+.action-rect-btn.delete {
+  background: #ef4444;
+  color: white;
+}
+
+.action-rect-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Logout button */
+.superadmin-logout-btn {
+  background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+  border: none;
+  border-radius: 25px;
+  color: white;
+  padding: 10px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(229, 62, 62, 0.3);
+}
+
+.superadmin-logout-btn:hover, .superadmin-logout-btn:focus {
+  background: linear-gradient(135deg, #c53030 0%, #a82727 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(229, 62, 62, 0.4);
+}
