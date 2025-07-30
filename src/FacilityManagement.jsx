@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Card, Button, Form, Modal, Alert, Badge } from 'react-bootstrap';
-import { FaSwimmingPool, FaPlus, FaEdit, FaTrash, FaArrowLeft } from 'react-icons/fa';
+import { Table, Card, Button, Form, Modal, Alert, Badge, Image } from 'react-bootstrap';
+import { FaSwimmingPool, FaPlus, FaEdit, FaTrash, FaArrowLeft, FaImage } from 'react-icons/fa';
 
 function FacilityManagement() {
   const navigate = useNavigate();
@@ -12,10 +12,13 @@ function FacilityManagement() {
   const [currentFacility, setCurrentFacility] = useState({
     facility_id: null,
     facility: '',
+    about: '',
+    image: '',
     unit_price: '',
     status: 'active'
   });
   const [alert, setAlert] = useState({ show: false, message: '', type: '' });
+  const [imagePreview, setImagePreview] = useState('');
 
   // Determine the back navigation based on URL params or localStorage
   const getBackNavigation = () => {
@@ -53,7 +56,12 @@ function FacilityManagement() {
       const data = await response.json();
       
       if (data.success) {
-        setFacilities(data.facilities);
+        // Process facilities to add full image URLs
+        const processedFacilities = data.facilities.map(facility => ({
+          ...facility,
+          image: facility.image ? `http://localhost/Project-I/backend/${facility.image}` : null
+        }));
+        setFacilities(processedFacilities);
       } else {
         showAlert('Failed to load facilities', 'danger');
       }
@@ -78,24 +86,53 @@ function FacilityManagement() {
     setCurrentFacility({
       facility_id: null,
       facility: '',
+      about: '',
+      image: '',
       unit_price: '',
       status: 'active'
     });
+    setImagePreview('');
     setIsEditing(false);
     setShowModal(true);
   };
 
   const handleEdit = (facility) => {
-    setCurrentFacility(facility);
+    // Store the original facility data including the full image URL
+    const originalFacility = {
+      ...facility,
+      about: facility.about || '',
+      image: facility.image || ''
+    };
+    
+    // For editing, we need to separate the display URL from the data we send to backend
+    setCurrentFacility({
+      ...originalFacility,
+      // Store the relative path for backend (remove the base URL)
+      image: facility.image ? facility.image.replace('http://localhost/Project-I/backend/', '') : ''
+    });
+    
+    // For editing, show the image preview if it exists (use full URL for display)
+    if (facility.image) {
+      setImagePreview(facility.image);
+    } else {
+      setImagePreview('');
+    }
     setIsEditing(true);
     setShowModal(true);
   };
 
-  const handleDelete = async (facilityId) => {
+  const handleDeactivate = async (facilityId) => {
     if (window.confirm('Are you sure you want to deactivate this facility? It will no longer be available for booking.')) {
       try {
-        const response = await fetch(`http://localhost/Project-I/backend/manageFacilities.php?facility_id=${facilityId}`, {
-          method: 'DELETE'
+        const response = await fetch('http://localhost/Project-I/backend/manageFacilities.php', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            facility_id: facilityId,
+            status: 'inactive'
+          })
         });
         const data = await response.json();
         
@@ -148,12 +185,24 @@ function FacilityManagement() {
 
     try {
       const method = isEditing ? 'PUT' : 'POST';
+      
+      // Prepare data for backend
+      const facilityData = {
+        ...currentFacility
+      };
+      
+      // If we're editing and the image hasn't changed (no base64), send the relative path
+      if (isEditing && currentFacility.image && !currentFacility.image.startsWith('data:')) {
+        // Keep the relative path as is
+        facilityData.image = currentFacility.image;
+      }
+      
       const response = await fetch('http://localhost/Project-I/backend/manageFacilities.php', {
         method: method,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(currentFacility)
+        body: JSON.stringify(facilityData)
       });
       
       const data = await response.json();
@@ -224,6 +273,7 @@ function FacilityManagement() {
               <tr>
                 <th>#</th>
                 <th>Facility Name</th>
+                <th>Image</th>
                 <th>Unit Price</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -232,7 +282,7 @@ function FacilityManagement() {
             <tbody>
               {facilities.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="text-center text-muted">
+                  <td colSpan="6" className="text-center text-muted">
                     No facilities found
                   </td>
                 </tr>
@@ -241,6 +291,20 @@ function FacilityManagement() {
                   <tr key={facility.facility_id} className={facility.status === 'inactive' ? 'table-secondary text-muted' : ''}>
                     <td>{index + 1}</td>
                     <td>{facility.facility}</td>
+                    <td>
+                      {facility.image && (
+                        <img 
+                          src={facility.image} 
+                          alt={facility.facility} 
+                          style={{ 
+                            width: 60, 
+                            height: 40, 
+                            objectFit: 'cover', 
+                            borderRadius: 6 
+                          }} 
+                        />
+                      )}
+                    </td>
                     <td>${parseFloat(facility.unit_price).toFixed(2)}</td>
                     <td>{getStatusBadge(facility.status)}</td>
                     <td>
@@ -256,7 +320,7 @@ function FacilityManagement() {
                         <Button
                           variant="outline-warning"
                           size="sm"
-                          onClick={() => handleDelete(facility.facility_id)}
+                          onClick={() => handleDeactivate(facility.facility_id)}
                           title="Deactivate facility"
                         >
                           <FaTrash />
@@ -304,6 +368,90 @@ function FacilityManagement() {
                 })}
                 placeholder="Enter facility name"
               />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>About</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={currentFacility.about}
+                onChange={(e) => setCurrentFacility({
+                  ...currentFacility,
+                  about: e.target.value
+                })}
+                placeholder="Enter facility description"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Image</Form.Label>
+              <Form.Control
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                      const imageUrl = event.target.result;
+                      setCurrentFacility({
+                        ...currentFacility,
+                        image: imageUrl
+                      });
+                      setImagePreview(imageUrl);
+                    };
+                    reader.readAsDataURL(file);
+                  } else {
+                    // If file input is cleared, keep the original image for editing
+                    if (isEditing && currentFacility.image && !currentFacility.image.startsWith('data:')) {
+                      // Keep the existing image preview
+                      setImagePreview(`http://localhost/Project-I/backend/${currentFacility.image}`);
+                    } else {
+                      setImagePreview('');
+                    }
+                  }
+                }}
+              />
+              
+              {/* Clear image button */}
+              {imagePreview && (
+                <div className="mt-2 d-flex justify-content-between align-items-start">
+                  <div>
+                    <Form.Label className="form-label small">Image Preview:</Form.Label>
+                    <div>
+                      <Image 
+                        src={imagePreview} 
+                        alt="Preview" 
+                        width="150" 
+                        height="150" 
+                        rounded 
+                        style={{ 
+                          objectFit: 'cover',
+                          border: '2px solid #dee2e6'
+                        }}
+                        onError={() => setImagePreview('')}
+                      />
+                    </div>
+                  </div>
+                  <Button 
+                    variant="outline-danger" 
+                    size="sm"
+                    onClick={() => {
+                      setCurrentFacility({
+                        ...currentFacility,
+                        image: ''
+                      });
+                      setImagePreview('');
+                      // Clear the file input
+                      const fileInput = document.querySelector('input[type="file"]');
+                      if (fileInput) fileInput.value = '';
+                    }}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              )}
             </Form.Group>
 
             <Form.Group className="mb-3">
