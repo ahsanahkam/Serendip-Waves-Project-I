@@ -66,11 +66,9 @@ const ThingsToDo = () => {
                 pricing: pricingInfo.pricing,
                 isPremium: pricingInfo.isPremium
               };
-              console.log('Transformed facility:', facilityData); // Debug log
               return facilityData;
             });
           
-          console.log('All transformed facilities:', transformedFacilities); // Debug log
           setFacilities(transformedFacilities);
         } else {
           console.error('Failed to fetch facilities:', data.message);
