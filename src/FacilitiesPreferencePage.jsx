@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Form, Row, Col, Table, Card, Alert } from 'react-bootstrap';
-import { FaSwimmingPool, FaArrowLeft, FaCreditCard, FaSave } from 'react-icons/fa';
+import { FaSwimmingPool, FaArrowLeft, FaCreditCard, FaSave, FaCheckCircle } from 'react-icons/fa';
 import FacilityBookingConfirmation from './components/FacilityBookingConfirmation';
 import BookedFacilities from './components/BookedFacilities';
 import './FacilitiesPreferencePage.css';
@@ -24,6 +24,7 @@ function FacilitiesPreferencePage() {
   const [success, setSuccess] = useState('');
   const [showBookingConfirmation, setShowBookingConfirmation] = useState(false);
   const [refreshBookedFacilities, setRefreshBookedFacilities] = useState(0);
+  const [existingBookingStatus, setExistingBookingStatus] = useState(null); // Track if booking is paid
 
   // Fetch facilities from backend
   useEffect(() => {
@@ -258,20 +259,20 @@ function FacilitiesPreferencePage() {
       // Refresh booked facilities display
       setRefreshBookedFacilities(prev => prev + 1);
       
+      // Reset the form and close the modal after successful payment
+      setSelectedFacilities({});
+      setQuantities({});
+      setShowBookingConfirmation(false); // Close the payment popup
+      
       switch (action) {
         case 'confirm':
-          setSuccess('🎉 Payment confirmed! Facilities booked successfully.');
-          setTimeout(() => navigate(`/customer-dashboard`), 5000);
+          setSuccess('🎉 Payment confirmed! Facilities booked successfully. You can add more facilities below if needed.');
           break;
         case 'save_pending':
-          setSuccess('💾 Preferences saved! You can complete payment later.');
-          setTimeout(() => navigate(`/customer-dashboard`), 5000);
+          setSuccess('💾 Preferences saved! You can complete payment later or add more facilities below.');
           break;
         case 'cancel':
           setSuccess('❌ Booking cancelled.');
-          // Reset form
-          setSelectedFacilities({});
-          setQuantities({});
           break;
       }
     } else {
@@ -341,12 +342,25 @@ function FacilitiesPreferencePage() {
             <BookedFacilities 
               bookingId={bookingId} 
               key={refreshBookedFacilities} 
-              onBookingUpdate={(action) => {
+              onBookingUpdate={(action, data) => {
                 if (action === 'cancelled') {
                   setSuccess('❌ Booking cancelled successfully!');
                   // Reset form to allow new booking
                   setSelectedFacilities({});
                   setQuantities({});
+                  setExistingBookingStatus(null);
+                } else if (action === 'payment_completed') {
+                  setSuccess('✅ Payment completed successfully! Your facilities are now confirmed. You can add more facilities below if needed.');
+                  // Update status to paid but don't redirect - let user add more facilities
+                  setExistingBookingStatus('paid');
+                  // Reset the current selection form
+                  setSelectedFacilities({});
+                  setQuantities({});
+                  // Refresh the booked facilities display
+                  setRefreshBookedFacilities(prev => prev + 1);
+                } else if (action === 'status_loaded' && data) {
+                  // Track the payment status to determine if booking is read-only
+                  setExistingBookingStatus(data.payment_status);
                 }
               }}
             />
@@ -369,6 +383,15 @@ function FacilitiesPreferencePage() {
             )}
             {success && <Alert variant="success">{success}</Alert>}
             
+            {/* Show info message if user has existing paid booking */}
+            {existingBookingStatus === 'paid' && (
+              <Alert variant="info" className="mb-3">
+                <FaCheckCircle className="me-2" />
+                <strong>Previous Booking Confirmed:</strong> You have confirmed facilities above. You can add more facilities below if needed.
+              </Alert>
+            )}
+            
+            {/* Facility selection form - always show unless journey is completed */}
             <div className="facilities-selection">
               <div className="facilities-grid-container">
                 {Object.entries(facilities).map(([facilityId, facility]) => (
@@ -467,7 +490,7 @@ function FacilitiesPreferencePage() {
                   className="pay-now-btn"
                 >
                   <FaCreditCard className="me-2" />
-                  Book Facilities (${calculateTotal()})
+                  {existingBookingStatus === 'paid' ? 'Book Additional Facilities' : 'Book Facilities'} (${calculateTotal()})
                 </Button>
                 
                 <Button 
@@ -501,6 +524,7 @@ function FacilitiesPreferencePage() {
                 </Button>
               </div>
             </div>
+
           </Card.Body>
         </Card>
       </div>
@@ -520,6 +544,4 @@ function FacilitiesPreferencePage() {
       />
     </div>
   );
-}
-
-export default FacilitiesPreferencePage;
+}export default FacilitiesPreferencePage;

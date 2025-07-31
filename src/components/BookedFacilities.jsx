@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Badge, Table, Alert, Spinner, Button, Modal } from 'react-bootstrap';
 import { FaSwimmingPool, FaCheckCircle, FaClock, FaTimes, FaEye, FaTrash, FaExclamationTriangle } from 'react-icons/fa';
+import FacilityBookingReceipt from './FacilityBookingReceipt';
 
 const BookedFacilities = ({ bookingId, showTitle = true, onBookingUpdate }) => {
   const [bookedFacilities, setBookedFacilities] = useState(null);
@@ -8,6 +9,8 @@ const BookedFacilities = ({ bookingId, showTitle = true, onBookingUpdate }) => {
   const [error, setError] = useState('');
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
 
   const fetchBookedFacilities = useCallback(async () => {
     try {
@@ -21,6 +24,11 @@ const BookedFacilities = ({ bookingId, showTitle = true, onBookingUpdate }) => {
         console.log('Booked facilities data:', data.preference);
         console.log('Passenger name in booked facilities:', data.preference?.passenger_name);
         setBookedFacilities(data.preference);
+        
+        // Notify parent component about the booking status
+        if (onBookingUpdate && data.preference) {
+          onBookingUpdate('status_loaded', data.preference);
+        }
       } else {
         setError('No facility bookings found for this booking ID.');
       }
@@ -30,7 +38,7 @@ const BookedFacilities = ({ bookingId, showTitle = true, onBookingUpdate }) => {
     } finally {
       setLoading(false);
     }
-  }, [bookingId]);
+  }, [bookingId, onBookingUpdate]);
 
   useEffect(() => {
     if (bookingId) {
@@ -77,6 +85,47 @@ const BookedFacilities = ({ bookingId, showTitle = true, onBookingUpdate }) => {
       alert('Failed to cancel booking. Please try again.');
     } finally {
       setCancelLoading(false);
+    }
+  };
+
+  const handleCompletePayment = async () => {
+    setPaymentLoading(true);
+    try {
+      const response = await fetch('http://localhost/Project-I/backend/processFacilityBooking.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          booking_id: bookingId,
+          action: 'confirm',
+          selected_facilities: bookedFacilities.selected_facilities,
+          quantities: bookedFacilities.quantities,
+          total_cost: bookedFacilities.total_cost,
+          passenger_email: bookedFacilities.passenger_email,
+          passenger_name: bookedFacilities.passenger_name
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert('✅ Payment completed successfully! Confirmation email sent.');
+        // Refresh the data to show updated status
+        fetchBookedFacilities();
+        
+        // Notify parent component if callback provided
+        if (onBookingUpdate) {
+          onBookingUpdate('payment_completed', data);
+        }
+      } else {
+        alert('Error processing payment: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Payment processing error:', error);
+      alert('Failed to process payment. Please try again.');
+    } finally {
+      setPaymentLoading(false);
     }
   };
 
@@ -246,9 +295,20 @@ const BookedFacilities = ({ bookingId, showTitle = true, onBookingUpdate }) => {
               <Button 
                 variant="success" 
                 size="sm"
-                onClick={() => window.location.href = `/facilities/${bookingId}`}
+                onClick={handleCompletePayment}
+                disabled={paymentLoading}
               >
-                Complete Payment
+                {paymentLoading ? (
+                  <>
+                    <Spinner animation="border" size="sm" className="me-2" />
+                    Processing Payment...
+                  </>
+                ) : (
+                  <>
+                    <FaCheckCircle className="me-1" />
+                    Complete Payment
+                  </>
+                )}
               </Button>
               <Button 
                 variant="outline-primary" 
@@ -274,26 +334,22 @@ const BookedFacilities = ({ bookingId, showTitle = true, onBookingUpdate }) => {
         {bookedFacilities.payment_status === 'paid' && !bookedFacilities.journey_completed && (
           <div className="mt-3">
             <Alert variant="success">
-              <strong>Booking Confirmed:</strong> Your facilities are confirmed and paid for.
+              <strong>✅ Booking Confirmed & Paid:</strong> Your facilities are confirmed and payment has been processed successfully. You can view your booking details below.
             </Alert>
             <div className="d-flex gap-2 flex-wrap">
               <Button 
-                variant="outline-primary" 
+                variant="primary" 
                 size="sm"
-                onClick={() => window.location.href = `/facilities/${bookingId}`}
+                onClick={() => setShowReceiptModal(true)}
               >
                 <FaEye className="me-1" />
-                View Details
+                View Booking Receipt
               </Button>
-              <Button 
-                variant="outline-danger" 
-                size="sm"
-                onClick={() => setShowCancelModal(true)}
-                disabled={cancelLoading}
-              >
-                <FaTrash className="me-1" />
-                Cancel & Refund
-              </Button>
+            </div>
+            <div className="mt-2">
+              <small className="text-muted">
+                <strong>Note:</strong> This booking has been confirmed and paid. For any changes or assistance, please contact our customer service team.
+              </small>
             </div>
           </div>
         )}
@@ -386,6 +442,13 @@ const BookedFacilities = ({ bookingId, showTitle = true, onBookingUpdate }) => {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* Facility Booking Receipt Modal */}
+      <FacilityBookingReceipt 
+        show={showReceiptModal}
+        onHide={() => setShowReceiptModal(false)}
+        bookingId={bookingId}
+      />
     </Card>
   );
 };
