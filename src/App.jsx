@@ -29,6 +29,7 @@ import Enquiries from './Enquiries';
 import MealsPreferencePage from './MealsPreferencePage';
 import FacilitiesPreferencePage from './FacilitiesPreferencePage';
 import MealsDashboard from './MealsDashboard';
+import MealsOptionsDashboard from './MealsOptionsDashboard';
 import FacilitiesDashboard from './FacilitiesDashboard';
 import FacilityManagement from './FacilityManagement';
 import ThingsToDo from './ThingstoDo';
@@ -146,6 +147,7 @@ function AppRoutes(props) {
     '/meals', // Hide navbar for Meal Preferences pages
     '/facilities', // Hide navbar for Facility Preferences pages
     '/meals-dashboard', // Hide navbar for Meals Dashboard
+    '/meals-options-dashboard', // Hide navbar for Meals Options Dashboard
     '/facilities-dashboard' // Hide navbar for Facilities Dashboard
   ];
   const shouldShowNavbar = !hideNavbarRoutes.some(route => location.pathname.startsWith(route));
@@ -220,6 +222,7 @@ function AppRoutes(props) {
         <Route path="/meals/:bookingId" element={<ProtectedRoute><MealsPreferencePage /></ProtectedRoute>} />
         <Route path="/facilities/:bookingId" element={<ProtectedRoute><FacilitiesPreferencePage /></ProtectedRoute>} />
         <Route path="/meals-dashboard" element={<ProtectedRoute><MealsDashboard /></ProtectedRoute>} />
+        <Route path="/meals-options-dashboard" element={<ProtectedRoute><MealsOptionsDashboard /></ProtectedRoute>} />
         <Route path="/facilities-dashboard" element={<ProtectedRoute><FacilitiesDashboard /></ProtectedRoute>} />
         <Route path="/facility-management" element={<ProtectedRoute><FacilityManagement /></ProtectedRoute>} />
       </Routes>
