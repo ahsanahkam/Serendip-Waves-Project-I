@@ -4,18 +4,16 @@ import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
 import { FaArrowLeft, FaLeaf, FaSeedling, FaMosque, FaHeartbeat, FaBreadSlice, FaUtensils, FaCoffee, FaWineGlass } from 'react-icons/fa';
 import './OurDining.css';
 
-// Import available local images and use online placeholders for meal-specific images
+// Import meal type images - add these images to assets folder
+import basicVegetarianImg from './assets/basic-vegetarian-meal.jpg';
+import veganImg from './assets/vegan-meal.jpg';
+import halalGourmetImg from './assets/halal-gourmet-meal.jpg';
+import diabeticFriendlyImg from './assets/diabetic-friendly-meal.jpg';
+import glutenFreeImg from './assets/gluten-free-meal.jpg';
+import diningHallImg from './assets/dining-hall-interior.jpg';
+import chefKitchenImg from './assets/chef-cooking.jpg';
+import fineDiningImg from './assets/fine-dining-setup.jpg';
 import eventHallsImg from './assets/event-halls.jpg';
-
-// Online placeholder images for meal types
-const basicVegetarianImg = 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
-const veganImg = 'https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
-const halalGourmetImg = 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
-const diabeticFriendlyImg = 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
-const glutenFreeImg = 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
-const diningHallImg = eventHallsImg; // Use local event halls image for dining hall
-const chefKitchenImg = 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
-const fineDiningImg = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
 
 const OurDining = () => {
   const navigate = useNavigate();
@@ -161,7 +159,15 @@ const OurDining = () => {
                             alt={mealType.name}
                             className="meal-image"
                             onError={(e) => {
-                              e.target.src = '/placeholder-meal.jpg';
+                              // Fallback to online image if local image fails
+                              const fallbacks = {
+                                'basic': 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+                                'vegan': 'https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+                                'halal': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+                                'diabetic': 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+                                'gluten_free': 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
+                              };
+                              e.target.src = fallbacks[mealType.id] || '/placeholder-meal.jpg';
                             }}
                           />
                         </div>
