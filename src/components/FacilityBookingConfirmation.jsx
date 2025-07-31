@@ -94,15 +94,13 @@ const FacilityBookingConfirmation = ({
 
         alert(successMessage);
         
-        // Call parent callback to refresh data
+        // Call parent callback to refresh data and let it handle modal closure
         if (onBookingComplete) {
           onBookingComplete(action, data);
         }
         
-        // Hide modal after a delay to let user see the success message
-        setTimeout(() => {
-          onHide();
-        }, 2000);
+        // Close modal immediately after parent callback
+        onHide();
       } else {
         alert('Error: ' + data.message);
       }
