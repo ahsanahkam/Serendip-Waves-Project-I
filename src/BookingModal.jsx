@@ -188,6 +188,23 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
     return (Number(adults) * price) + (Number(children) * price * 0.5);
   };
 
+  // Get unit price for specific cabin type
+  const getCabinUnitPrice = (cabinType) => {
+    const { destination } = form;
+    if (!destination) return 0;
+    const itinerary = itineraries.find(i => i.route === destination);
+    if (!itinerary) return 0;
+    const ship_name = itinerary.ship_name;
+    const pricing = cabinPricing.find(p => p.ship_name === ship_name && p.route === destination);
+    if (!pricing) return 0;
+    
+    if (cabinType === 'Interior') return Number(pricing.interior_price);
+    else if (cabinType === 'Ocean View') return Number(pricing.ocean_view_price);
+    else if (cabinType === 'Balcony') return Number(pricing.balcony_price);
+    else if (cabinType === 'Suite') return Number(pricing.suite_price);
+    return 0;
+  };
+
   useEffect(() => {
     if (isOpen && defaultCountry && !form.destination) {
       setForm(prev => ({ ...prev, destination: defaultCountry }));
@@ -834,8 +851,56 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
             <div style={{ marginTop: 24, marginBottom: 24 }}>
               <label style={{ fontWeight: 600, marginBottom: 8, display: 'block' }}>Cabin type</label>
               
-              {/* Debug info */}
-              {console.log('Cabin availability data:', cabinAvailability)}
+              {/* Pricing Information Display */}
+              {cabinPricing && cabinPricing.length > 0 && form.destination && (
+                <div style={{ 
+                  backgroundColor: '#e8f4f8', 
+                  border: '1px solid #bee5eb', 
+                  borderRadius: 8, 
+                  padding: 12, 
+                  marginBottom: 12 
+                }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8, color: '#0c5460' }}>
+                    Cabin Pricing (per person)
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 8 }}>
+                    {(() => {
+                      const itinerary = itineraries.find(i => i.route === form.destination);
+                      if (!itinerary) return null;
+                      
+                      const pricing = cabinPricing.find(p => p.ship_name === itinerary.ship_name && p.route === form.destination);
+                      if (!pricing) return null;
+                      
+                      const cabinTypes = [
+                        { type: 'Interior', price: pricing.interior_price },
+                        { type: 'Ocean View', price: pricing.ocean_view_price },
+                        { type: 'Balcony', price: pricing.balcony_price },
+                        { type: 'Suite', price: pricing.suite_price }
+                      ];
+                      
+                      return cabinTypes.map(({ type, price }) => (
+                        <div key={type} style={{
+                          padding: '8px 12px',
+                          backgroundColor: 'white',
+                          borderRadius: 6,
+                          border: '1px solid #b8daff',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}>
+                          <span style={{ fontSize: 13, fontWeight: 500 }}>{type}</span>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: '#007bff' }}>
+                            ${price}/person
+                          </span>
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                  <div style={{ fontSize: 12, color: '#6c757d', marginTop: 8, fontStyle: 'italic' }}>
+                    * Children (under 12): 50% discount
+                  </div>
+                </div>
+              )}
               
               {/* Show cabin availability if data is loaded */}
               {cabinAvailability.length > 0 && (
@@ -847,7 +912,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
                   marginBottom: 12 
                 }}>
                   <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8, color: '#495057' }}>
-                    Available Cabins {console.log('Rendering cabin availability UI:', cabinAvailability)}
+                    Available Cabins
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 8 }}>
                     {cabinAvailability.map(cabin => (
@@ -883,6 +948,8 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
                   const availabilityInfo = cabinAvailability.find(cabin => cabin.cabin_type === type);
                   const isAvailable = !availabilityInfo || availabilityInfo.available > 0;
                   const availableText = availabilityInfo ? ` (${availabilityInfo.available} available)` : '';
+                  const unitPrice = getCabinUnitPrice(type);
+                  const priceText = unitPrice > 0 ? ` - $${unitPrice}/person` : '';
                   
                   return (
                     <option 
@@ -891,7 +958,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
                       disabled={!isAvailable}
                       style={{ color: isAvailable ? 'inherit' : '#999' }}
                     >
-                      {type}{availableText}
+                      {type}{priceText}{availableText}
                     </option>
                   );
                 })}
@@ -943,7 +1010,11 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 24 }}>
-              <button type="button" onClick={handleBack} className="booking-modal-btn secondary">Cancel</button>
+              {!bookingSuccess ? (
+                <button type="button" onClick={handleBack} className="booking-modal-btn secondary">Cancel</button>
+              ) : (
+                <button type="button" onClick={handleBack} className="booking-modal-btn secondary">Back</button>
+              )}
               {!bookingSuccess && (
                 <button type="submit" className="booking-modal-btn" id="managePaymentBtn">Make Payment</button>
               )}
