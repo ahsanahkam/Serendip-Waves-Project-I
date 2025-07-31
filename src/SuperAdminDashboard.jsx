@@ -75,6 +75,12 @@ const dashboardButtons = [
     active: true,
   },
   {
+    label: "Meal Options",
+    icon: <FaUtensils size={28} />,
+    route: "/meals-options-dashboard",
+    active: true,
+  },
+  {
     label: "Facilities Dashboard", 
     icon: <FaSwimmingPool size={28} />,
     route: "/facilities-dashboard",
