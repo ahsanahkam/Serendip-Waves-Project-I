@@ -22,6 +22,7 @@ import ItineraryDashboard from './ItineraryDashboard';
 import CabinAdminDashboard from './CabinAdminDashboard';
 import PassengerDashboard from './PassengerDashboard';
 import AdminDashboard from './AdminDashboard';
+import ChefDashboard from './ChefDashboard';
 import DestinationDetails from './DestinationDetails';
 import ManageCruises from './ManageCruises';
 import ItineraryDetails from './ItineraryDetails';
@@ -213,6 +214,7 @@ function AppRoutes(props) {
         <Route path="/cabin-admin" element={<ProtectedRoute><CabinAdminDashboard /></ProtectedRoute>} />
         <Route path="/passenger-management" element={<ProtectedRoute><PassengerDashboard /></ProtectedRoute>} />
         <Route path="/admin-dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/chef-dashboard" element={<ProtectedRoute><ChefDashboard /></ProtectedRoute>} />
         <Route path="/destination/:country" element={<DestinationDetails />} />
         <Route path="/itinerary-details" element={<ProtectedRoute><ItineraryDetails /></ProtectedRoute>} />
         <Route path="/enquiries" element={<ProtectedRoute><Enquiries /></ProtectedRoute>} />

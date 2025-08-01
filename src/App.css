@@ -423,3 +423,45 @@ body {
 .admin-dashboard-btn:focus svg {
   color: #fff !important;
 }
+
+/* Admin Dashboard Column Layout */
+.admin-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  min-width: 300px;
+  flex: 1;
+}
+
+.admin-column-title {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-align: center;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid rgba(255,255,255,0.3);
+  padding-bottom: 0.5rem;
+  width: 100%;
+  max-width: 280px;
+}
+
+@media (max-width: 1200px) {
+  .admin-column {
+    min-width: 280px;
+    margin-bottom: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-column {
+    min-width: 100%;
+    max-width: 320px;
+  }
+  
+  .admin-column-title {
+    font-size: 1.3rem;
+  }
+}
