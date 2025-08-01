@@ -59,15 +59,37 @@ function MealsDashboard() {
       
       if (data.success && data.preferences) {
         // Transform the data to match expected structure
-        const transformedData = data.preferences.map((pref, index) => ({
-          id: index + 1,
-          passengerName: pref.passenger_name || 'Unknown',
-          bookingId: pref.booking_id,
-          mealType: pref.meal_type,
-          mealTimes: [...(pref.main_meals || []), ...(pref.tea_times || [])],
-          days: pref.days,
-          notes: pref.notes || ''
-        }));
+        const transformedData = data.preferences.map((pref, index) => {
+          // Convert meal IDs to display names
+          const mainMealNames = (pref.main_meals || []).map(mealId => {
+            switch(mealId) {
+              case 'breakfast': return 'Breakfast';
+              case 'lunch': return 'Lunch';
+              case 'dinner': return 'Dinner';
+              default: return mealId;
+            }
+          });
+          
+          const teaTimeNames = (pref.tea_times || []).map(teaId => {
+            switch(teaId) {
+              case 'morning_tea': return 'Morning Teatime';
+              case 'evening_tea': return 'Evening Teatime';
+              default: return teaId;
+            }
+          });
+          
+          return {
+            id: index + 1,
+            passengerName: pref.passenger_name || 'Unknown',
+            bookingId: pref.booking_id,
+            mealType: pref.meal_type,
+            mealTimes: [...mainMealNames, ...teaTimeNames],
+            days: parseInt(pref.days) || 0,
+            notes: pref.notes || ''
+          };
+        });
+        
+        console.log('Transformed meal data:', transformedData); // Debug log
         setMealsData(transformedData);
       } else {
         setMealsData([]);
@@ -121,11 +143,11 @@ function MealsDashboard() {
                 <Button 
                   variant="light" 
                   size="sm" 
-                  onClick={() => navigate('/super-admin')}
+                  onClick={() => navigate('/meals-options-dashboard')}
                   className="me-3"
                 >
                   <FaArrowLeft className="me-1" />
-                  Back
+                  Back to Meal Options
                 </Button>
                 <h2 className="mb-0">
                   <FaUtensils className="me-2" />
@@ -221,8 +243,14 @@ function MealsDashboard() {
                   {(() => {
                     // Calculate meal counts
                     const mealCounts = {};
+                    
+                    console.log('Filtered data for meal count calculation:', filteredData); // Debug log
+                    
                     filteredData.forEach(item => {
                       const mealType = item.mealType;
+                      
+                      console.log(`Processing item: ${item.passengerName}, mealType: ${mealType}, mealTimes: ${JSON.stringify(item.mealTimes)}, days: ${item.days}`); // Debug log
+                      
                       if (!mealCounts[mealType]) {
                         mealCounts[mealType] = {
                           passengers: 0,
@@ -234,24 +262,31 @@ function MealsDashboard() {
                       
                       // Count individual meal times (excluding tea services)
                       item.mealTimes.forEach(mealTime => {
-                        const mealsForThisType = item.days;
+                        const mealsForThisType = parseInt(item.days) || 0;
+                        
+                        console.log(`Processing mealTime: ${mealTime}, days: ${mealsForThisType}`); // Debug log
                         
                         // Only count main meals (breakfast, lunch, dinner) for individual meal type boxes
                         if (mealTime === 'Breakfast') {
                           mealCounts[mealType].totalMeals += mealsForThisType;
                           mealCounts[mealType].breakdown.breakfast += mealsForThisType;
+                          console.log(`Added ${mealsForThisType} breakfast meals for ${mealType}`); // Debug log
                         }
                         if (mealTime === 'Lunch') {
                           mealCounts[mealType].totalMeals += mealsForThisType;
                           mealCounts[mealType].breakdown.lunch += mealsForThisType;
+                          console.log(`Added ${mealsForThisType} lunch meals for ${mealType}`); // Debug log
                         }
                         if (mealTime === 'Dinner') {
                           mealCounts[mealType].totalMeals += mealsForThisType;
                           mealCounts[mealType].breakdown.dinner += mealsForThisType;
+                          console.log(`Added ${mealsForThisType} dinner meals for ${mealType}`); // Debug log
                         }
                         // Tea services are handled separately in the tea summary box
                       });
                     });
+
+                    console.log('Final meal counts:', mealCounts); // Debug log
 
                     return Object.entries(mealCounts).map(([mealType, data]) => (
                       <Col md={6} lg={4} key={mealType} className="mb-3">

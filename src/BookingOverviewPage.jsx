@@ -7,15 +7,13 @@ import logo from './assets/logo.png';
 import { AuthContext } from './App';
 import { useContext } from 'react';
 
-// Mock cruise and booking data
-const cruiseTitles = ['Caribbean Adventure', 'Mediterranean Escape', 'Alaskan Expedition', 'Asian Discovery'];
-const cabinTypes = ['Interior', 'Ocean View', 'Balcony', 'Suite'];
-
 function BookingOverviewPage() {
   const { logout } = useContext(AuthContext);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = (to) => { window.location.href = to; };
   const [bookings, setBookings] = useState([]);
+  const [cruiseTitles, setCruiseTitles] = useState([]);
+  const [cabinTypes, setCabinTypes] = useState([]);
   const [filters, setFilters] = useState({
     search: '',
     cruise: '',
@@ -50,14 +48,46 @@ function BookingOverviewPage() {
   });
   const [formError, setFormError] = useState('');
 
-  // Fetch bookings from backend on mount
+  // Fetch data from backend on mount
   useEffect(() => {
+    // Fetch bookings
     fetch('http://localhost/Project-I/backend/getAllBookings.php')
       .then(res => res.json())
       .then(data => {
         if (data.success && data.bookings) {
           setBookings(data.bookings);
         }
+      })
+      .catch(error => {
+        console.error('Error fetching bookings:', error);
+      });
+
+    // Fetch cruise titles
+    fetch('http://localhost/Project-I/backend/getCruises.php')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.cruises) {
+          setCruiseTitles(data.cruises);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching cruises:', error);
+        // Fallback to default cruises
+        setCruiseTitles(['Caribbean Adventure', 'Mediterranean Escape', 'Alaskan Expedition', 'Asian Discovery']);
+      });
+
+    // Fetch cabin types
+    fetch('http://localhost/Project-I/backend/getCabinTypes.php')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.cabinTypes) {
+          setCabinTypes(data.cabinTypes);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching cabin types:', error);
+        // Fallback to default cabin types
+        setCabinTypes(['Interior', 'Ocean View', 'Balcony', 'Suite']);
       });
   }, []);
 
@@ -111,7 +141,30 @@ function BookingOverviewPage() {
   };
   const _openEditModal = booking => {
     setModalMode('edit');
-    setForm({ ...booking });
+    
+    // Map backend booking structure to form structure
+    setForm({
+      id: booking.booking_id,
+      cruise: booking.ship_name || '',
+      cabinNumber: booking.room_number || '',
+      cabinType: booking.room_type || '',
+      date: booking.booking_date || '',
+      price: booking.total_amount || '',
+      guests: (booking.adults || 1) + (booking.children || 0),
+      primaryPassenger: {
+        name: booking.full_name || '',
+        gender: booking.gender || '',
+        age: booking.age || '',
+        citizenship: booking.citizenship || '',
+        email: booking.email || ''
+      },
+      additionalPassengers: Array(3).fill().map(() => ({
+        name: '',
+        age: '',
+        citizenship: ''
+      }))
+    });
+    
     setFormError('');
     setShowModal(true);
   };
@@ -152,8 +205,10 @@ function BookingOverviewPage() {
   };
 
   // Add/Edit booking
-  const handleFormSubmit = e => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
+    setFormError('');
+    
     // Validate required fields
     if (!form.primaryPassenger.name || !form.cruise || !form.cabinNumber || !form.cabinType || !form.date || !form.price) {
       setFormError('Please fill in all required fields.');
@@ -169,37 +224,77 @@ function BookingOverviewPage() {
         }
       }
     }
-    
-    // Validate double booking
-    const isDoubleBooked = bookings.some(b =>
-      b.cruise === form.cruise &&
-      b.cabinNumber === form.cabinNumber &&
-      b.date === form.date &&
-      (modalMode === 'add' || (modalMode === 'edit' && b.id !== form.id))
-    );
-    if (isDoubleBooked) {
-      setFormError('This cabin is already booked for the selected date.');
-      return;
-    }
-    
-    if (modalMode === 'add') {
-      const newBooking = {
+
+    try {
+      const payload = {
         ...form,
-        id: 'B' + (Math.floor(Math.random() * 9000) + 1000),
-        guests: Number(form.guests),
-        price: Number(form.price),
+        adults: Math.max(1, form.guests - (form.additionalPassengers.filter(p => p.age && parseInt(p.age) < 18).length)),
+        children: form.additionalPassengers.filter(p => p.age && parseInt(p.age) < 18).length,
+        destination: 'Various Destinations' // Default destination
       };
-      setBookings(prev => [...prev, newBooking]);
-    } else {
-      setBookings(prev => prev.map(b => (b.id === form.id ? { ...form, guests: Number(form.guests), price: Number(form.price) } : b)));
+
+      const url = 'http://localhost/Project-I/backend/manageBookings.php';
+      const method = modalMode === 'add' ? 'POST' : 'PUT';
+      
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Refresh bookings list
+        const bookingsResponse = await fetch('http://localhost/Project-I/backend/getAllBookings.php');
+        const bookingsData = await bookingsResponse.json();
+        
+        if (bookingsData.success && bookingsData.bookings) {
+          setBookings(bookingsData.bookings);
+        }
+
+        setShowModal(false);
+        setFormError('');
+      } else {
+        setFormError(data.message || 'Failed to save booking. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error saving booking:', error);
+      setFormError('Network error. Please check your connection and try again.');
     }
-    setShowModal(false);
   };
 
   // Delete booking
-  const _handleDelete = id => {
+  const _handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this booking?')) {
-      setBookings(prev => prev.filter(b => b.id !== id));
+      try {
+        const response = await fetch('http://localhost/Project-I/backend/manageBookings.php', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id: id })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Refresh bookings list
+          const bookingsResponse = await fetch('http://localhost/Project-I/backend/getAllBookings.php');
+          const bookingsData = await bookingsResponse.json();
+          
+          if (bookingsData.success && bookingsData.bookings) {
+            setBookings(bookingsData.bookings);
+          }
+        } else {
+          alert('Failed to delete booking: ' + data.message);
+        }
+      } catch (error) {
+        console.error('Error deleting booking:', error);
+        alert('Network error. Please check your connection and try again.');
+      }
     }
   };
 
@@ -340,11 +435,12 @@ function BookingOverviewPage() {
                 <th>Guests</th>
                 <th>Booking Date</th>
                 <th>Total Price</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredBookings.length === 0 ? (
-                <tr><td colSpan={8} className="text-center">No bookings found.</td></tr>
+                <tr><td colSpan={9} className="text-center">No bookings found.</td></tr>
               ) : (
                 filteredBookings.map(b => (
                   <tr key={b.booking_id}>
@@ -356,6 +452,14 @@ function BookingOverviewPage() {
                     <td>{b.number_of_guests}</td>
                     <td>{b.booking_date ? new Date(b.booking_date).toLocaleDateString() : ''}</td>
                     <td>${parseFloat(b.total_price || 0).toLocaleString()}</td>
+                    <td>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => _handleDelete(b.booking_id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))
               )}
