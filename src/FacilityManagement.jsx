@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Card, Button, Form, Modal, Alert, Badge, Image } from 'react-bootstrap';
-import { FaSwimmingPool, FaPlus, FaEdit, FaTrash, FaArrowLeft, FaImage } from 'react-icons/fa';
+import { Table, Card, Button, Form, Modal, Alert, Badge, Image, Row, Col } from 'react-bootstrap';
+import { FaSwimmingPool, FaPlus, FaEdit, FaTrash, FaArrowLeft, FaImage, FaFilter, FaSearch, FaSignOutAlt } from 'react-icons/fa';
 import logo from './assets/logo.png';
 
 function FacilityManagement() {
   const navigate = useNavigate();
   const [facilities, setFacilities] = useState([]);
+  const [filteredFacilities, setFilteredFacilities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -20,6 +21,11 @@ function FacilityManagement() {
   });
   const [alert, setAlert] = useState({ show: false, message: '', type: '' });
   const [imagePreview, setImagePreview] = useState('');
+  
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [priceRangeFilter, setPriceRangeFilter] = useState('all');
 
   // Determine the back navigation based on URL params or localStorage
   const getBackNavigation = () => {
@@ -63,6 +69,7 @@ function FacilityManagement() {
           image: facility.image ? `http://localhost/Project-I/backend/${facility.image}` : null
         }));
         setFacilities(processedFacilities);
+        setFilteredFacilities(processedFacilities);
       } else {
         showAlert('Failed to load facilities', 'danger');
       }
@@ -77,6 +84,62 @@ function FacilityManagement() {
   useEffect(() => {
     fetchFacilities();
   }, [fetchFacilities]);
+
+  // Filter facilities based on search term, status, and price range
+  useEffect(() => {
+    let filtered = facilities;
+
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(facility =>
+        facility.facility.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (facility.about && facility.about.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+    }
+
+    // Status filter
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(facility => facility.status === statusFilter);
+    }
+
+    // Price range filter
+    if (priceRangeFilter !== 'all') {
+      filtered = filtered.filter(facility => {
+        const price = parseFloat(facility.unit_price);
+        switch (priceRangeFilter) {
+          case 'low':
+            return price < 50;
+          case 'medium':
+            return price >= 50 && price < 150;
+          case 'high':
+            return price >= 150;
+          default:
+            return true;
+        }
+      });
+    }
+
+    setFilteredFacilities(filtered);
+  }, [facilities, searchTerm, statusFilter, priceRangeFilter]);
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setStatusFilter('all');
+    setPriceRangeFilter('all');
+  };
+
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you want to logout?')) {
+      // Clear any stored authentication data
+      localStorage.removeItem('userToken');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('userId');
+      sessionStorage.clear();
+      
+      // Navigate to login page
+      navigate('/login');
+    }
+  };
 
   const showAlert = (message, type) => {
     setAlert({ show: true, message, type });
@@ -248,27 +311,112 @@ function FacilityManagement() {
             <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
             <span className="navbar-brand mb-0 h1 fw-bold text-dark">Facility Management</span>
           </div>
+          
+          {/* Right side - Logout button */}
           <div className="d-flex align-items-center">
-            <Button 
-              variant="outline-primary" 
-              size="sm" 
-              onClick={() => navigate(getBackNavigation())}
-              className="me-3"
-            >
-              <FaArrowLeft className="me-1" />
-              Back to Dashboard
-            </Button>
-            <Button 
-              variant="success" 
+            <Button
+              variant="danger"
               size="sm"
-              onClick={handleAddNew}
+              onClick={handleLogout}
+              className="d-flex align-items-center rounded-pill px-3"
+              style={{
+                backgroundColor: '#dc3545',
+                borderColor: '#dc3545',
+                fontWeight: '500'
+              }}
             >
-              <FaPlus className="me-1" />
-              Add New Facility
+              <FaSignOutAlt className="me-2" />
+              Logout
             </Button>
           </div>
         </div>
       </nav>
+
+      {/* Filter Bar */}
+      <div className="container-fluid py-3 bg-light border-bottom mt-5">
+        <Row className="g-3 align-items-end">
+          <Col md={4}>
+            <Form.Group>
+              <Form.Label className="small fw-bold text-muted">
+                <FaSearch className="me-1" />
+                Search Facilities
+              </Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Search by facility name or description..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="form-control-sm"
+              />
+            </Form.Group>
+          </Col>
+          <Col md={3}>
+            <Form.Group>
+              <Form.Label className="small fw-bold text-muted">
+                <FaFilter className="me-1" />
+                Status
+              </Form.Label>
+              <Form.Select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="form-select-sm"
+              >
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col md={3}>
+            <Form.Group>
+              <Form.Label className="small fw-bold text-muted">Price Range</Form.Label>
+              <Form.Select
+                value={priceRangeFilter}
+                onChange={(e) => setPriceRangeFilter(e.target.value)}
+                className="form-select-sm"
+              >
+                <option value="all">All Prices</option>
+                <option value="low">Under $50</option>
+                <option value="medium">$50 - $150</option>
+                <option value="high">Above $150</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col md={2} className="d-flex gap-2">
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleAddNew}
+              className="w-100"
+            >
+              <FaPlus className="me-1" />
+              Add New
+            </Button>
+            {(searchTerm || statusFilter !== 'all' || priceRangeFilter !== 'all') && (
+              <Button
+                variant="outline-secondary"
+                size="sm"
+                onClick={clearFilters}
+                title="Clear Filters"
+              >
+                Clear
+              </Button>
+            )}
+          </Col>
+        </Row>
+        
+        {/* Filter Summary */}
+        <Row className="mt-2">
+          <Col>
+            <small className="text-muted">
+              Showing {filteredFacilities.length} of {facilities.length} facilities
+              {searchTerm && ` • Search: "${searchTerm}"`}
+              {statusFilter !== 'all' && ` • Status: ${statusFilter}`}
+              {priceRangeFilter !== 'all' && ` • Price: ${priceRangeFilter}`}
+            </small>
+          </Col>
+        </Row>
+      </div>
 
       <div className="container-fluid py-4">
       <Card className="shadow-sm">
@@ -291,14 +439,14 @@ function FacilityManagement() {
               </tr>
             </thead>
             <tbody>
-              {facilities.length === 0 ? (
+              {filteredFacilities.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="text-center text-muted">
-                    No facilities found
+                    {facilities.length === 0 ? 'No facilities found' : 'No facilities match the current filters'}
                   </td>
                 </tr>
               ) : (
-                facilities.map((facility, index) => (
+                filteredFacilities.map((facility, index) => (
                   <tr key={facility.facility_id} className={facility.status === 'inactive' ? 'table-secondary text-muted' : ''}>
                     <td>{index + 1}</td>
                     <td>{facility.facility}</td>
@@ -353,8 +501,19 @@ function FacilityManagement() {
             </tbody>
           </Table>
 
-          <div className="mt-3 text-muted">
-            Total Facilities: {facilities.length}
+          <div className="mt-3 d-flex justify-content-between align-items-center">
+            <div className="text-muted">
+              <strong>Total Facilities:</strong> {facilities.length}
+              {filteredFacilities.length !== facilities.length && (
+                <span> • <strong>Filtered:</strong> {filteredFacilities.length}</span>
+              )}
+            </div>
+            {facilities.length > 0 && (
+              <div className="text-muted small">
+                Active: {facilities.filter(f => f.status === 'active').length} | 
+                Inactive: {facilities.filter(f => f.status === 'inactive').length}
+              </div>
+            )}
           </div>
         </Card.Body>
       </Card>

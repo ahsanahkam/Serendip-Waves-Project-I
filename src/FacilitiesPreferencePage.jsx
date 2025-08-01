@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Form, Row, Col, Table, Card, Alert } from 'react-bootstrap';
 import { FaSwimmingPool, FaArrowLeft, FaCreditCard, FaSave, FaCheckCircle } from 'react-icons/fa';
+import logo from './assets/logo.png';
 import FacilityBookingConfirmation from './components/FacilityBookingConfirmation';
 import BookedFacilities from './components/BookedFacilities';
-import './FacilitiesPreferencePage.css';
-
 import './FacilitiesPreferencePage.css';
 
 function FacilitiesPreferencePage() {
@@ -288,6 +287,19 @@ function FacilitiesPreferencePage() {
     console.log('Passenger data not loaded yet, showing loading...');
     return (
       <div className="facilities-preference-page">
+        {/* Navigation Bar */}
+        <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+          <div className="container-fluid px-4">
+            <div className="d-flex align-items-center">
+              <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
+              <span className="navbar-brand mb-0 h1 fw-bold text-dark">Facility Preferences</span>
+            </div>
+            <div className="d-flex align-items-center">
+              <span className="text-muted">Booking ID: {bookingId}</span>
+            </div>
+          </div>
+        </nav>
+
         <div className="container py-4">
           <div className="text-center mt-5">
             <div className="spinner-border text-info" role="status">
@@ -303,6 +315,19 @@ function FacilitiesPreferencePage() {
   if (facilitiesLoading) {
     return (
       <div className="facilities-preference-page">
+        {/* Navigation Bar */}
+        <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+          <div className="container-fluid px-4">
+            <div className="d-flex align-items-center">
+              <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
+              <span className="navbar-brand mb-0 h1 fw-bold text-dark">Facility Preferences</span>
+            </div>
+            <div className="d-flex align-items-center">
+              <span className="text-muted">Booking ID: {bookingId}</span>
+            </div>
+          </div>
+        </nav>
+
         <div className="container py-4">
           <div className="text-center mt-5">
             <div className="spinner-border text-info" role="status">
@@ -319,14 +344,28 @@ function FacilitiesPreferencePage() {
 
   return (
     <div className="facilities-preference-page">
+      {/* Navigation Bar */}
+      <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div className="container-fluid px-4">
+          <div className="d-flex align-items-center">
+            <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
+            <span className="navbar-brand mb-0 h1 fw-bold text-dark">Facility Preferences</span>
+          </div>
+          <div className="d-flex align-items-center">
+            <span className="text-muted">Booking ID: {bookingId}</span>
+          </div>
+        </div>
+      </nav>
+
       <div className="container py-4">
         <Card className="shadow-lg">
           <Card.Header className="bg-info text-white">
-            <h2 className="mb-0">
-              <FaSwimmingPool className="me-2" />
-              Facility Preferences for {passenger.passenger_name || 'Guest'}
-            </h2>
-            <small>Booking ID: {bookingId}</small>
+            <div className="d-flex justify-content-center align-items-center">
+              <h2 className="mb-0">
+                <FaSwimmingPool className="me-2" />
+                Facility Preferences for {passenger.passenger_name || 'Guest'}
+              </h2>
+            </div>
             {passenger.departure_date && passenger.return_date && (
               <div className="mt-2">
                 <small>
