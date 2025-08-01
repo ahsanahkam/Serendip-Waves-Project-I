@@ -159,6 +159,10 @@ function SuperAdminDashboard() {
           {/* Chef Column */}
           <div className="admin-column">
             <h3 className="admin-column-title">👨‍🍳 Chef</h3>
+            <Link to="/meals-options-dashboard" className="admin-dashboard-btn">
+              <FaUtensils style={iconStyle} />
+              Meal Section
+            </Link>
             <Link to="/meals-dashboard" className="admin-dashboard-btn">
               <FaUtensils style={iconStyle} />
               Meals Predictions
@@ -171,7 +175,6 @@ function SuperAdminDashboard() {
         </div>
       </div>
 
-      
       {/* Logout Confirmation Modal */}
       <Modal show={showLogoutModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>

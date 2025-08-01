@@ -1,65 +1,72 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
 import { FaArrowLeft, FaLeaf, FaSeedling, FaMosque, FaHeartbeat, FaBreadSlice, FaUtensils, FaCoffee, FaWineGlass } from 'react-icons/fa';
 import './OurDining.css';
 
+// Import meal type images - add these images to assets folder
+import basicVegetarianImg from './assets/basic-vegetarian-meal.jpg';
+import veganImg from './assets/vegan-meal.jpg';
+import halalGourmetImg from './assets/halal-gourmet-meal.jpg';
+import diabeticFriendlyImg from './assets/diabetic-friendly-meal.jpg';
+import glutenFreeImg from './assets/gluten-free-meal.jpg';
+
+
 const OurDining = () => {
   const navigate = useNavigate();
-  
-  // State for meal options from database
-  const [mealOptions, setMealOptions] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  // Icon mapping for meal types
-  const iconMapping = {
-    'Vegetarian': <FaLeaf />,
-    'Vegan': <FaSeedling />,
-    'Halal': <FaMosque />,
-    'Diabetic-Friendly': <FaHeartbeat />,
-    'Gluten-Free': <FaBreadSlice />
-  };
-
-  // Badge mapping for meal types
-  const badgeMapping = {
-    'Vegetarian': { label: 'Most Popular', color: 'success' },
-    'Vegan': { label: 'Premium', color: 'warning' },
-    'Halal': { label: 'Certified', color: 'info' },
-    'Diabetic-Friendly': { label: 'Health Focused', color: 'danger' },
-    'Gluten-Free': { label: 'Celiac Safe', color: 'primary' }
-  };
-
-  // Fetch meal options from backend
-  useEffect(() => {
-    const fetchMealOptions = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('http://localhost/Project-I/backend/mealOptionsAPI.php');
-        const data = await response.json();
-        
-        if (data.success && data.data) {
-          const activeMealOptions = data.data.filter(option => option.status === 'active');
-          setMealOptions(activeMealOptions);
-        }
-      } catch (error) {
-        console.error('Error fetching meal options:', error);
-        // Keep default empty array if fetch fails
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMealOptions();
-  }, []);
-
-  // Fallback images for meal types
-  const fallbackImages = {
-    'Vegetarian': 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-    'Vegan': 'https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-    'Halal': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-    'Diabetic-Friendly': 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-    'Gluten-Free': 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
-  };
+  const mealTypes = [
+    {
+      id: 'basic',
+      name: 'Basic/Vegetarian',
+      icon: <FaLeaf />,
+      image: basicVegetarianImg,
+      description: 'Fresh, wholesome vegetarian meals prepared with the finest ingredients. Our basic menu features nutritious, plant-based dishes that satisfy and nourish your body during your cruise journey.',
+      features: ['Fresh seasonal vegetables', 'Wholesome grains and legumes', 'Dairy products included', 'Balanced nutrition'],
+      badge: 'Most Popular',
+      badgeColor: 'success'
+    },
+    {
+      id: 'vegan',
+      name: 'Vegan',
+      icon: <FaSeedling />,
+      image: veganImg,
+      description: 'Completely plant-based cuisine that never compromises on taste or nutrition. Our vegan menu showcases creative, flavorful dishes using only the finest plant-based ingredients.',
+      features: ['100% plant-based ingredients', 'Rich in vitamins and minerals', 'Environmentally conscious', 'Creative flavor combinations'],
+      badge: 'Premium',
+      badgeColor: 'warning'
+    },
+    {
+      id: 'halal',
+      name: 'Halal Gourmet',
+      icon: <FaMosque />,
+      image: halalGourmetImg,
+      description: 'Gourmet halal cuisine prepared according to Islamic dietary laws, featuring exquisite flavors from around the world. Our halal menu combines tradition with modern culinary techniques.',
+      features: ['Certified halal ingredients', 'International cuisine styles', 'Expert halal preparation', 'Rich cultural flavors'],
+      badge: 'Certified',
+      badgeColor: 'info'
+    },
+    {
+      id: 'diabetic',
+      name: 'Diabetic-Friendly',
+      icon: <FaHeartbeat />,
+      image: diabeticFriendlyImg,
+      description: 'Specially crafted meals designed for diabetic dietary needs, focusing on balanced nutrition with controlled carbohydrates and natural ingredients for optimal health.',
+      features: ['Low glycemic index foods', 'Controlled portion sizes', 'Natural sweeteners', 'Heart-healthy options'],
+      badge: 'Health Focused',
+      badgeColor: 'danger'
+    },
+    {
+      id: 'gluten_free',
+      name: 'Gluten-Free',
+      icon: <FaBreadSlice />,
+      image: glutenFreeImg,
+      description: 'Delicious gluten-free options that ensure everyone can enjoy exceptional dining. Our gluten-free menu maintains full flavor while accommodating celiac and gluten-sensitive passengers.',
+      features: ['Certified gluten-free ingredients', 'Separate preparation areas', 'Cross-contamination prevention', 'Full flavor profiles'],
+      badge: 'Celiac Safe',
+      badgeColor: 'primary'
+    }
+  ];
 
   const diningTimes = [
     {
@@ -138,81 +145,70 @@ const OurDining = () => {
           
           <Row className="justify-content-center">
             <Col lg={10}>
-              {loading ? (
-                <div className="text-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                  <p className="mt-3">Loading dining options...</p>
-                </div>
-              ) : mealOptions.length > 0 ? (
-                mealOptions.map((mealOption, index) => (
-                  <React.Fragment key={mealOption.option_id}>
-                    <Card className="meal-type-card mb-5">
-                      <Row className="g-0">
-                        <Col md={5}>
-                          <div className="meal-image-container">
-                            <img 
-                              src={mealOption.image ? `http://localhost/Project-I/backend/meal_images/${mealOption.image}` : fallbackImages[mealOption.type] || fallbackImages['Vegetarian']} 
-                              alt={mealOption.title}
-                              className="meal-image"
-                              onError={(e) => {
-                                // Fallback to online image if backend image fails
-                                e.target.src = fallbackImages[mealOption.type] || fallbackImages['Vegetarian'];
-                              }}
-                            />
+              {mealTypes.map((mealType, index) => (
+                <React.Fragment key={mealType.id}>
+                  <Card className="meal-type-card mb-5">
+                    <Row className="g-0">
+                      <Col md={5}>
+                        <div className="meal-image-container">
+                          <img 
+                            src={mealType.image} 
+                            alt={mealType.name}
+                            className="meal-image"
+                            onError={(e) => {
+                              // Fallback to online image if local image fails
+                              const fallbacks = {
+                                'basic': 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+                                'vegan': 'https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+                                'halal': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+                                'diabetic': 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+                                'gluten_free': 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
+                              };
+                              e.target.src = fallbacks[mealType.id] || '/placeholder-meal.jpg';
+                            }}
+                          />
+                        </div>
+                      </Col>
+                      <Col md={7}>
+                        <Card.Body className="meal-content">
+                          <div className="meal-header">
+                            <div className="meal-icon">
+                              {mealType.icon}
+                            </div>
+                            <div>
+                              <h3 className="meal-name">{mealType.name}</h3>
+                              <Badge 
+                                bg={mealType.badgeColor}
+                                className="meal-badge"
+                              >
+                                {mealType.badge}
+                              </Badge>
+                            </div>
                           </div>
-                        </Col>
-                        <Col md={7}>
-                          <Card.Body className="meal-content">
-                            <div className="meal-header">
-                              <div className="meal-icon">
-                                {iconMapping[mealOption.type] || <FaUtensils />}
-                              </div>
-                              <div>
-                                <h3 className="meal-name">{mealOption.title}</h3>
-                                <Badge 
-                                  bg={badgeMapping[mealOption.type]?.color || 'secondary'}
-                                  className="meal-badge"
-                                >
-                                  {badgeMapping[mealOption.type]?.label || 'Available'}
-                                </Badge>
-                              </div>
-                            </div>
-                            <p className="meal-description">
-                              {mealOption.description}
-                            </p>
-                            <div className="meal-features">
-                              <h6>Key Features:</h6>
-                              <ul>
-                                {mealOption.key_features && mealOption.key_features.length > 0 ? (
-                                  mealOption.key_features.map((feature, idx) => (
-                                    <li key={idx}>{feature}</li>
-                                  ))
-                                ) : (
-                                  <li>Premium quality ingredients</li>
-                                )}
-                              </ul>
-                            </div>
-                          </Card.Body>
-                        </Col>
-                      </Row>
-                    </Card>
-                    
-                    {/* Divider (except for last item) */}
-                    {index < mealOptions.length - 1 && (
-                      <div className="meal-divider">
-                        <div className="divider-line"></div>
-                      </div>
-                    )}
-                  </React.Fragment>
-                ))
-              ) : (
-                <div className="text-center py-5">
-                  <p>No meal options available at the moment.</p>
-                  <p>Please check back later or contact our support team.</p>
-                </div>
-              )}
+                          <p className="meal-description">
+                            {mealType.description}
+                          </p>
+                          <div className="meal-features">
+                            <h6>Key Features:</h6>
+                            <ul>
+                              {mealType.features.map((feature, idx) => (
+                                <li key={idx}>{feature}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </Card.Body>
+                      </Col>
+                    </Row>
+                  </Card>
+                  
+                  {/* Divider (except for last item) */}
+                  {index < mealTypes.length - 1 && (
+                    <div className="meal-divider">
+                      <div className="divider-line"></div>
+                    </div>
+                  )}
+                </React.Fragment>
+              ))}
             </Col>
           </Row>
         </Container>
