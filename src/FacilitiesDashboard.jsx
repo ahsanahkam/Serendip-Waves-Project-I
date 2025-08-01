@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Card, Button, Form, Row, Col, Badge } from 'react-bootstrap';
-import { FaSwimmingPool, FaDownload, FaFilter, FaArrowLeft } from 'react-icons/fa';
+import { FaSwimmingPool, FaDownload, FaFilter, FaArrowLeft, FaSignOutAlt } from 'react-icons/fa';
 import logo from './assets/logo.png';
 import './FacilitiesDashboard.css';
 
@@ -37,6 +37,19 @@ function FacilitiesDashboard() {
     
     // Default fallback
     return '/super-admin';
+  };
+
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you want to logout?')) {
+      // Clear any stored authentication data
+      localStorage.removeItem('userToken');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('userId');
+      sessionStorage.clear();
+      
+      // Navigate to login page
+      navigate('/login');
+    }
   };
 
   useEffect(() => {
@@ -207,32 +220,22 @@ function FacilitiesDashboard() {
             <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
             <span className="navbar-brand mb-0 h1 fw-bold text-dark">Facilities Dashboard</span>
           </div>
-          <div className="d-flex align-items-center gap-2">
-            <Button 
-              variant="outline-primary" 
-              size="sm" 
-              onClick={() => navigate(getBackNavigation())}
-              className="me-2"
-            >
-              <FaArrowLeft className="me-1" />
-              Back to Dashboard
-            </Button>
-            <Button 
-              variant="info" 
+          
+          {/* Right side - Logout button */}
+          <div className="d-flex align-items-center">
+            <Button
+              variant="danger"
               size="sm"
-              onClick={() => navigate('/facility-management?from=facilities-dashboard')}
-              className="me-2"
+              onClick={handleLogout}
+              className="d-flex align-items-center rounded-pill px-3"
+              style={{
+                backgroundColor: '#dc3545',
+                borderColor: '#dc3545',
+                fontWeight: '500'
+              }}
             >
-              <FaSwimmingPool className="me-1" />
-              Manage Facilities
-            </Button>
-            <Button 
-              variant="success" 
-              size="sm"
-              onClick={exportToCSV}
-            >
-              <FaDownload className="me-1" />
-              Export CSV
+              <FaSignOutAlt className="me-2" />
+              Logout
             </Button>
           </div>
         </div>

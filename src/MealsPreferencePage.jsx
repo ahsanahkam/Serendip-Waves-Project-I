@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Form, Row, Col, Table, Card, Alert } from 'react-bootstrap';
-import { FaUtensils, FaArrowRight, FaSave } from 'react-icons/fa';
+import { FaUtensils, FaArrowRight, FaSave, FaArrowLeft } from 'react-icons/fa';
+import logo from './assets/logo.png';
 import './MealsPreferencePage.css';
 
 const MAIN_MEAL_TIMES = [
@@ -351,6 +352,19 @@ function MealsPreferencePage() {
     console.log('Passenger data not loaded yet, showing loading...');
     return (
       <div className="meals-preference-page">
+        {/* Navigation Bar */}
+        <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+          <div className="container-fluid px-4">
+            <div className="d-flex align-items-center">
+              <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
+              <span className="navbar-brand mb-0 h1 fw-bold text-dark">Meal Preferences</span>
+            </div>
+            <div className="d-flex align-items-center">
+              <span className="text-muted">Booking ID: {bookingId}</span>
+            </div>
+          </div>
+        </nav>
+
         <div className="container py-4">
           <div className="text-center mt-5">
             <div className="spinner-border text-primary" role="status">
@@ -365,14 +379,28 @@ function MealsPreferencePage() {
 
   return (
     <div className="meals-preference-page">
+      {/* Navigation Bar */}
+      <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div className="container-fluid px-4">
+          <div className="d-flex align-items-center">
+            <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
+            <span className="navbar-brand mb-0 h1 fw-bold text-dark">Meal Preferences</span>
+          </div>
+          <div className="d-flex align-items-center">
+            <span className="text-muted">Booking ID: {bookingId}</span>
+          </div>
+        </div>
+      </nav>
+
       <div className="container py-4">
         <Card className="shadow-lg">
           <Card.Header className="bg-primary text-white">
-            <h2 className="mb-0">
-              <FaUtensils className="me-2" />
-              Meal Preferences for {passenger.name}
-            </h2>
-            <small>Booking ID: {bookingId}</small>
+            <div className="d-flex justify-content-center align-items-center">
+              <h2 className="mb-0">
+                <FaUtensils className="me-2" />
+                Meal Preferences for {passenger.name}
+              </h2>
+            </div>
           </Card.Header>
           
           <Card.Body>
