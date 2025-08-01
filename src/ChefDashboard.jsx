@@ -13,7 +13,7 @@ const iconStyle = {
 
 const ChefDashboard = () => {
   const { logout } = useContext(AuthContext);
-  const navigate = (to) => { window.location.href = to; };
+  const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = React.useState(false);
   
   const handleLogoutClick = () => {
