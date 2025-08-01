@@ -281,7 +281,7 @@ const Navbar = ({ onLoginClick, onSignupClick }) => {
                   padding: '8px 20px',
                   fontWeight: 500
                 }}>Home</a>
-                <Link to="/destinations" className="nav-link fw-semibold" style={{ 
+                               <Link to="/destinations" className="nav-link fw-semibold" style={{ 
                   color: '#222', 
                   textDecoration: 'none',
                   fontSize: '1.05rem',
@@ -294,7 +294,7 @@ const Navbar = ({ onLoginClick, onSignupClick }) => {
                   fontSize: '1.05rem',
                   padding: '8px 20px',
                   fontWeight: 500
-                }}>Things to Do</Link>
+                }}>Facilities</Link>
                 <Link to="/our-dining" className="nav-link fw-semibold" style={{ 
                   color: '#222', 
                   textDecoration: 'none',
@@ -417,7 +417,7 @@ const Navbar = ({ onLoginClick, onSignupClick }) => {
           <button className="close-btn" onClick={toggleMenu} aria-label="Close menu">&times;</button>
           <a href="#home" className="nav-link" onClick={e => { handleNavClick(e, 'home'); toggleMenu(); }}>Home</a>
           <Link to="/destinations" className="nav-link" onClick={() => setIsMenuOpen(false)}>Destination</Link>
-          <Link to="/things-to-do" className="nav-link" onClick={() => setIsMenuOpen(false)}>Things to Do</Link>
+          <Link to="/things-to-do" className="nav-link" onClick={() => setIsMenuOpen(false)}>Facilities</Link>
           <Link to="/our-dining" className="nav-link" onClick={() => setIsMenuOpen(false)}>Our Dining</Link>
           <Link to="/cruise-ships" className="nav-link" onClick={() => setIsMenuOpen(false)}>Cruises</Link>
           <a href="#about" className="nav-link" onClick={e => { handleNavClick(e, 'about'); toggleMenu(); }}>About Us</a>

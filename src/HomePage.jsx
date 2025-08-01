@@ -518,6 +518,146 @@ const DestinationsSection = () => (
   </section>
 );
 
+// Facilities Section (after Destinations)
+const FacilitiesSection = () => (
+  <section id="facilities-section" style={{
+    background: 'linear-gradient(135deg, #f8f9ff 0%, #e8ecf7 100%)',
+    minHeight: '60vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    overflow: 'hidden',
+    color: '#1a237e',
+    padding: '0',
+    margin: '0',
+  }}>
+    <div className="container" style={{ display: 'flex', flexDirection: 'row-reverse', alignItems: 'center', justifyContent: 'center', gap: '3rem', padding: '3rem 0' }}>
+      {/* Right: Image */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <img
+          src="/facilities.jpg"
+          alt="Luxury Facilities"
+          style={{
+            width: '100%',
+            maxWidth: '520px',
+            height: 'auto',
+            borderRadius: '0 0 80px 0',
+            boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.13)',
+            objectFit: 'cover',
+          }}
+        />
+      </div>
+      {/* Left: Text */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', gap: '1.5rem', maxWidth: 600 }}>
+        <h1 className="display-3 fw-bold mb-2" style={{ color: '#1a237e', fontWeight: 800, fontSize: '3rem', letterSpacing: '0.5px', textAlign: 'left' }}>
+          Luxury Facilities
+        </h1>
+        <p className="lead mb-3" style={{ color: '#26334d', fontSize: '1.25rem', textAlign: 'left', fontWeight: 500 }}>
+          Experience world-class amenities and facilities designed for your ultimate comfort and entertainment throughout your cruise journey.
+        </p>
+        <Link to="/things-to-do" className="btn view-all-facilities-btn btn-lg mt-2" style={{ alignSelf: 'flex-start' }}>
+          Explore Facilities
+        </Link>
+      </div>
+    </div>
+    <style>{`
+      @media (max-width: 991.98px) {
+        #facilities-section .container {
+          flex-direction: column !important;
+          gap: 2rem !important;
+          padding: 2rem 0 !important;
+        }
+        #facilities-section img {
+          max-width: 100% !important;
+          border-radius: 0 0 40px 0 !important;
+        }
+        #facilities-section h1 {
+          font-size: 2.2rem !important;
+        }
+      }
+      @media (max-width: 575.98px) {
+        #facilities-section .container {
+          padding: 1rem 0 !important;
+        }
+        #facilities-section h1 {
+          font-size: 1.5rem !important;
+        }
+      }
+    `}</style>
+  </section>
+);
+
+// Our Dining Section (after Facilities)
+const DiningSection = () => (
+  <section id="dining-section" style={{
+    background: 'linear-gradient(135deg, #e9eff7 0%, #dbe6f6 100%)',
+    minHeight: '60vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    overflow: 'hidden',
+    color: '#1a237e',
+    padding: '0',
+    margin: '0',
+  }}>
+    <div className="container" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '3rem', padding: '3rem 0' }}>
+      {/* Left: Image */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <img
+          src="/fine-dining-setup.jpg"
+          alt="Gourmet Dining"
+          style={{
+            width: '100%',
+            maxWidth: '520px',
+            height: 'auto',
+            borderRadius: '0 0 80px 0',
+            boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.13)',
+            objectFit: 'cover',
+          }}
+        />
+      </div>
+      {/* Right: Text */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', gap: '1.5rem', maxWidth: 600 }}>
+        <h1 className="display-3 fw-bold mb-2" style={{ color: '#1a237e', fontWeight: 800, fontSize: '3rem', letterSpacing: '0.5px', textAlign: 'left' }}>
+          Exquisite Dining
+        </h1>
+        <p className="lead mb-3" style={{ color: '#26334d', fontSize: '1.25rem', textAlign: 'left', fontWeight: 500 }}>
+          Savor culinary excellence with our diverse dining options, featuring gourmet cuisine and special dietary accommodations for every palate.
+        </p>
+        <Link to="/our-dining" className="btn view-all-dining-btn btn-lg mt-2" style={{ alignSelf: 'flex-start' }}>
+          Discover Dining
+        </Link>
+      </div>
+    </div>
+    <style>{`
+      @media (max-width: 991.98px) {
+        #dining-section .container {
+          flex-direction: column !important;
+          gap: 2rem !important;
+          padding: 2rem 0 !important;
+        }
+        #dining-section img {
+          max-width: 100% !important;
+          border-radius: 0 0 40px 0 !important;
+        }
+        #dining-section h1 {
+          font-size: 2.2rem !important;
+        }
+      }
+      @media (max-width: 575.98px) {
+        #dining-section .container {
+          padding: 1rem 0 !important;
+        }
+        #dining-section h1 {
+          font-size: 1.5rem !important;
+        }
+      }
+    `}</style>
+  </section>
+);
+
 const HomePage = ({ onBookingClick }) => {
   const { isAuthenticated, currentUser } = useContext(AuthContext);
   const [bookingError, setBookingError] = useState("");
@@ -537,6 +677,8 @@ const HomePage = ({ onBookingClick }) => {
     <div style={{ width: '100%', overflow: 'hidden' }}>
       <Hero onBookingClick={handleBookingClick} bookingError={bookingError} />
       <DestinationsSection />
+      <FacilitiesSection />
+      <DiningSection />
       <FleetSection />
       <AboutSection />
       <ContactSection />
@@ -664,6 +806,34 @@ const HomePage = ({ onBookingClick }) => {
           background: #43cea2;
           color: #fff;
           box-shadow: 0 6px 24px rgba(24,90,157,0.18);
+        }
+        .view-all-facilities-btn {
+          background: #6c5ce7;
+          color: #fff;
+          border: none;
+          font-weight: 700;
+          letter-spacing: 0.03em;
+          box-shadow: 0 4px 18px rgba(108,92,231,0.12);
+          transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        }
+        .view-all-facilities-btn:hover, .view-all-facilities-btn:focus {
+          background: #5b4cdb;
+          color: #fff;
+          box-shadow: 0 6px 24px rgba(108,92,231,0.18);
+        }
+        .view-all-dining-btn {
+          background: #fd79a8;
+          color: #fff;
+          border: none;
+          font-weight: 700;
+          letter-spacing: 0.03em;
+          box-shadow: 0 4px 18px rgba(253,121,168,0.12);
+          transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        }
+        .view-all-dining-btn:hover, .view-all-dining-btn:focus {
+          background: #fd6c9e;
+          color: #fff;
+          box-shadow: 0 6px 24px rgba(253,121,168,0.18);
         }
       `}</style>
     </div>
