@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaUtensils } from "react-icons/fa";
 import { AuthContext } from './App';
 import logo from './assets/logo.png';
@@ -110,6 +110,10 @@ const ChefDashboard = () => {
           {/* Chef Column */}
           <div className="admin-column">
             <h3 className="admin-column-title">👨‍🍳 Chef Management</h3>
+            <Link to="/meals-options-dashboard" className="admin-dashboard-btn">
+              <FaUtensils style={iconStyle} />
+              Meal Section
+            </Link>
             <Link to="/meals-dashboard" className="admin-dashboard-btn">
               <FaUtensils style={iconStyle} />
               Meals Predictions

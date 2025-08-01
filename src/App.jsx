@@ -225,6 +225,7 @@ function AppRoutes(props) {
         <Route path="/facilities/:bookingId" element={<ProtectedRoute><FacilitiesPreferencePage /></ProtectedRoute>} />
         <Route path="/meals-dashboard" element={<ProtectedRoute><MealsDashboard /></ProtectedRoute>} />
         <Route path="/meals-options-dashboard" element={<ProtectedRoute><MealsOptionsDashboard /></ProtectedRoute>} />
+        <Route path="/meal-options-management" element={<ProtectedRoute><MealsOptionsDashboard /></ProtectedRoute>} />
         <Route path="/facilities-dashboard" element={<ProtectedRoute><FacilitiesDashboard /></ProtectedRoute>} />
         <Route path="/facility-management" element={<ProtectedRoute><FacilityManagement /></ProtectedRoute>} />
       </Routes>
