@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Row, Col, Table, InputGroup } from 'react-bootstrap';
-import { FaUser, FaShip, FaBed, FaUsers, FaCalendarAlt, FaDollarSign, FaTrash, FaPlus } from 'react-icons/fa';
+import { Modal, Button, Table, Form, Row, Col } from 'react-bootstrap';
+import { FaTrash, FaShip, FaUser, FaBed, FaCalendarAlt } from 'react-icons/fa';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './BookingOverviewPage.css';
 import logo from './assets/logo.png';
 import { AuthContext } from './App';
 import { useContext } from 'react';
 
-// Mock cruise and booking data
-const cruiseTitles = ['Caribbean Adventure', 'Mediterranean Escape', 'Alaskan Expedition', 'Asian Discovery'];
+// Mock cabin types data (keeping this as it's not requested to be dynamic)
 const cabinTypes = ['Interior', 'Ocean View', 'Balcony', 'Suite'];
 
 function BookingOverviewPage() {
@@ -16,6 +15,7 @@ function BookingOverviewPage() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = (to) => { window.location.href = to; };
   const [bookings, setBookings] = useState([]);
+  const [cruiseTitles, setCruiseTitles] = useState([]);
   const [filters, setFilters] = useState({
     search: '',
     cruise: '',
@@ -23,41 +23,30 @@ function BookingOverviewPage() {
     dateFrom: '',
     dateTo: '',
   });
-  const [showModal, setShowModal] = useState(false);
-  const [modalMode, setModalMode] = useState('add'); // 'add' or 'edit'
-  const [form, setForm] = useState({
-    id: '',
-    cruise: '',
-    cabinNumber: '',
-    cabinType: '',
-    date: '',
-    price: '',
-    guests: 1,
-    // Primary passenger
-    primaryPassenger: {
-      name: '',
-      gender: '',
-      age: '',
-      citizenship: '',
-      email: ''
-    },
-    // Additional passengers
-    additionalPassengers: Array(3).fill().map(() => ({
-      name: '',
-      age: '',
-      citizenship: ''
-    }))
-  });
-  const [formError, setFormError] = useState('');
 
-  // Fetch bookings from backend on mount
+  // Fetch bookings and cruise titles from backend on mount
   useEffect(() => {
+    // Fetch bookings
     fetch('http://localhost/Project-I/backend/getAllBookings.php')
       .then(res => res.json())
       .then(data => {
         if (data.success && data.bookings) {
           setBookings(data.bookings);
         }
+      });
+
+    // Fetch cruise titles from ship_details table
+    fetch('http://localhost/Project-I/backend/getCruises.php')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.cruises) {
+          setCruiseTitles(data.cruises);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching cruise titles:', error);
+        // Fallback to empty array if API fails
+        setCruiseTitles([]);
       });
   }, []);
 
@@ -80,114 +69,6 @@ function BookingOverviewPage() {
   };
   const clearFilters = () => {
     setFilters({ search: '', cruise: '', cabinType: '', dateFrom: '', dateTo: '' });
-  };
-
-  // Modal open/close
-  const openAddModal = () => {
-    setModalMode('add');
-    setForm({
-      id: '',
-      cruise: '',
-      cabinNumber: '',
-      cabinType: '',
-      date: '',
-      price: '',
-      guests: 1,
-      primaryPassenger: {
-        name: '',
-        gender: '',
-        age: '',
-        citizenship: '',
-        email: ''
-      },
-      additionalPassengers: Array(3).fill().map(() => ({
-        name: '',
-        age: '',
-        citizenship: ''
-      }))
-    });
-    setFormError('');
-    setShowModal(true);
-  };
-  const closeModal = () => setShowModal(false);
-
-  // Handle form changes
-  const handleFormChange = e => {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
-  };
-
-  // Handle primary passenger changes
-  const handlePrimaryPassengerChange = e => {
-    const { name, value } = e.target;
-    setForm(prev => ({
-      ...prev,
-      primaryPassenger: {
-        ...prev.primaryPassenger,
-        [name]: value
-      }
-    }));
-  };
-
-  // Handle additional passenger changes
-  const handleAdditionalPassengerChange = (index, e) => {
-    const { name, value } = e.target;
-    setForm(prev => {
-      const updatedPassengers = [...prev.additionalPassengers];
-      updatedPassengers[index] = {
-        ...updatedPassengers[index],
-        [name]: value
-      };
-      return {
-        ...prev,
-        additionalPassengers: updatedPassengers
-      };
-    });
-  };
-
-  // Add/Edit booking
-  const handleFormSubmit = e => {
-    e.preventDefault();
-    // Validate required fields
-    if (!form.primaryPassenger.name || !form.cruise || !form.cabinNumber || !form.cabinType || !form.date || !form.price) {
-      setFormError('Please fill in all required fields.');
-      return;
-    }
-    
-    // Validate additional passengers if guests > 1
-    if (form.guests > 1) {
-      for (let i = 0; i < form.guests - 1; i++) {
-        if (!form.additionalPassengers[i].name || !form.additionalPassengers[i].age || !form.additionalPassengers[i].citizenship) {
-          setFormError(`Please fill in all details for passenger ${i + 2}.`);
-          return;
-        }
-      }
-    }
-    
-    // Validate double booking
-    const isDoubleBooked = bookings.some(b =>
-      b.cruise === form.cruise &&
-      b.cabinNumber === form.cabinNumber &&
-      b.date === form.date &&
-      (modalMode === 'add' || (modalMode === 'edit' && b.id !== form.id))
-    );
-    if (isDoubleBooked) {
-      setFormError('This cabin is already booked for the selected date.');
-      return;
-    }
-    
-    if (modalMode === 'add') {
-      const newBooking = {
-        ...form,
-        id: 'B' + (Math.floor(Math.random() * 9000) + 1000),
-        guests: Number(form.guests),
-        price: Number(form.price),
-      };
-      setBookings(prev => [...prev, newBooking]);
-    } else {
-      setBookings(prev => prev.map(b => (b.id === form.id ? { ...form, guests: Number(form.guests), price: Number(form.price) } : b)));
-    }
-    setShowModal(false);
   };
 
   // Delete booking
@@ -339,9 +220,6 @@ function BookingOverviewPage() {
                 </Col>
               </Row>
             </div>
-            <div className="d-flex justify-content-end mt-3 mt-md-0 ms-md-3">
-              <Button variant="success" className="booking-cta-button" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', border: 'none', minWidth: 170 }} onClick={openAddModal}><FaPlus className="me-2" />Add Booking</Button>
-            </div>
           </div>
         </div>
         {/* Booking Table */}
@@ -392,234 +270,6 @@ function BookingOverviewPage() {
             </tbody>
           </Table>
         </div>
-        {/* Add/Edit Modal */}
-        <Modal show={showModal} onHide={closeModal} backdrop="static" centered size="lg">
-          <Modal.Header closeButton style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
-            <Modal.Title>{modalMode === 'add' ? 'Add Booking' : 'Edit Booking'}</Modal.Title>
-          </Modal.Header>
-          <Form onSubmit={handleFormSubmit}>
-            <Modal.Body className="booking-glass-effect">
-              {formError && <div className="alert alert-danger py-2">{formError}</div>}
-              
-              {/* Step 1: Primary Passenger Details */}
-              <div className="mb-4 border-bottom pb-3">
-                <h5 className="text-primary">Step 1: Primary Passenger Details</h5>
-                <Row>
-                  <Col md={6}>
-                    <Form.Group className="mb-2">
-                      <Form.Label><FaUser className="me-1" /> Full Name</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="name"
-                        value={form.primaryPassenger.name}
-                        onChange={handlePrimaryPassengerChange}
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-2">
-                      <Form.Label>Gender</Form.Label>
-                      <Form.Select 
-                        name="gender" 
-                        value={form.primaryPassenger.gender} 
-                        onChange={handlePrimaryPassengerChange} 
-                        required
-                      >
-                        <option value="">Select Gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col md={4}>
-                    <Form.Group className="mb-2">
-                      <Form.Label>Age</Form.Label>
-                      <Form.Control
-                        type="number"
-                        name="age"
-                        min={1}
-                        value={form.primaryPassenger.age}
-                        onChange={handlePrimaryPassengerChange}
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Group className="mb-2">
-                      <Form.Label>Citizenship</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="citizenship"
-                        value={form.primaryPassenger.citizenship}
-                        onChange={handlePrimaryPassengerChange}
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Group className="mb-2">
-                      <Form.Label>Email</Form.Label>
-                      <Form.Control
-                        type="email"
-                        name="email"
-                        value={form.primaryPassenger.email}
-                        onChange={handlePrimaryPassengerChange}
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-              </div>
-
-              {/* Step 2: Number of Guests */}
-              <div className="mb-4 border-bottom pb-3">
-                <h5 className="text-primary">Step 2: Number of Guests</h5>
-                <Form.Group className="mb-2">
-                  <Form.Label><FaUsers className="me-1" /> Number of Guests</Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="guests"
-                    min={1}
-                    max={4}
-                    value={form.guests}
-                    onChange={handleFormChange}
-                    required
-                  />
-                </Form.Group>
-              </div>
-
-              {/* Step 3: Additional Passengers */}
-              {form.guests > 1 && (
-                <div className="mb-4 border-bottom pb-3">
-                  <h5 className="text-primary">Step 3: Additional Passengers</h5>
-                  {[...Array(form.guests - 1)].map((_, index) => (
-                    <div key={index} className="mb-3 p-3 border rounded">
-                      <h6>Passenger {index + 2}</h6>
-                      <Row>
-                        <Col md={6}>
-                          <Form.Group className="mb-2">
-                            <Form.Label>Full Name</Form.Label>
-                            <Form.Control
-                              type="text"
-                              name="name"
-                              value={form.additionalPassengers[index].name}
-                              onChange={(e) => handleAdditionalPassengerChange(index, e)}
-                              required
-                            />
-                          </Form.Group>
-                        </Col>
-                        <Col md={3}>
-                          <Form.Group className="mb-2">
-                            <Form.Label>Age</Form.Label>
-                            <Form.Control
-                              type="number"
-                              name="age"
-                              min={1}
-                              value={form.additionalPassengers[index].age}
-                              onChange={(e) => handleAdditionalPassengerChange(index, e)}
-                              required
-                            />
-                          </Form.Group>
-                        </Col>
-                        <Col md={3}>
-                          <Form.Group className="mb-2">
-                            <Form.Label>Citizenship</Form.Label>
-                            <Form.Control
-                              type="text"
-                              name="citizenship"
-                              value={form.additionalPassengers[index].citizenship}
-                              onChange={(e) => handleAdditionalPassengerChange(index, e)}
-                              required
-                            />
-                          </Form.Group>
-                        </Col>
-                      </Row>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Step 4: Booking Details */}
-              <div className="mb-4">
-                <h5 className="text-primary">Step 4: Booking Details</h5>
-                <Row>
-                  <Col md={6}>
-                    <Form.Group className="mb-2">
-                      <Form.Label><FaShip className="me-1" /> Cruise</Form.Label>
-                      <Form.Select name="cruise" value={form.cruise} onChange={handleFormChange} required>
-                        <option value="">Select Cruise</option>
-                        {cruiseTitles.map(title => (
-                          <option key={title} value={title}>{title}</option>
-                        ))}
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-2">
-                      <Form.Label><FaBed className="me-1" /> Cabin Type</Form.Label>
-                      <Form.Select name="cabinType" value={form.cabinType} onChange={handleFormChange} required>
-                        <option value="">Select Type</option>
-                        {cabinTypes.map(type => (
-                          <option key={type} value={type}>{type}</option>
-                        ))}
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col md={4}>
-                    <Form.Group className="mb-2">
-                      <Form.Label><FaBed className="me-1" /> Cabin Number</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="cabinNumber"
-                        value={form.cabinNumber}
-                        onChange={handleFormChange}
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Group className="mb-2">
-                      <Form.Label><FaCalendarAlt className="me-1" /> Booking Date</Form.Label>
-                      <Form.Control
-                        type="date"
-                        name="date"
-                        value={form.date}
-                        onChange={handleFormChange}
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Group className="mb-2">
-                      <Form.Label><FaDollarSign className="me-1" /> Total Price</Form.Label>
-                      <InputGroup>
-                        <InputGroup.Text>$</InputGroup.Text>
-                        <Form.Control
-                          type="number"
-                          name="price"
-                          min={0}
-                          value={form.price}
-                          onChange={handleFormChange}
-                          required
-                        />
-                      </InputGroup>
-                    </Form.Group>
-                  </Col>
-                </Row>
-              </div>
-            </Modal.Body>
-            <Modal.Footer className="booking-glass-effect">
-              <Button variant="secondary" onClick={closeModal}>Cancel</Button>
-              <Button variant="primary" type="submit">{modalMode === 'add' ? 'Add' : 'Save'}</Button>
-            </Modal.Footer>
-          </Form>
-        </Modal>
       </div>
       {/* Logout Confirmation Modal */}
       <Modal show={showLogoutModal} onHide={handleCloseLogoutModal} centered>
