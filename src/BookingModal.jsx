@@ -496,6 +496,82 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
     >
       <style>{`
         /* ... (keep all existing styles) ... */
+        /* Modern Horizontal Stepper Styles */
+        .modern-stepper {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 0;
+          margin-bottom: 30px;
+          margin-top: 10px;
+          width: 100%;
+        }
+        .modern-step {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          position: relative;
+          flex: 1 1 0;
+          min-width: 80px;
+        }
+        .modern-step-circle {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background: #ede7f6;
+          border: 2.5px solid #bdbdbd;
+          color: #7c4dff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          font-size: 20px;
+          margin-bottom: 7px;
+          z-index: 2;
+          transition: border 0.2s, background 0.2s, color 0.2s;
+        }
+        .modern-step-label {
+          font-size: 14px;
+          font-weight: 500;
+          color: #bdbdbd;
+          margin-bottom: 0;
+          text-align: center;
+          margin-top: 2px;
+        }
+        .modern-step-line {
+          position: absolute;
+          top: 18px;
+          left: 100%;
+          width: calc(100% - 36px);
+          height: 3.5px;
+          background: linear-gradient(90deg, #ede7f6 60%, #bdbdbd 100%);
+          z-index: 1;
+        }
+        .modern-step.active .modern-step-circle {
+          background: #7c4dff;
+          color: #fff;
+          border-color: #7c4dff;
+          box-shadow: 0 2px 8px #7c4dff22;
+        }
+        .modern-step.active .modern-step-label {
+          color: #7c4dff;
+          font-weight: 700;
+        }
+        .modern-step.completed .modern-step-circle {
+          background: #22c55e;
+          color: #fff;
+          border-color: #22c55e;
+        }
+        .modern-step.completed .modern-step-label {
+          color: #22c55e;
+          font-weight: 700;
+        }
+        @media (max-width: 600px) {
+          .modern-stepper { flex-direction: column; gap: 12px; }
+          .modern-step { flex-direction: row; min-width: unset; }
+          .modern-step-label { margin-left: 10px; margin-top: 0; text-align: left; }
+          .modern-step-line { left: 38px; top: 18px; width: 18px; height: 3px; }
+        }
         .passenger-section {
           margin-bottom: 24px;
           padding: 16px;
@@ -607,13 +683,27 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
           ×
         </button>
         {/* Step Indicator */}
-        <div className="booking-modal-steps">
-          {steps.map((label, idx) => (
-            <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div className={`booking-modal-step${step === idx + 1 ? ' active' : ''}`}>{idx + 1}</div>
-              <div className="booking-modal-step-label" style={{ color: step === idx + 1 ? '#7c4dff' : '#bdbdbd' }}>{label}</div>
-            </div>
-          ))}
+        <div className="modern-stepper">
+          {steps.map((label, idx) => {
+            const isActive = step === idx + 1;
+            const isCompleted = step > idx + 1;
+            return (
+              <div
+                className={`modern-step${isActive ? ' active' : ''}${isCompleted ? ' completed' : ''}`}
+                key={label}
+              >
+                <div className="modern-step-circle">
+                  {isCompleted ? (
+                    <span style={{fontSize:18, fontWeight:800}}>&#10003;</span>
+                  ) : (
+                    idx + 1
+                  )}
+                </div>
+                <div className="modern-step-label">{label}</div>
+                {idx !== steps.length - 1 && <div className="modern-step-line"></div>}
+              </div>
+            );
+          })}
         </div>
         <hr className="booking-modal-divider" />
         {step === 1 && (

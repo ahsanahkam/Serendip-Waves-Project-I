@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Card, Button, Form, Modal, Alert, Badge, Image } from 'react-bootstrap';
 import { FaSwimmingPool, FaPlus, FaEdit, FaTrash, FaArrowLeft, FaImage } from 'react-icons/fa';
+import logo from './assets/logo.png';
 
 function FacilityManagement() {
   const navigate = useNavigate();
@@ -239,28 +240,38 @@ function FacilityManagement() {
   }
 
   return (
-    <div className="container-fluid py-4">
-      <Card className="shadow-sm">
-        <Card.Header className="bg-primary text-white d-flex justify-content-between align-items-center">
+    <div>
+      {/* Navigation Bar */}
+      <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div className="container-fluid px-4">
+          <div className="d-flex align-items-center">
+            <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
+            <span className="navbar-brand mb-0 h1 fw-bold text-dark">Facility Management</span>
+          </div>
           <div className="d-flex align-items-center">
             <Button 
-              variant="light" 
+              variant="outline-primary" 
               size="sm" 
-              className="me-3"
               onClick={() => navigate(getBackNavigation())}
+              className="me-3"
             >
               <FaArrowLeft className="me-1" />
               Back to Dashboard
             </Button>
-            <FaSwimmingPool className="me-2" size={24} />
-            <h4 className="mb-0">Facility Management</h4>
+            <Button 
+              variant="success" 
+              size="sm"
+              onClick={handleAddNew}
+            >
+              <FaPlus className="me-1" />
+              Add New Facility
+            </Button>
           </div>
-          <Button variant="light" onClick={handleAddNew}>
-            <FaPlus className="me-1" />
-            Add New Facility
-          </Button>
-        </Card.Header>
+        </div>
+      </nav>
 
+      <div className="container-fluid py-4">
+      <Card className="shadow-sm">
         <Card.Body>
           {alert.show && (
             <Alert variant={alert.type} dismissible onClose={() => setAlert({ show: false, message: '', type: '' })}>
@@ -493,6 +504,7 @@ function FacilityManagement() {
           </Button>
         </Modal.Footer>
       </Modal>
+      </div>
     </div>
   );
 }

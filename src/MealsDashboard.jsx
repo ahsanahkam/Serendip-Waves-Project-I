@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Card, Button, Form, Row, Col, Badge } from 'react-bootstrap';
 import { FaUtensils, FaDownload, FaFilter, FaArrowLeft } from 'react-icons/fa';
+import logo from './assets/logo.png';
 import './MealsDashboard.css';
 
 function MealsDashboard() {
@@ -135,29 +136,43 @@ function MealsDashboard() {
 
   return (
     <div className="meals-dashboard">
+      {/* Navigation Bar */}
+      <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div className="container-fluid px-4">
+          <div className="d-flex align-items-center">
+            <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
+            <span className="navbar-brand mb-0 h1 fw-bold text-dark">Meals Dashboard</span>
+          </div>
+          <div className="d-flex align-items-center">
+            <Button 
+              variant="outline-primary" 
+              size="sm" 
+              onClick={() => navigate('/chef-dashboard')}
+              className="me-3"
+            >
+              <FaArrowLeft className="me-1" />
+              Back to Chef Dashboard
+            </Button>
+            <Button 
+              variant="success" 
+              size="sm"
+              onClick={exportToCSV}
+            >
+              <FaDownload className="me-1" />
+              Export CSV
+            </Button>
+          </div>
+        </div>
+      </nav>
+
       <div className="container-fluid py-4">
         <Card className="shadow-lg">
           <Card.Header className="bg-primary text-white">
-            <div className="d-flex justify-content-between align-items-center">
-              <div className="d-flex align-items-center">
-                <Button 
-                  variant="light" 
-                  size="sm" 
-                  onClick={() => navigate('/meals-options-dashboard')}
-                  className="me-3"
-                >
-                  <FaArrowLeft className="me-1" />
-                  Back to Meal Options
-                </Button>
-                <h2 className="mb-0">
-                  <FaUtensils className="me-2" />
-                  Meal Preferences - Inventory Planning
-                </h2>
-              </div>
-              <Button variant="light" onClick={exportToCSV}>
-                <FaDownload className="me-2" />
-                Export CSV
-              </Button>
+            <div className="d-flex justify-content-center align-items-center">
+              <h2 className="mb-0">
+                <FaUtensils className="me-2" />
+                Meal Preferences - Inventory Planning
+              </h2>
             </div>
           </Card.Header>
           

@@ -291,6 +291,28 @@ function Footer() {
                   <i className="bi bi-ship me-2 text-white"></i>Cruises
                 </a>
               </li>
+              <li className="mb-2">
+                <a 
+                  href="/things-to-do" 
+                  className="text-decoration-none text-light"
+                  style={{ transition: 'color 0.3s ease' }}
+                  onMouseEnter={(e) => e.target.style.color = '#ffd600'}
+                  onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
+                >
+                  <i className="bi bi-building me-2 text-white"></i>Facilities
+                </a>
+              </li>
+              <li className="mb-2">
+                <a 
+                  href="/our-dining" 
+                  className="text-decoration-none text-light"
+                  style={{ transition: 'color 0.3s ease' }}
+                  onMouseEnter={(e) => e.target.style.color = '#ffd600'}
+                  onMouseLeave={(e) => e.target.style.color = '#f8f9fa'}
+                >
+                  <i className="bi bi-cup-hot me-2 text-white"></i>Our Dining
+                </a>
+              </li>
             </ul>
           </div>
           {/* Third Column - Contact Information */}

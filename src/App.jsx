@@ -149,7 +149,9 @@ function AppRoutes(props) {
     '/facilities', // Hide navbar for Facility Preferences pages
     '/meals-dashboard', // Hide navbar for Meals Dashboard
     '/meals-options-dashboard', // Hide navbar for Meals Options Dashboard
-    '/facilities-dashboard' // Hide navbar for Facilities Dashboard
+    '/facilities-dashboard', // Hide navbar for Facilities Dashboard
+    '/chef-dashboard', // Hide navbar for Chef Dashboard
+    '/facility-management' // Hide navbar for Facility Management page
   ];
   const shouldShowNavbar = !hideNavbarRoutes.some(route => location.pathname.startsWith(route));
 
