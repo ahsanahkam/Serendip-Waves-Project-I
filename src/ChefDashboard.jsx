@@ -31,100 +31,192 @@ const ChefDashboard = () => {
   };
 
   return (
-    <div
+    <div 
+      className="min-vh-100"
       style={{
-        minHeight: "100vh",
         background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "0 1rem",
+        padding: "0",
+        margin: "0"
       }}
     >
-      {/* Custom Navbar */}
-      <div
-        style={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "2px 2px",
-          background: "#fff",
-          position: "absolute",
-          top: 0,
-          left: 0,
-          zIndex: 10,
-          minHeight: "90px",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
-          borderBottom: "1px solid #eee"
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "18px" }}>
-          <img
-            src={logo}
-            alt="Logo"
-            style={{
-              height: "80px",
-              width: "auto",
-              maxWidth: "100px",
-              cursor: "pointer",
-              objectFit: "contain"
-            }}
-            onClick={() => navigate('/#top')}
-          />
-          <div style={{ fontWeight: "bold", fontSize: "1.5rem", color: "#1a237e", letterSpacing: "1px" }}>
-            Chef Dashboard
-          </div>
+      {/* Header with Logo and Logout */}
+      <div className="d-flex justify-content-between align-items-center p-4" style={{ background: "white", boxShadow: "0 2px 10px rgba(0,0,0,0.1)" }}>
+        <div className="d-flex align-items-center">
+          <img src={logo} alt="Logo" width="50" height="50" className="me-3" />
+          <h2 className="text-dark mb-0 fw-bold">Chef Dashboard</h2>
         </div>
-        <button
+        <button 
+          className="btn text-white fw-bold px-4 py-2"
+          style={{
+            background: "linear-gradient(45deg, #ff6b6b, #ee5a24)",
+            border: "none",
+            borderRadius: "25px",
+            boxShadow: "0 4px 15px rgba(0,0,0,0.2)"
+          }}
           onClick={handleLogoutClick}
-          className="superadmin-logout-btn"
         >
           Logout
         </button>
       </div>
-      {/* End Custom Navbar */}
-      <div style={{ marginTop: "110px" }}>
-        <h2 style={{
-          color: "#fff",
-          fontWeight: 800,
-          fontSize: "3rem",
-          marginBottom: "2.5rem",
-          textAlign: "center",
-          letterSpacing: "0.5px",
-          textShadow: "0 4px 24px rgba(30,58,138,0.13)"
+
+      {/* Main Content Area */}
+      <div className="container-fluid px-4 pb-4">
+        <h1 className="text-center mb-5 text-white" style={{
+          fontSize: "3.5rem",
+          fontWeight: "bold",
+          textShadow: "0 2px 20px rgba(0,0,0,0.3)",
+          marginTop: "2rem"
         }}>
           Welcome Chef...!
-        </h2>
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            gap: "3rem",
-            maxWidth: 800,
-            width: "100%",
-          }}
-        >
-          {/* Chef Column */}
-          <div className="admin-column">
-            <h3 className="admin-column-title">👨‍🍳 Chef Management</h3>
-            <Link to="/meals-options-dashboard" className="admin-dashboard-btn">
-              <FaUtensils style={iconStyle} />
-              Meal Section
+        </h1>
+        <div className="row justify-content-center g-4">
+          {/* Section Headers */}
+          <div className="col-12">
+            <div className="row text-center mb-4">
+              <div className="col-md-4">
+                <h3 className="text-white fw-bold">🍽️ Kitchen Operations</h3>
+              </div>
+              <div className="col-md-4">
+                <h3 className="text-white fw-bold">📊 Analytics</h3>
+              </div>
+              <div className="col-md-4">
+                <h3 className="text-white fw-bold">🏪 Inventory</h3>
+              </div>
+            </div>
+          </div>
+
+          {/* Chef Management Cards */}
+          <div className="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
+            <Link 
+              to="/meals-options-dashboard" 
+              className="dashboard-btn"
+              style={{ 
+                textDecoration: "none",
+                width: "280px",
+                height: "140px",
+                borderRadius: "20px",
+                background: "rgba(255,255,255,0.95)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+                border: "none",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "1.2rem",
+                fontWeight: "600",
+                color: "#333",
+                transition: "all 0.3s ease",
+                cursor: "pointer",
+                margin: "10px",
+                position: "relative",
+                backdropFilter: "blur(10px)"
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = "translateY(-8px) scale(1.05)";
+                e.target.style.boxShadow = "0 15px 40px rgba(0,0,0,0.3)";
+                e.target.style.background = "rgba(255,255,255,1)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = "translateY(0) scale(1)";
+                e.target.style.boxShadow = "0 10px 30px rgba(0,0,0,0.2)";
+                e.target.style.background = "rgba(255,255,255,0.95)";
+              }}
+            >
+              <div style={{ fontSize: "3rem", color: "#667eea", marginBottom: "10px" }}>
+                <FaUtensils />
+              </div>
+              <span style={{ fontSize: "1.2rem", fontWeight: "700", color: "#333" }}>Meal Section</span>
             </Link>
-            <Link to="/meals-dashboard" className="admin-dashboard-btn">
-              <FaUtensils style={iconStyle} />
-              Meals Predictions
+          </div>
+          
+          <div className="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
+            <Link 
+              to="/meals-dashboard" 
+              className="dashboard-btn"
+              style={{ 
+                textDecoration: "none",
+                width: "280px",
+                height: "140px",
+                borderRadius: "20px",
+                background: "rgba(255,255,255,0.95)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+                border: "none",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "1.2rem",
+                fontWeight: "600",
+                color: "#333",
+                transition: "all 0.3s ease",
+                cursor: "pointer",
+                margin: "10px",
+                position: "relative",
+                backdropFilter: "blur(10px)"
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = "translateY(-8px) scale(1.05)";
+                e.target.style.boxShadow = "0 15px 40px rgba(0,0,0,0.3)";
+                e.target.style.background = "rgba(255,255,255,1)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = "translateY(0) scale(1)";
+                e.target.style.boxShadow = "0 10px 30px rgba(0,0,0,0.2)";
+                e.target.style.background = "rgba(255,255,255,0.95)";
+              }}
+            >
+              <div style={{ fontSize: "3rem", color: "#764ba2", marginBottom: "10px" }}>
+                <FaUtensils />
+              </div>
+              <span style={{ fontSize: "1.2rem", fontWeight: "700", color: "#333" }}>Meals Predictions</span>
             </Link>
-            <Link to="/food-inventory-management" className="admin-dashboard-btn">
-              <FaUtensils style={iconStyle} />
-              Pantry
+          </div>
+          
+          <div className="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
+            <Link 
+              to="/food-inventory-management" 
+              className="dashboard-btn"
+              style={{ 
+                textDecoration: "none",
+                width: "280px",
+                height: "140px",
+                borderRadius: "20px",
+                background: "rgba(255,255,255,0.95)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+                border: "none",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "1.2rem",
+                fontWeight: "600",
+                color: "#333",
+                transition: "all 0.3s ease",
+                cursor: "pointer",
+                margin: "10px",
+                position: "relative",
+                backdropFilter: "blur(10px)"
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = "translateY(-8px) scale(1.05)";
+                e.target.style.boxShadow = "0 15px 40px rgba(0,0,0,0.3)";
+                e.target.style.background = "rgba(255,255,255,1)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = "translateY(0) scale(1)";
+                e.target.style.boxShadow = "0 10px 30px rgba(0,0,0,0.2)";
+                e.target.style.background = "rgba(255,255,255,0.95)";
+              }}
+            >
+              <div style={{ fontSize: "3rem", color: "#ee5a24", marginBottom: "10px" }}>
+                <FaUtensils />
+              </div>
+              <span style={{ fontSize: "1.2rem", fontWeight: "700", color: "#333" }}>Pantry</span>
             </Link>
           </div>
         </div>
       </div>
+
       {/* Logout Confirmation Modal */}
       <Modal show={showLogoutModal} onHide={handleCloseLogoutModal} centered>
         <Modal.Header closeButton>
