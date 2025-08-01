@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { FaBook, FaUtensils, FaBed, FaRoute, FaUsers, FaShip, FaInfoCircle, FaDollarSign, FaSwimmingPool } from "react-icons/fa";
 import "./SuperAdminDashboard.css";
 import { useContext } from "react";
@@ -8,91 +8,10 @@ import logo from './assets/logo.png';
 import { Modal, Button } from "react-bootstrap";
 
 const iconStyle = {
-  fontSize: 28,
-  marginRight: 12,
-  color: "#4f46e5"
+  fontSize: "2.2rem",
+  color: "#7c5fe6",
+  marginBottom: "0.7rem",
 };
-
-const dashboardButtons = [
-  {
-    label: "Booking Overview",
-    icon: <FaBook size={28} />,
-    route: "/booking-overview",
-    active: true,
-  },
-  {
-    label: "Pantry",
-    icon: <FaUtensils size={28} />,
-    route: "/food-inventory-management",
-    active: true,
-  },
-  {
-    label: "Cruise",
-    icon: <FaShip style={iconStyle} />,
-    route: "/manage-cruises",
-    active: true,
-  },
-  {
-    label: "Cabin Management",
-    icon: <FaBed size={28} />,
-    route: "/cabin-admin",
-    active: true,
-  },
-  {
-    label: "Itinerary Management",
-    icon: <FaRoute size={28} />,
-    route: "/itinerary-management",
-    active: true,
-  },
-  {
-    label: "Itinerary Details",
-    icon: <FaInfoCircle size={28} />,
-    route: "/itinerary-details",
-    active: true,
-  },
-  {
-    label: "Passenger Management",
-    icon: <FaUsers size={28} />,
-    route: "/passenger-management",
-    active: true,
-  },
-  {
-    label: "Dynamic Pricing",
-    icon: <FaDollarSign size={28} />,
-    route: "/dynamic-pricing",
-    active: true,
-  },
-  {
-    label: "Enquiries",
-    icon: <FaInfoCircle size={28} />,
-    route: "/enquiries",
-    active: true,
-  },
-  {
-    label: "Meals Dashboard",
-    icon: <FaUtensils size={28} />,
-    route: "/meals-dashboard",
-    active: true,
-  },
-  {
-    label: "Meal Options",
-    icon: <FaUtensils size={28} />,
-    route: "/meals-options-dashboard",
-    active: true,
-  },
-  {
-    label: "Facilities Dashboard", 
-    icon: <FaSwimmingPool size={28} />,
-    route: "/facilities-dashboard",
-    active: true,
-  },
-  {
-    label: "Facility Management", 
-    icon: <FaSwimmingPool size={28} />,
-    route: "/facility-management",
-    active: true,
-  },
-];
 
 function SuperAdminDashboard() {
   const navigate = useNavigate();
@@ -114,7 +33,17 @@ function SuperAdminDashboard() {
   };
 
   return (
-    <div className="superadmin-dashboard-bg">
+    <div 
+      style={{
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "0 1rem",
+      }}
+    >
       {/* Custom Navbar */}
       <div style={{
         width: '100%',
@@ -126,7 +55,10 @@ function SuperAdminDashboard() {
         position: 'absolute',
         top: 0,
         left: 0,
-        zIndex: 10
+        zIndex: 10,
+        minHeight: "90px",
+        boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+        borderBottom: "1px solid #eee"
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
           <img
@@ -136,7 +68,7 @@ function SuperAdminDashboard() {
             onClick={() => navigate('/#top')}
           />
           <div style={{ fontWeight: 'bold', fontSize: '1.5rem', color: '#1a237e', letterSpacing: '1px' }}>
-            Serendip Waves
+            Super Admin Dashboard
           </div>
         </div>
         <button
@@ -147,57 +79,116 @@ function SuperAdminDashboard() {
         </button>
       </div>
       {/* End Custom Navbar */}
-      <div className="container py-5">
-        <h1 className="text-center mb-5 superadmin-title">Welcome Super Admin...!</h1>
-        <div className="row justify-content-center g-4">
-          {dashboardButtons.map((btn) => (
-            <div
-              className="col-12 col-md-6 col-lg-4 d-flex justify-content-center"
-              key={btn.label}
-            >
-              <button
-                className={`dashboard-btn${
-                  btn.active ? " active" : " disabled"
-                }`}
-                onClick={() => {
-                  if (btn.active) {
-                    if (btn.route === "/facility-management") {
-                      navigate("/facility-management?from=super-admin");
-                    } else if (btn.route === "/facilities-dashboard") {
-                      navigate("/facilities-dashboard?from=super-admin");
-                    } else {
-                      navigate(btn.route);
-                    }
-                  }
-                }}
-                disabled={!btn.active}
-              >
-                <div className="dashboard-btn-icon mb-2">{btn.icon}</div>
-                <span className="dashboard-btn-label">{btn.label}</span>
-              </button>
-            </div>
-          ))}
+      <div style={{ marginTop: "110px" }}>
+        <h2 style={{
+          color: "#fff",
+          fontWeight: 800,
+          fontSize: "3rem",
+          marginBottom: "2.5rem",
+          textAlign: "center",
+          letterSpacing: "0.5px",
+          textShadow: "0 4px 24px rgba(30,58,138,0.13)"
+        }}>
+          Welcome Boss...!
+        </h2>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: "3rem",
+            maxWidth: 1400,
+            width: "100%",
+          }}
+        >
+          {/* Bookings Column */}
+          <div className="admin-column">
+            <h3 className="admin-column-title">📋 Bookings</h3>
+            <Link to="/booking-overview" className="admin-dashboard-btn">
+              <FaBook style={iconStyle} />
+              Booking Overview
+            </Link>
+            <Link to="/passenger-management" className="admin-dashboard-btn">
+              <FaUsers style={iconStyle} />
+              Passenger Management
+            </Link>
+            <Link to="/enquiries" className="admin-dashboard-btn">
+              <FaInfoCircle style={iconStyle} />
+              Customer Enquiries
+            </Link>
+          </div>
+
+          {/* Route & Cruises Column */}
+          <div className="admin-column">
+            <h3 className="admin-column-title">🚢 Route & Cruises</h3>
+            <Link to="/manage-cruises" className="admin-dashboard-btn">
+              <FaShip style={iconStyle} />
+              Cruise Management
+            </Link>
+            <Link to="/itinerary-management" className="admin-dashboard-btn">
+              <FaRoute style={iconStyle} />
+              Itinerary Management
+            </Link>
+            <Link to="/itinerary-details" className="admin-dashboard-btn">
+              <FaInfoCircle style={iconStyle} />
+              Itinerary Details
+            </Link>
+            <Link to="/dynamic-pricing" className="admin-dashboard-btn">
+              <FaDollarSign style={iconStyle} />
+              Dynamic Pricing for Cabins
+            </Link>
+          </div>
+
+          {/* Facilities Column */}
+          <div className="admin-column">
+            <h3 className="admin-column-title">🏊 Facilities</h3>
+            <Link to="/facility-management?from=super-admin" className="admin-dashboard-btn">
+              <FaSwimmingPool style={iconStyle} />
+              Facility Management
+            </Link>
+            <Link to="/facilities-dashboard?from=super-admin" className="admin-dashboard-btn">
+              <FaSwimmingPool style={iconStyle} />
+              Facilities Dashboard
+            </Link>
+            <Link to="/cabin-admin" className="admin-dashboard-btn">
+              <FaBed style={iconStyle} />
+              Cabin Management
+            </Link>
+          </div>
+
+          {/* Chef Column */}
+          <div className="admin-column">
+            <h3 className="admin-column-title">👨‍🍳 Chef</h3>
+            <Link to="/meals-dashboard" className="admin-dashboard-btn">
+              <FaUtensils style={iconStyle} />
+              Meals Predictions
+            </Link>
+            <Link to="/food-inventory-management" className="admin-dashboard-btn">
+              <FaUtensils style={iconStyle} />
+              Pantry
+            </Link>
+          </div>
         </div>
       </div>
 
-      {showLogoutModal && (
-        <Modal show={showLogoutModal} onHide={handleCloseModal} centered>
-          <Modal.Header closeButton>
-            <Modal.Title>Confirm Logout</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            Do you want to logout?
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              No
-            </Button>
-            <Button variant="danger" onClick={handleConfirmLogout}>
-              Yes, Logout
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      )}
+      
+      {/* Logout Confirmation Modal */}
+      <Modal show={showLogoutModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Logout</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Do you want to logout?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            No
+          </Button>
+          <Button variant="danger" onClick={handleConfirmLogout}>
+            Yes, Logout
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

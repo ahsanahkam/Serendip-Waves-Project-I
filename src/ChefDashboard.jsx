@@ -1,28 +1,9 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { FaBook, FaUsers, FaRoute, FaBed, FaShip, FaInfoCircle, FaSwimmingPool, FaUtensils, FaDollarSign } from "react-icons/fa";
+import { FaUtensils } from "react-icons/fa";
 import { AuthContext } from './App';
 import logo from './assets/logo.png';
 import { Modal, Button } from 'react-bootstrap';
-
-const _cardStyle = {
-  background: "#ece9f6",
-  borderRadius: "32px",
-  boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.13)",
-  padding: "2.5rem 3.5rem",
-  minWidth: 260,
-  minHeight: 140,
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  textDecoration: "none",
-  color: "#333",
-  fontWeight: 600,
-  fontSize: "1.25rem",
-  margin: "1.2rem",
-  transition: "box-shadow 0.2s, transform 0.2s",
-};
 
 const iconStyle = {
   fontSize: "2.2rem",
@@ -30,21 +11,25 @@ const iconStyle = {
   marginBottom: "0.7rem",
 };
 
-const AdminDashboard = () => {
+const ChefDashboard = () => {
   const { logout } = useContext(AuthContext);
-  const navigate = (to) => { window.location.href = to; };
+  const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = React.useState(false);
+  
   const handleLogoutClick = () => {
     setShowLogoutModal(true);
   };
+  
   const handleCloseLogoutModal = () => {
     setShowLogoutModal(false);
   };
+  
   const handleConfirmLogout = () => {
     logout();
     navigate('/');
     setShowLogoutModal(false);
   };
+
   return (
     <div
       style={{
@@ -89,7 +74,7 @@ const AdminDashboard = () => {
             onClick={() => navigate('/#top')}
           />
           <div style={{ fontWeight: "bold", fontSize: "1.5rem", color: "#1a237e", letterSpacing: "1px" }}>
-            Admin Dashboard
+            Chef Dashboard
           </div>
         </div>
         <button
@@ -110,7 +95,7 @@ const AdminDashboard = () => {
           letterSpacing: "0.5px",
           textShadow: "0 4px 24px rgba(30,58,138,0.13)"
         }}>
-          Admin Dashboard
+          Welcome Chef...!
         </h2>
         <div
           style={{
@@ -118,65 +103,22 @@ const AdminDashboard = () => {
             flexWrap: "wrap",
             justifyContent: "center",
             gap: "3rem",
-            maxWidth: 1400,
+            maxWidth: 800,
             width: "100%",
           }}
         >
-          {/* Bookings Column */}
+          {/* Chef Column */}
           <div className="admin-column">
-            <h3 className="admin-column-title">📋 Bookings</h3>
-            <Link to="/booking-overview" className="admin-dashboard-btn">
-              <FaBook style={iconStyle} />
-              Booking Overview
+            <h3 className="admin-column-title">👨‍🍳 Chef Management</h3>
+            <Link to="/meals-dashboard" className="admin-dashboard-btn">
+              <FaUtensils style={iconStyle} />
+              Meals Predictions
             </Link>
-            <Link to="/passenger-management" className="admin-dashboard-btn">
-              <FaUsers style={iconStyle} />
-              Passenger Management
-            </Link>
-            <Link to="/enquiries" className="admin-dashboard-btn">
-              <FaInfoCircle style={iconStyle} />
-              Customer Enquiries
+            <Link to="/food-inventory-management" className="admin-dashboard-btn">
+              <FaUtensils style={iconStyle} />
+              Pantry
             </Link>
           </div>
-
-          {/* Route & Cruises Column */}
-          <div className="admin-column">
-            <h3 className="admin-column-title">🚢 Route & Cruises</h3>
-            <Link to="/manage-cruises" className="admin-dashboard-btn">
-              <FaShip style={iconStyle} />
-              Cruise Management
-            </Link>
-            <Link to="/itinerary-management" className="admin-dashboard-btn">
-              <FaRoute style={iconStyle} />
-              Itinerary Management
-            </Link>
-            <Link to="/itinerary-details" className="admin-dashboard-btn">
-              <FaInfoCircle style={iconStyle} />
-              Itinerary Details
-            </Link>
-            <Link to="/dynamic-pricing" className="admin-dashboard-btn">
-              <FaDollarSign style={iconStyle} />
-              Dynamic Pricing for Cabins
-            </Link>
-          </div>
-
-          {/* Facilities Column */}
-          <div className="admin-column">
-            <h3 className="admin-column-title">🏊 Facilities</h3>
-            <Link to="/facility-management?from=admin-dashboard" className="admin-dashboard-btn">
-              <FaSwimmingPool style={iconStyle} />
-              Facility Management
-            </Link>
-            <Link to="/facilities-dashboard?from=admin-dashboard" className="admin-dashboard-btn">
-              <FaSwimmingPool style={iconStyle} />
-              Facilities Dashboard
-            </Link>
-            <Link to="/cabin-admin" className="admin-dashboard-btn">
-              <FaBed style={iconStyle} />
-              Cabin Management
-            </Link>
-          </div>
-
         </div>
       </div>
       {/* Logout Confirmation Modal */}
@@ -200,4 +142,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard; 
+export default ChefDashboard;

@@ -127,7 +127,7 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
           if (user.email === "sadmin@gmail.com") {
             navigate("/super-admin");
           } else if (user.email === "admin2@gmail.com" && form.password === "admin123") {
-            navigate("/food-inventory-management");
+            navigate("/chef-dashboard");
           } else if (user.email === "admin3@gmail.com"  && form.password === "dadmin123") {
             navigate("/admin-dashboard");
           }
