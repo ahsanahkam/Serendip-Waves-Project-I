@@ -355,10 +355,23 @@ function MealsPreferencePage() {
         {/* Navigation Bar */}
         <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
           <div className="container-fluid px-4">
+            {/* Logo */}
             <div className="d-flex align-items-center">
               <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
-              <span className="navbar-brand mb-0 h1 fw-bold text-dark">Meal Preferences</span>
             </div>
+
+            {/* Navigation Menu */}
+            <div className="navbar-nav d-flex flex-row">
+              <a className="nav-link px-3 fw-medium text-dark" href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }}>Home</a>
+              <a className="nav-link px-3 fw-medium text-dark" href="/destinations" onClick={(e) => { e.preventDefault(); navigate('/destinations'); }}>Destination</a>
+              <a className="nav-link px-3 fw-medium text-dark" href="/things-to-do" onClick={(e) => { e.preventDefault(); navigate('/things-to-do'); }}>Facilities</a>
+              <a className="nav-link px-3 fw-medium text-dark" href="/our-dining" onClick={(e) => { e.preventDefault(); navigate('/our-dining'); }}>Our Dining</a>
+              <a className="nav-link px-3 fw-medium text-dark" href="/cruise-ships" onClick={(e) => { e.preventDefault(); navigate('/cruise-ships'); }}>Cruises</a>
+              <a className="nav-link px-3 fw-medium text-dark" href="/" onClick={(e) => { e.preventDefault(); navigate('/'); setTimeout(() => { const el = document.getElementById('about'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }, 100); }}>About Us</a>
+              <a className="nav-link px-3 fw-medium text-dark" href="/" onClick={(e) => { e.preventDefault(); navigate('/'); setTimeout(() => { const el = document.getElementById('contact'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }, 100); }}>Contact</a>
+            </div>
+
+            {/* Right side - Booking ID only */}
             <div className="d-flex align-items-center">
               <span className="text-muted">Booking ID: {bookingId}</span>
             </div>
@@ -382,10 +395,23 @@ function MealsPreferencePage() {
       {/* Navigation Bar */}
       <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div className="container-fluid px-4">
+          {/* Logo */}
           <div className="d-flex align-items-center">
             <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
-            <span className="navbar-brand mb-0 h1 fw-bold text-dark">Meal Preferences</span>
           </div>
+
+          {/* Navigation Menu */}
+          <div className="navbar-nav d-flex flex-row">
+            <a className="nav-link px-3 fw-medium text-dark" href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }}>Home</a>
+            <a className="nav-link px-3 fw-medium text-dark" href="/destinations" onClick={(e) => { e.preventDefault(); navigate('/destinations'); }}>Destination</a>
+            <a className="nav-link px-3 fw-medium text-dark" href="/things-to-do" onClick={(e) => { e.preventDefault(); navigate('/things-to-do'); }}>Facilities</a>
+            <a className="nav-link px-3 fw-medium text-dark" href="/our-dining" onClick={(e) => { e.preventDefault(); navigate('/our-dining'); }}>Our Dining</a>
+            <a className="nav-link px-3 fw-medium text-dark" href="/cruise-ships" onClick={(e) => { e.preventDefault(); navigate('/cruise-ships'); }}>Cruises</a>
+            <a className="nav-link px-3 fw-medium text-dark" href="/" onClick={(e) => { e.preventDefault(); navigate('/'); setTimeout(() => { const el = document.getElementById('about'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }, 100); }}>About Us</a>
+            <a className="nav-link px-3 fw-medium text-dark" href="/" onClick={(e) => { e.preventDefault(); navigate('/'); setTimeout(() => { const el = document.getElementById('contact'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }, 100); }}>Contact</a>
+          </div>
+
+          {/* Right side - Booking ID only */}
           <div className="d-flex align-items-center">
             <span className="text-muted">Booking ID: {bookingId}</span>
           </div>
