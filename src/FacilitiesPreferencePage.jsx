@@ -290,6 +290,7 @@ function FacilitiesPreferencePage() {
         {/* Navigation Bar */}
         <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
           <div className="container-fluid px-4">
+
             {/* Logo */}
             <div className="d-flex align-items-center">
               <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
@@ -307,6 +308,12 @@ function FacilitiesPreferencePage() {
             </div>
 
             {/* Right side - Booking ID only */}
+
+       //     <div className="d-flex align-items-center">
+         //     <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
+        //      <span className="navbar-brand mb-0 h1 fw-bold text-dark">Facility Preferences</span>
+        //    </div>
+
             <div className="d-flex align-items-center">
               <span className="text-muted">Booking ID: {bookingId}</span>
             </div>
@@ -331,6 +338,7 @@ function FacilitiesPreferencePage() {
         {/* Navigation Bar */}
         <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
           <div className="container-fluid px-4">
+
             {/* Logo */}
             <div className="d-flex align-items-center">
               <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
@@ -348,6 +356,12 @@ function FacilitiesPreferencePage() {
             </div>
 
             {/* Right side - Booking ID only */}
+
+       //     <div className="d-flex align-items-center">
+       //       <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
+         //     <span className="navbar-brand mb-0 h1 fw-bold text-dark">Facility Preferences</span>
+        //    </div>
+
             <div className="d-flex align-items-center">
               <span className="text-muted">Booking ID: {bookingId}</span>
             </div>
@@ -373,6 +387,7 @@ function FacilitiesPreferencePage() {
       {/* Navigation Bar */}
       <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div className="container-fluid px-4">
+
           {/* Logo */}
           <div className="d-flex align-items-center">
             <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
@@ -390,6 +405,11 @@ function FacilitiesPreferencePage() {
           </div>
 
           {/* Right side - Booking ID only */}
+
+        //  <div className="d-flex align-items-center">
+        //    <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
+        //    <span className="navbar-brand mb-0 h1 fw-bold text-dark">Facility Preferences</span>
+        //                
           <div className="d-flex align-items-center">
             <span className="text-muted">Booking ID: {bookingId}</span>
           </div>
