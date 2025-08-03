@@ -303,9 +303,19 @@ function FacilityManagement() {
   }
 
   return (
-    <div>
+    <div
+      style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        padding: '0 1rem',
+      }}
+    >
       {/* Navigation Bar */}
-      <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+      <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm" style={{ width: '100%', position: 'fixed', top: 0, zIndex: 1030 }}>
         <div className="container-fluid px-4">
           <div className="d-flex align-items-center">
             <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
@@ -332,100 +342,118 @@ function FacilityManagement() {
         </div>
       </nav>
 
-      {/* Filter Bar */}
-      <div className="container-fluid py-3 bg-light border-bottom mt-5">
-        <Row className="g-3 align-items-end">
-          <Col md={4}>
-            <Form.Group>
-              <Form.Label className="small fw-bold text-muted">
-                <FaSearch className="me-1" />
-                Search Facilities
-              </Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Search by facility name or description..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="form-control-sm"
-              />
-            </Form.Group>
-          </Col>
-          <Col md={3}>
-            <Form.Group>
-              <Form.Label className="small fw-bold text-muted">
-                <FaFilter className="me-1" />
-                Status
-              </Form.Label>
-              <Form.Select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="form-select-sm"
-              >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </Form.Select>
-            </Form.Group>
-          </Col>
-          <Col md={3}>
-            <Form.Group>
-              <Form.Label className="small fw-bold text-muted">Price Range</Form.Label>
-              <Form.Select
-                value={priceRangeFilter}
-                onChange={(e) => setPriceRangeFilter(e.target.value)}
-                className="form-select-sm"
-              >
-                <option value="all">All Prices</option>
-                <option value="low">Under $50</option>
-                <option value="medium">$50 - $150</option>
-                <option value="high">Above $150</option>
-              </Form.Select>
-            </Form.Group>
-          </Col>
-          <Col md={2} className="d-flex gap-2">
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleAddNew}
-              className="w-100"
-            >
-              <FaPlus className="me-1" />
-              Add New
-            </Button>
-            {(searchTerm || statusFilter !== 'all' || priceRangeFilter !== 'all') && (
-              <Button
-                variant="outline-secondary"
-                size="sm"
-                onClick={clearFilters}
-                title="Clear Filters"
-              >
-                Clear
-              </Button>
-            )}
-          </Col>
-        </Row>
-        
-        {/* Filter Summary */}
-        <Row className="mt-2">
-          <Col>
-            <small className="text-muted">
-              Showing {filteredFacilities.length} of {facilities.length} facilities
-              {searchTerm && ` • Search: "${searchTerm}"`}
-              {statusFilter !== 'all' && ` • Status: ${statusFilter}`}
-              {priceRangeFilter !== 'all' && ` • Price: ${priceRangeFilter}`}
-            </small>
-          </Col>
-        </Row>
-      </div>
+      <div style={{ marginTop: '110px', width: '100%' }}>
+        {/* Gradient Header */}
+        <section className="facility-hero-section mb-4" style={{ minHeight: '220px', padding: '40px 0' }}>
+          <div className="facility-hero-content container text-center text-white">
+            <h2 className="facility-hero-title mb-2" style={{ fontSize: '2.8rem' }}>
+              <FaSwimmingPool className="me-2 mb-1" /> Facility Management
+            </h2>
+            <p className="facility-hero-subtitle mb-0">
+              Manage and configure all cruise facilities with pricing, images, and availability settings.
+            </p>
+          </div>
+        </section>
 
-      <div className="container-fluid py-4">
-      <Card className="shadow-sm">
-        <Card.Body>
-          {alert.show && (
-            <Alert variant={alert.type} dismissible onClose={() => setAlert({ show: false, message: '', type: '' })}>
-              {alert.message}
-            </Alert>
-          )}
+        {/* Main Content Card */}
+        <div className="card facility-glass-effect mb-4 p-3 shadow-lg border-0" style={{ maxWidth: 1200, margin: '0 auto', background: '#fff', borderRadius: '15px' }}>
+          {/* Filter Bar */}
+          <div className="mb-4">
+            <h5 className="mb-3">
+              <FaFilter className="me-2" />
+              Filters & Search
+            </h5>
+            <Row className="g-3 align-items-end">
+              <Col md={4}>
+                <Form.Group>
+                  <Form.Label className="small fw-bold text-muted">
+                    <FaSearch className="me-1" />
+                    Search Facilities
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Search by facility name or description..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="form-control-sm"
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label className="small fw-bold text-muted">
+                    <FaFilter className="me-1" />
+                    Status
+                  </Form.Label>
+                  <Form.Select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="form-select-sm"
+                  >
+                    <option value="all">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label className="small fw-bold text-muted">Price Range</Form.Label>
+                  <Form.Select
+                    value={priceRangeFilter}
+                    onChange={(e) => setPriceRangeFilter(e.target.value)}
+                    className="form-select-sm"
+                  >
+                    <option value="all">All Prices</option>
+                    <option value="low">Under $50</option>
+                    <option value="medium">$50 - $150</option>
+                    <option value="high">Above $150</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={2} className="d-flex gap-2">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleAddNew}
+                  className="w-100"
+                >
+                  <FaPlus className="me-1" />
+                  Add New
+                </Button>
+                {(searchTerm || statusFilter !== 'all' || priceRangeFilter !== 'all') && (
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={clearFilters}
+                    title="Clear Filters"
+                  >
+                    Clear
+                  </Button>
+                )}
+              </Col>
+            </Row>
+            
+            {/* Filter Summary */}
+            <Row className="mt-2">
+              <Col>
+                <small className="text-muted">
+                  Showing {filteredFacilities.length} of {facilities.length} facilities
+                  {searchTerm && ` • Search: "${searchTerm}"`}
+                  {statusFilter !== 'all' && ` • Status: ${statusFilter}`}
+                  {priceRangeFilter !== 'all' && ` • Price: ${priceRangeFilter}`}
+                </small>
+              </Col>
+            </Row>
+          </div>
+
+          {/* Data Table */}
+          <div className="table-responsive">
+            {alert.show && (
+              <Alert variant={alert.type} dismissible onClose={() => setAlert({ show: false, message: '', type: '' })}>
+                {alert.message}
+              </Alert>
+            )}
 
           <Table striped bordered hover responsive>
             <thead className="table-dark">
@@ -515,8 +543,8 @@ function FacilityManagement() {
               </div>
             )}
           </div>
-        </Card.Body>
-      </Card>
+        </div>
+      </div>
 
       {/* Add/Edit Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
