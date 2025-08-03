@@ -212,9 +212,19 @@ function FacilitiesDashboard() {
   }
 
   return (
-    <div className="facilities-dashboard">
+    <div
+      style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        padding: '0 1rem',
+      }}
+    >
       {/* Navigation Bar */}
-      <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+      <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm" style={{ width: '100%', position: 'fixed', top: 0, zIndex: 1030 }}>
         <div className="container-fluid px-4">
           <div className="d-flex align-items-center">
             <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
@@ -241,164 +251,162 @@ function FacilitiesDashboard() {
         </div>
       </nav>
 
-      <div className="container-fluid py-4">
-        <Card className="shadow-lg">
-          <Card.Header className="bg-info text-white">
-            <div className="d-flex justify-content-center align-items-center">
-              <h2 className="mb-0">
-                <FaSwimmingPool className="me-2" />
-                Facilities Dashboard
-              </h2>
-            </div>
-          </Card.Header>
-          
-          <Card.Body>
-            {/* Filters */}
-            <Card className="mb-4">
-              <Card.Header>
-                <h5 className="mb-0">
-                  <FaFilter className="me-2" />
-                  Filters
-                </h5>
-              </Card.Header>
-              <Card.Body>
-                <Row>
-                  <Col md={4}>
-                    <Form.Group>
-                      <Form.Label>Passenger Name</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Search by name..."
-                        value={filters.passengerName}
-                        onChange={(e) => handleFilterChange('passengerName', e.target.value)}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Group>
-                      <Form.Label>Booking ID</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Search by booking ID..."
-                        value={filters.bookingId}
-                        onChange={(e) => handleFilterChange('bookingId', e.target.value)}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Group>
-                      <Form.Label>Facility</Form.Label>
-                      <Form.Select
-                        value={filters.facility}
-                        onChange={(e) => handleFilterChange('facility', e.target.value)}
-                      >
-                        <option value="">All Facilities</option>
-                        <option value="Spa and Wellness Center">Spa and Wellness Center</option>
-                        <option value="Private Party/Event Hall">Private Party/Event Hall</option>
-                        <option value="Babysitting Services">Babysitting Services</option>
-                        <option value="Fitness Center">Fitness Center</option>
-                        <option value="Cinema/Open Air">Cinema/Open Air</option>
-                        <option value="Game Zone/Arcade">Game Zone/Arcade</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <Row className="mt-3">
-                  <Col md={4}>
-                    <Form.Group>
-                      <Form.Label>Status</Form.Label>
-                      <Form.Select
-                        value={filters.status}
-                        onChange={(e) => handleFilterChange('status', e.target.value)}
-                      >
-                        <option value="">All Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="paid">Paid</option>
-                        <option value="cancelled">Cancelled</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                </Row>
-              </Card.Body>
-            </Card>
+      <div style={{ marginTop: '110px', width: '100%' }}>
+        {/* Gradient Header */}
+        <section className="facilities-hero-section mb-4" style={{ minHeight: '220px', padding: '40px 0' }}>
+          <div className="facilities-hero-content container text-center text-white">
+            <h2 className="facilities-hero-title mb-2" style={{ fontSize: '2.8rem' }}>
+              <FaSwimmingPool className="me-2 mb-1" /> Facilities Dashboard
+            </h2>
+            <p className="facilities-hero-subtitle mb-0">
+              Monitor and manage all facility bookings with powerful filters and detailed insights.
+            </p>
+          </div>
+        </section>
 
-            {/* Data Table */}
-            <div className="table-responsive">
-              <Table striped bordered hover className="facilities-table">
-                <thead className="table-info">
+        {/* Main Content Card */}
+        <div className="card booking-glass-effect mb-4 p-3 shadow-lg border-0" style={{ maxWidth: 1200, margin: '0 auto', background: '#fff', borderRadius: '15px' }}>
+          {/* Filters */}
+          <div className="mb-4">
+            <h5 className="mb-3">
+              <FaFilter className="me-2" />
+              Filters
+            </h5>
+            <Row>
+              <Col md={4}>
+                <Form.Group>
+                  <Form.Label>Passenger Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Search by name..."
+                    value={filters.passengerName}
+                    onChange={(e) => handleFilterChange('passengerName', e.target.value)}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group>
+                  <Form.Label>Booking ID</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Search by booking ID..."
+                    value={filters.bookingId}
+                    onChange={(e) => handleFilterChange('bookingId', e.target.value)}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group>
+                  <Form.Label>Facility</Form.Label>
+                  <Form.Select
+                    value={filters.facility}
+                    onChange={(e) => handleFilterChange('facility', e.target.value)}
+                  >
+                    <option value="">All Facilities</option>
+                    <option value="Spa and Wellness Center">Spa and Wellness Center</option>
+                    <option value="Private Party/Event Hall">Private Party/Event Hall</option>
+                    <option value="Babysitting Services">Babysitting Services</option>
+                    <option value="Fitness Center">Fitness Center</option>
+                    <option value="Cinema/Open Air">Cinema/Open Air</option>
+                    <option value="Game Zone/Arcade">Game Zone/Arcade</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row className="mt-3">
+              <Col md={4}>
+                <Form.Group>
+                  <Form.Label>Status</Form.Label>
+                  <Form.Select
+                    value={filters.status}
+                    onChange={(e) => handleFilterChange('status', e.target.value)}
+                  >
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="paid">Paid</option>
+                    <option value="cancelled">Cancelled</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+            </Row>
+          </div>
+
+          {/* Data Table */}
+          <div className="table-responsive">
+            <Table striped bordered hover className="facilities-table">
+              <thead className="table-info">
+                <tr>
+                  <th>Passenger Name</th>
+                  <th>Booking ID</th>
+                  <th>Facilities</th>
+                  <th>Status</th>
+                  <th>Total Cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredData.length === 0 ? (
                   <tr>
-                    <th>Passenger Name</th>
-                    <th>Booking ID</th>
-                    <th>Facilities</th>
-                    <th>Status</th>
-                    <th>Total Cost</th>
+                    <td colSpan="5" className="text-center text-muted">
+                      No facility preferences found
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {filteredData.length === 0 ? (
-                    <tr>
-                      <td colSpan="5" className="text-center text-muted">
-                        No facility preferences found
+                ) : (
+                  filteredData.map(item => (
+                    <tr key={item.id}>
+                      <td>{item.passengerName}</td>
+                      <td>
+                        <Badge bg="secondary">{item.bookingId}</Badge>
                       </td>
-                    </tr>
-                  ) : (
-                    filteredData.map(item => (
-                      <tr key={item.id}>
-                        <td>{item.passengerName}</td>
-                        <td>
-                          <Badge bg="secondary">{item.bookingId}</Badge>
-                        </td>
-                        <td>
-                          <div className="facilities-list">
-                            {item.facilities.map((facility, index) => (
-                              <div key={index} className="facility-item mb-2">
-                                <div className="d-flex justify-content-between align-items-center">
-                                  <div>
-                                    <Badge 
-                                      bg={facility.cost === 0 ? 'success' : 'primary'}
-                                      className="facility-name-badge me-2"
-                                    >
-                                      {facility.name}
-                                    </Badge>
-                                    <Badge bg="outline-dark" className="quantity-badge">
-                                      {facility.quantity}
-                                    </Badge>
-                                  </div>
-                                  <div className="facility-cost">
-                                    {facility.cost === 0 ? (
-                                      <Badge bg="success">FREE</Badge>
-                                    ) : (
-                                      <span className="fw-bold text-primary">${facility.cost}</span>
-                                    )}
-                                  </div>
+                      <td>
+                        <div className="facilities-list">
+                          {item.facilities.map((facility, index) => (
+                            <div key={index} className="facility-item mb-2">
+                              <div className="d-flex justify-content-between align-items-center">
+                                <div>
+                                  <Badge 
+                                    bg={facility.cost === 0 ? 'success' : 'primary'}
+                                    className="facility-name-badge me-2"
+                                  >
+                                    {facility.name}
+                                  </Badge>
+                                  <Badge bg="outline-dark" className="quantity-badge">
+                                    {facility.quantity}
+                                  </Badge>
+                                </div>
+                                <div className="facility-cost">
+                                  {facility.cost === 0 ? (
+                                    <Badge bg="success">FREE</Badge>
+                                  ) : (
+                                    <span className="fw-bold text-primary">${facility.cost}</span>
+                                  )}
                                 </div>
                               </div>
-                            ))}
-                          </div>
-                        </td>
-                        <td className="text-center">
-                          {getStatusBadge(item.status)}
-                        </td>
-                        <td className="text-end fw-bold">
-                          <div className="total-cost-cell">
-                            <Badge bg="dark" className="total-badge">
-                              Total: ${item.totalCost}
-                            </Badge>
-                            <div className="mt-1">
-                              <small className="text-muted">
-                                {item.facilities.length} facility{item.facilities.length !== 1 ? 'ies' : ''}
-                              </small>
                             </div>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="text-center">
+                        {getStatusBadge(item.status)}
+                      </td>
+                      <td className="text-end fw-bold">
+                        <div className="total-cost-cell">
+                          <Badge bg="dark" className="total-badge">
+                            Total: ${item.totalCost}
+                          </Badge>
+                          <div className="mt-1">
+                            <small className="text-muted">
+                              {item.facilities.length} facility{item.facilities.length !== 1 ? 'ies' : ''}
+                            </small>
                           </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </Table>
-            </div>
-          </Card.Body>
-        </Card>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </Table>
+          </div>
+        </div>
       </div>
     </div>
   );
