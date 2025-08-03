@@ -373,15 +373,9 @@ function MealsPreferencePage() {
             </div>
 
             {/* Right side - Booking ID only */}
-
-          //  <div className="d-flex align-items-center">
-           //   <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
-           //   <span className="navbar-brand mb-0 h1 fw-bold text-dark">Meal Preferences</span>
-           // </div>
-
-            <div className="d-flex align-items-center">
-              <span className="text-muted">Booking ID: {bookingId}</span>
-            </div>
+          <div className="d-flex align-items-center">
+            <span className="text-muted">Booking ID: {bookingId}</span>
+          </div>
           </div>
         </nav>
 
@@ -420,12 +414,6 @@ function MealsPreferencePage() {
           </div>
 
           {/* Right side - Booking ID only */}
-
-         // <div className="d-flex align-items-center">
-          //  <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
-          //  <span className="navbar-brand mb-0 h1 fw-bold text-dark">Meal Preferences</span>
-         // </div>
-
           <div className="d-flex align-items-center">
             <span className="text-muted">Booking ID: {bookingId}</span>
           </div>

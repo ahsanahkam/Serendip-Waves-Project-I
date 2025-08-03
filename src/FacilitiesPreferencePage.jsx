@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Form, Row, Col, Table, Card, Alert } from 'react-bootstrap';
-import { FaSwimmingPool, FaArrowLeft, FaCreditCard, FaSave, FaCheckCircle } from 'react-icons/fa';
+import { FaSwimmingPool, FaCheckCircle, FaCreditCard, FaSave, FaArrowLeft } from 'react-icons/fa';
 import logo from './assets/logo.png';
-import FacilityBookingConfirmation from './components/FacilityBookingConfirmation';
 import BookedFacilities from './components/BookedFacilities';
+import FacilityBookingConfirmation from './components/FacilityBookingConfirmation';
 import './FacilitiesPreferencePage.css';
 
 function FacilitiesPreferencePage() {
@@ -405,11 +405,6 @@ function FacilitiesPreferencePage() {
           </div>
 
           {/* Right side - Booking ID only */}
-
-        //  <div className="d-flex align-items-center">
-        //    <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
-        //    <span className="navbar-brand mb-0 h1 fw-bold text-dark">Facility Preferences</span>
-        //                
           <div className="d-flex align-items-center">
             <span className="text-muted">Booking ID: {bookingId}</span>
           </div>
