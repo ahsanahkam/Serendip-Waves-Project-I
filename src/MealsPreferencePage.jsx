@@ -358,7 +358,15 @@ function MealsPreferencePage() {
 
             {/* Logo */}
             <div className="d-flex align-items-center">
-              <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
+              <img 
+                src={logo} 
+                alt="Logo" 
+                width="80" 
+                height="80" 
+                className="me-3" 
+                style={{ cursor: 'pointer' }}
+                onClick={(e) => { e.preventDefault(); navigate('/'); }}
+              />
             </div>
 
             {/* Navigation Menu */}
@@ -399,7 +407,15 @@ function MealsPreferencePage() {
 
           {/* Logo */}
           <div className="d-flex align-items-center">
-            <img src={logo} alt="Logo" width="40" height="40" className="me-3" />
+            <img 
+              src={logo} 
+              alt="Logo" 
+              width="80" 
+              height="80" 
+              className="me-3" 
+              style={{ cursor: 'pointer' }}
+              onClick={(e) => { e.preventDefault(); navigate('/'); }}
+            />
           </div>
 
           {/* Navigation Menu */}
