@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Card, Button, Form, Row, Col, Badge } from 'react-bootstrap';
-import { FaUtensils, FaDownload, FaFilter, FaArrowLeft } from 'react-icons/fa';
+import { FaUtensils, FaFilter, FaSignOutAlt } from 'react-icons/fa';
 import logo from './assets/logo.png';
 import './MealsDashboard.css';
 
@@ -130,6 +130,18 @@ function MealsDashboard() {
     window.URL.revokeObjectURL(url);
   };
 
+  const handleLogout = () => {
+    // Clear any stored authentication data
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('role');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('currentUser');
+    
+    // Navigate to home page
+    navigate('/');
+  };
+
   if (loading) {
     return <div className="text-center mt-5">Loading meals data...</div>;
   }
@@ -145,21 +157,16 @@ function MealsDashboard() {
           </div>
           <div className="d-flex align-items-center">
             <Button 
-              variant="outline-primary" 
-              size="sm" 
-              onClick={() => navigate('/chef-dashboard')}
-              className="me-3"
-            >
-              <FaArrowLeft className="me-1" />
-              Back to Chef Dashboard
-            </Button>
-            <Button 
-              variant="success" 
+              variant="danger" 
               size="sm"
-              onClick={exportToCSV}
+              onClick={handleLogout}
+              className="rounded-pill px-3"
+              style={{ 
+                fontWeight: '600'
+              }}
             >
-              <FaDownload className="me-1" />
-              Export CSV
+              <FaSignOutAlt className="me-1" />
+              Logout
             </Button>
           </div>
         </div>
