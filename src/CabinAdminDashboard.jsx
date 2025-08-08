@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
   FaUser,
@@ -18,17 +18,8 @@ import {
 } from "react-icons/fa";
 import logo from './assets/logo.png';
 import { AuthContext } from './AuthContext';
-import { useContext } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 
-const cruiseNames = [
-  "Serendip Dream",
-  "Serendip Majesty",
-  "Serendip Explorer",
-  "Serendip Serenade",
-  "Serendip Adventurer",
-  "Serendip Harmony",
-];
 const cabinTypes = ["Interior", "Ocean View", "Balcony", "Suite"];
 const statusOptions = ["Available", "Booked", "Maintenance"];
 
@@ -37,6 +28,7 @@ function CabinAdminDashboard() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = (to) => { window.location.href = to; };
   const [cabins, setCabins] = useState([]);
+  const [cruiseNames, setCruiseNames] = useState([]);
   const [_loading, setLoading] = useState(true);
   const [_error, setError] = useState("");
   const [search, setSearch] = useState("");
@@ -80,9 +72,38 @@ function CabinAdminDashboard() {
       });
   };
 
-  React.useEffect(() => {
+  // Fetch cruise names from backend
+  const fetchCruiseNames = () => {
+    console.log('Fetching cruise names from backend...');
+    fetch("http://localhost/Project-I/backend/getShipDetails.php")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('Raw ship data from API:', data);
+        if (Array.isArray(data)) {
+          // Extract unique ship names from the response
+          const uniqueShipNames = [...new Set(data.map(ship => ship.ship_name))];
+          console.log('Extracted ship names:', uniqueShipNames);
+          setCruiseNames(uniqueShipNames);
+        } else {
+          console.error('API response is not an array:', data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching cruise names:", error);
+        // Fallback to empty array if fetch fails
+        setCruiseNames([]);
+      });
+  };
+
+  useEffect(() => {
     fetchCabins();
+    fetchCruiseNames();
   }, []);
+
+  // Debug effect to log cruise names when they change
+  useEffect(() => {
+    console.log('Cruise names state updated:', cruiseNames);
+  }, [cruiseNames]);
 
   const handleClear = () => {
     setSearch("");

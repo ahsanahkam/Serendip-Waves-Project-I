@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
 import { FaArrowLeft, FaLeaf, FaSeedling, FaMosque, FaHeartbeat, FaBreadSlice, FaUtensils, FaCoffee, FaWineGlass } from 'react-icons/fa';
@@ -21,7 +21,7 @@ const OurDining = () => {
   const [loading, setLoading] = useState(true);
 
   // Static fallback data (keeping original design intact)
-  const fallbackMealTypes = [
+  const fallbackMealTypes = useMemo(() => [
     {
       id: 'basic',
       name: 'Basic/Vegetarian',
@@ -72,7 +72,7 @@ const OurDining = () => {
       badge: 'Celiac Safe',
       badgeColor: 'primary'
     }
-  ];
+  ], []);
 
   // Icon mapping function
   const getIconForMealType = (type) => {
@@ -185,12 +185,7 @@ const OurDining = () => {
     return fallbackImages[type.toLowerCase()] || defaultImages[index % defaultImages.length];
   };
 
-  // Fetch meal options from backend
-  useEffect(() => {
-    fetchMealOptions();
-  }, []);
-
-  const fetchMealOptions = async () => {
+  const fetchMealOptions = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axios.get('http://localhost/Project-I/backend/mealOptionsAPI.php');
@@ -224,7 +219,12 @@ const OurDining = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [fallbackMealTypes]);
+
+  // Fetch meal options from backend
+  useEffect(() => {
+    fetchMealOptions();
+  }, [fetchMealOptions]);
 
   const diningTimes = [
     {
