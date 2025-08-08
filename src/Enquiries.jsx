@@ -5,7 +5,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Table, Modal, Button, Spinner, Alert } from 'react-bootstrap';
 import './Enquiries.css';
 import logo from './assets/logo.png';
-import { AuthContext } from './App';
+import { AuthContext } from './AuthContext';
 
 const BACKEND = 'http://localhost/Project-I/backend';
 

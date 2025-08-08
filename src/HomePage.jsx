@@ -7,7 +7,7 @@ import React, { useState, useContext } from "react";
 import DestinationsPage from "./DestinationsPage";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AboutSection from './AboutSection';
-import { AuthContext } from './App';
+import { AuthContext } from './AuthContext';
 
 // Optimized Hero Section as a component
 const Hero = ({ onBookingClick, bookingError }) => (

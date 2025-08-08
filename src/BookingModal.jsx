@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
-import { AuthContext } from "./App";
+import { AuthContext } from "./AuthContext";
 import logo from './assets/logo.png';
 
 const cabinTypes = ["Interior", "Ocean View", "Balcony", "Suite"];

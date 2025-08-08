@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -7,6 +7,7 @@ import {
   useNavigate,
   useLocation
 } from 'react-router-dom';
+import { AuthContext, AuthProvider } from './AuthContext';
 import HomePage from './HomePage';
 import DestinationsPage from './DestinationsPage';
 import BookingModal from './BookingModal';
@@ -40,59 +41,6 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import DynamicPricing from './DynamicPricing';
 
 
-export const AuthContext = createContext();
-export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [defaultBookingCountry, setDefaultBookingCountry] = useState("");
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-
-  const [loading, setLoading] = useState(true);
-  // On mount, check session with backend
-  useEffect(() => {
-    fetch('http://localhost/Project-I/backend/login.php?action=session_user', {
-      method: 'GET',
-      credentials: 'include',
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && data.user) {
-          setCurrentUser(data.user);
-          setIsAuthenticated(true);
-        } else {
-          setCurrentUser(null);
-          setIsAuthenticated(false);
-        }
-      })
-      .catch(() => {
-        setCurrentUser(null);
-        setIsAuthenticated(false);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  const login = (userData) => {
-    setCurrentUser(userData);
-    setIsAuthenticated(true);
-  };
-
-  const logout = () => {
-    setCurrentUser(null);
-    setIsAuthenticated(false);
-    // Optionally, call backend to destroy session
-    fetch('http://localhost/Project-I/backend/logout.php', { method: 'POST', credentials: 'include' });
-    localStorage.clear();
-    sessionStorage.clear();
-  };
-
-  return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, currentUser, setCurrentUser, login, logout, defaultBookingCountry, setDefaultBookingCountry, isBookingModalOpen, setIsBookingModalOpen, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-
 function SignupRouteHandler({ isAuthenticated, setIsSignupModalOpen }) {
   React.useEffect(() => {
     setIsSignupModalOpen(true);
@@ -121,8 +69,8 @@ const ProtectedRoute = ({ allowedRoles, children }) => {
 function AppRoutes(props) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuthenticated } = useContext(AuthContext); // Get from context
   const {
-    isAuthenticated,
     setIsLoginModalOpen,
     setIsSignupModalOpen,
     isLoginModalOpen,

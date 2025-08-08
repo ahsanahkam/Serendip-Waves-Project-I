@@ -4,7 +4,7 @@ import { FaTrash, FaShip, FaUser, FaBed, FaCalendarAlt } from 'react-icons/fa';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './BookingOverviewPage.css';
 import logo from './assets/logo.png';
-import { AuthContext } from './App';
+import { AuthContext } from './AuthContext';
 import { useContext } from 'react';
 
 // Mock cabin types data (keeping this as it's not requested to be dynamic)

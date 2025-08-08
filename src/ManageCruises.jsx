@@ -4,7 +4,7 @@ import { FaPlus, FaEdit, FaTrash, FaSearch, FaTimes, FaShip } from 'react-icons/
 import './ManageCruises.css';
 import axios from 'axios';
 import logo from './assets/logo.png';
-import { AuthContext } from './App';
+import { AuthContext } from './AuthContext';
 import { useContext } from 'react';
 
 function ManageCruises() {

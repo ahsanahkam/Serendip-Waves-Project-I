@@ -4,7 +4,7 @@ import { FaPlus, FaEdit, FaTrash, FaSearch, FaTimes, FaRoute } from 'react-icons
 import './itinerary.css';
 import axios from 'axios';
 import logo from './assets/logo.png';
-import { AuthContext } from './App';
+import { AuthContext } from './AuthContext';
 
 // Remove static shipNames
 // const shipNames = [ ... ];

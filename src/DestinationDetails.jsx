@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
-import { AuthContext } from './App';
+import { AuthContext } from './AuthContext';
 
 const API_BASE = 'http://localhost/Project-I/backend';
 

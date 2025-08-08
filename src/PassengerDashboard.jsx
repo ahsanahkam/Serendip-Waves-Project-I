@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import './PassengerDashboard.css';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import logo from './assets/logo.png';
-import { AuthContext } from './App';
+import { AuthContext } from './AuthContext';
 import { useContext } from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 
