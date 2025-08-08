@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { AuthContext } from "./App";
+import { AuthContext } from "./AuthContext";
 import BookingModal from "./BookingModal";
 import { Modal, Button } from 'react-bootstrap';
 

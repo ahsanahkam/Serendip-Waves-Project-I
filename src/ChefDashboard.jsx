@@ -1,15 +1,9 @@
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUtensils } from "react-icons/fa";
-import { AuthContext } from './App';
+import { AuthContext } from './AuthContext';
 import logo from './assets/logo.png';
 import { Modal, Button } from 'react-bootstrap';
-
-const iconStyle = {
-  fontSize: "2.2rem",
-  color: "#7c5fe6",
-  marginBottom: "0.7rem",
-};
 
 const ChefDashboard = () => {
   const { logout } = useContext(AuthContext);

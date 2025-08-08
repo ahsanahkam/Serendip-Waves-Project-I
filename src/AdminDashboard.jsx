@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { FaBook, FaUtensils, FaBed, FaRoute, FaUsers, FaShip, FaInfoCircle, FaDollarSign, FaSwimmingPool } from "react-icons/fa";
 import "./SuperAdminDashboard.css"; // Reuse the SuperAdmin styles
 import { useContext } from "react";
-import { AuthContext } from "./App";
+import { AuthContext } from "./AuthContext";
 import logo from './assets/logo.png';
 import { Modal, Button } from "react-bootstrap";
 

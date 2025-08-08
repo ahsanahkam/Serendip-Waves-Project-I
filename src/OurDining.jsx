@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
 import { FaArrowLeft, FaLeaf, FaSeedling, FaMosque, FaHeartbeat, FaBreadSlice, FaUtensils, FaCoffee, FaWineGlass } from 'react-icons/fa';
+import axios from 'axios';
 import './OurDining.css';
 
 // Import meal type images - add these images to assets folder
@@ -14,8 +15,13 @@ import glutenFreeImg from './assets/gluten-free-meal.jpg';
 
 const OurDining = () => {
   const navigate = useNavigate();
+  
+  // State for meal types from backend
+  const [mealTypes, setMealTypes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const mealTypes = [
+  // Static fallback data (keeping original design intact)
+  const fallbackMealTypes = [
     {
       id: 'basic',
       name: 'Basic/Vegetarian',
@@ -67,6 +73,158 @@ const OurDining = () => {
       badgeColor: 'primary'
     }
   ];
+
+  // Icon mapping function
+  const getIconForMealType = (type) => {
+    const iconMap = {
+      'Basic/Vegetarian': <FaLeaf />,
+      'basic': <FaLeaf />,
+      'vegetarian': <FaLeaf />,
+      'Vegan': <FaSeedling />,
+      'vegan': <FaSeedling />,
+      'Halal Gourmet': <FaMosque />,
+      'halal': <FaMosque />,
+      'Diabetic-Friendly': <FaHeartbeat />,
+      'diabetic-friendly': <FaHeartbeat />,
+      'diabetic': <FaHeartbeat />,
+      'Gluten-Free': <FaBreadSlice />,
+      'gluten-free': <FaBreadSlice />,
+      'gluten_free': <FaBreadSlice />,
+      'Keto': <FaUtensils />,
+      'keto': <FaUtensils />,
+      'Mediterranean': <FaUtensils />,
+      'mediterranean': <FaUtensils />,
+      'Asian': <FaUtensils />,
+      'asian': <FaUtensils />,
+      'Low-Sodium': <FaHeartbeat />,
+      'low-sodium': <FaHeartbeat />,
+      'Kosher': <FaMosque />,
+      'kosher': <FaMosque />
+    };
+    return iconMap[type] || <FaUtensils />;
+  };
+
+  // Badge color mapping function
+  const getBadgeColor = (type, index) => {
+    const colorMap = {
+      'Basic/Vegetarian': 'success',
+      'basic': 'success',
+      'vegetarian': 'success',
+      'Vegan': 'warning',
+      'vegan': 'warning',
+      'Halal Gourmet': 'info',
+      'halal': 'info',
+      'Diabetic-Friendly': 'danger',
+      'diabetic-friendly': 'danger',
+      'diabetic': 'danger',
+      'Gluten-Free': 'primary',
+      'gluten-free': 'primary',
+      'gluten_free': 'primary',
+      'Keto': 'dark',
+      'keto': 'dark',
+      'Mediterranean': 'secondary',
+      'mediterranean': 'secondary',
+      'Asian': 'success',
+      'asian': 'success',
+      'Low-Sodium': 'danger',
+      'low-sodium': 'danger',
+      'Kosher': 'info',
+      'kosher': 'info'
+    };
+    const defaultColors = ['success', 'warning', 'info', 'danger', 'primary'];
+    return colorMap[type] || defaultColors[index % defaultColors.length];
+  };
+
+  // Badge text mapping function
+  const getBadgeText = (type, index) => {
+    const badgeMap = {
+      'Basic/Vegetarian': 'Most Popular',
+      'basic': 'Most Popular',
+      'vegetarian': 'Most Popular',
+      'Vegan': 'Premium',
+      'vegan': 'Premium',
+      'Halal Gourmet': 'Certified',
+      'halal': 'Certified',
+      'Diabetic-Friendly': 'Health Focused',
+      'diabetic-friendly': 'Health Focused',
+      'diabetic': 'Health Focused',
+      'Gluten-Free': 'Celiac Safe',
+      'gluten-free': 'Celiac Safe',
+      'gluten_free': 'Celiac Safe',
+      'Keto': 'Low Carb',
+      'keto': 'Low Carb',
+      'Mediterranean': 'Heart Healthy',
+      'mediterranean': 'Heart Healthy',
+      'Asian': 'Authentic',
+      'asian': 'Authentic',
+      'Low-Sodium': 'Heart Friendly',
+      'low-sodium': 'Heart Friendly',
+      'Kosher': 'Certified',
+      'kosher': 'Certified'
+    };
+    const defaultBadges = ['Featured', 'Premium', 'Special', 'Popular', 'Recommended'];
+    return badgeMap[type] || defaultBadges[index % defaultBadges.length];
+  };
+
+  // Get fallback image function
+  const getFallbackImage = (type, index) => {
+    const fallbackImages = {
+      'basic': 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+      'vegan': 'https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+      'halal': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+      'diabetic': 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+      'gluten_free': 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
+    };
+    const defaultImages = [
+      'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1551782450-a2132b4ba21d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
+    ];
+    return fallbackImages[type.toLowerCase()] || defaultImages[index % defaultImages.length];
+  };
+
+  // Fetch meal options from backend
+  useEffect(() => {
+    fetchMealOptions();
+  }, []);
+
+  const fetchMealOptions = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('http://localhost/Project-I/backend/mealOptionsAPI.php');
+      
+      if (response.data.success && response.data.data) {
+        // Transform backend data to match component structure
+        const transformedData = response.data.data
+          .filter(option => option.status === 'active') // Only show active meal options
+          .map((option, index) => ({
+            id: option.option_id || index,
+            name: option.title,
+            icon: getIconForMealType(option.type),
+            image: option.image ? `http://localhost/Project-I/backend/meal_images/${option.image}` : getFallbackImage(option.type, index),
+            description: option.description,
+            features: Array.isArray(option.key_features) ? option.key_features : (option.key_features ? option.key_features.split(',').map(f => f.trim()) : []),
+            badge: getBadgeText(option.type, index),
+            badgeColor: getBadgeColor(option.type, index),
+            type: option.type,
+            status: option.status
+          }));
+
+        setMealTypes(transformedData.length > 0 ? transformedData : fallbackMealTypes);
+      } else {
+        // Use fallback data if backend fails
+        setMealTypes(fallbackMealTypes);
+      }
+    } catch (error) {
+      console.error('Error fetching meal options:', error);
+      // Use fallback data if backend fails
+      setMealTypes(fallbackMealTypes);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const diningTimes = [
     {
@@ -145,70 +303,79 @@ const OurDining = () => {
           
           <Row className="justify-content-center">
             <Col lg={10}>
-              {mealTypes.map((mealType, index) => (
-                <React.Fragment key={mealType.id}>
-                  <Card className="meal-type-card mb-5">
-                    <Row className="g-0">
-                      <Col md={5}>
-                        <div className="meal-image-container">
-                          <img 
-                            src={mealType.image} 
-                            alt={mealType.name}
-                            className="meal-image"
-                            onError={(e) => {
-                              // Fallback to online image if local image fails
-                              const fallbacks = {
-                                'basic': 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-                                'vegan': 'https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-                                'halal': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-                                'diabetic': 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-                                'gluten_free': 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
-                              };
-                              e.target.src = fallbacks[mealType.id] || '/placeholder-meal.jpg';
-                            }}
-                          />
-                        </div>
-                      </Col>
-                      <Col md={7}>
-                        <Card.Body className="meal-content">
-                          <div className="meal-header">
-                            <div className="meal-icon">
-                              {mealType.icon}
-                            </div>
-                            <div>
-                              <h3 className="meal-name">{mealType.name}</h3>
-                              <Badge 
-                                bg={mealType.badgeColor}
-                                className="meal-badge"
-                              >
-                                {mealType.badge}
-                              </Badge>
-                            </div>
+              {loading ? (
+                <div className="text-center py-5">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                  <p className="mt-3">Loading our dining options...</p>
+                </div>
+              ) : (
+                mealTypes.map((mealType, index) => (
+                  <React.Fragment key={mealType.id}>
+                    <Card className="meal-type-card mb-5">
+                      <Row className="g-0">
+                        <Col md={5}>
+                          <div className="meal-image-container">
+                            <img 
+                              src={mealType.image} 
+                              alt={mealType.name}
+                              className="meal-image"
+                              onError={(e) => {
+                                // Fallback to online image if local image fails
+                                const fallbacks = {
+                                  'basic': 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+                                  'vegan': 'https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+                                  'halal': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+                                  'diabetic': 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+                                  'gluten_free': 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
+                                };
+                                e.target.src = fallbacks[mealType.id] || fallbacks[mealType.type?.toLowerCase()] || '/placeholder-meal.jpg';
+                              }}
+                            />
                           </div>
-                          <p className="meal-description">
-                            {mealType.description}
-                          </p>
-                          <div className="meal-features">
-                            <h6>Key Features:</h6>
-                            <ul>
-                              {mealType.features.map((feature, idx) => (
-                                <li key={idx}>{feature}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        </Card.Body>
-                      </Col>
-                    </Row>
-                  </Card>
-                  
-                  {/* Divider (except for last item) */}
-                  {index < mealTypes.length - 1 && (
-                    <div className="meal-divider">
-                      <div className="divider-line"></div>
-                    </div>
-                  )}
-                </React.Fragment>
-              ))}
+                        </Col>
+                        <Col md={7}>
+                          <Card.Body className="meal-content">
+                            <div className="meal-header">
+                              <div className="meal-icon">
+                                {mealType.icon}
+                              </div>
+                              <div>
+                                <h3 className="meal-name">{mealType.name}</h3>
+                                <Badge 
+                                  bg={mealType.badgeColor}
+                                  className="meal-badge"
+                                >
+                                  {mealType.type}
+                                </Badge>
+                              </div>
+                            </div>
+                            <p className="meal-description">
+                              {mealType.description}
+                            </p>
+                            <div className="meal-features">
+                              <h6>Key Features:</h6>
+                              <ul>
+                                {mealType.features.map((feature, idx) => (
+                                  <li key={idx}>{feature}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          </Card.Body>
+                        </Col>
+                      </Row>
+                    </Card>
+                    
+                    {/* Divider (except for last item) */}
+                    {index < mealTypes.length - 1 && (
+                      <div className="meal-divider">
+                        <div className="divider-line"></div>
+                      </div>
+                    )}
+                  </React.Fragment>
+                ))
+              )}
             </Col>
           </Row>
         </Container>

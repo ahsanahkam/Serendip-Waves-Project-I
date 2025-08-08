@@ -107,29 +107,6 @@ function MealsDashboard() {
     setFilters(prev => ({ ...prev, [field]: value }));
   };
 
-  const exportToCSV = () => {
-    const headers = ['Passenger Name', 'Booking ID', 'Meal Type', 'Meal Times', 'Days', 'Notes/Allergies'];
-    const csvContent = [
-      headers.join(','),
-      ...filteredData.map(item => [
-        item.passengerName,
-        item.bookingId,
-        item.mealType,
-        item.mealTimes.join('; '),
-        item.days,
-        item.notes || 'None'
-      ].join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'meals-preferences.csv';
-    a.click();
-    window.URL.revokeObjectURL(url);
-  };
-
   const handleLogout = () => {
     // Clear any stored authentication data
     localStorage.removeItem('token');

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { Container, Row, Col, Card, Table, Button, Modal, Form, Badge, Alert } from 'react-bootstrap';
 import { FaUtensils, FaEye, FaEdit, FaTrash, FaToggleOn, FaToggleOff, FaLeaf, FaPlus } from 'react-icons/fa';
-import { AuthContext } from './App';
+import { AuthContext } from './AuthContext';
 import logo from './assets/logo.png';
 import axios from 'axios';
 import './MealsOptionsDashboard.css';
@@ -34,9 +34,8 @@ const MealsOptionsDashboard = () => {
   const [formErrors, setFormErrors] = useState({});
   
   // Image upload states
-  const [selectedImages, setSelectedImages] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [isUploading, setIsUploading] = useState(false);
   
   // Predefined meal types
   const mealTypes = [
@@ -117,13 +116,12 @@ const MealsOptionsDashboard = () => {
   
   // Handle image file selection
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length === 0) return;
+    const file = e.target.files[0];
+    if (!file) return;
     
-    setSelectedImages(files);
+    setSelectedImage(file);
     
-    // Create preview for the first image
-    const file = files[0];
+    // Create preview for the image
     const reader = new FileReader();
     reader.onload = (e) => {
       setImagePreview(e.target.result);
@@ -131,35 +129,46 @@ const MealsOptionsDashboard = () => {
     reader.readAsDataURL(file);
   };
   
-  // Upload images to backend
-  const uploadImages = async () => {
-    if (selectedImages.length === 0) return null;
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     
-    setIsUploading(true);
-    const formDataUpload = new FormData();
-    
-    selectedImages.forEach((file) => {
-      formDataUpload.append('images[]', file);
-    });
+    if (!validateForm()) return;
     
     try {
-      const response = await axios.post('http://localhost/Project-I/backend/uploadMealImages.php', formDataUpload, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+      // Use FormData for image upload (like cruise ships)
+      const data = new FormData();
+      data.append('action', modalMode === 'add' ? 'create' : 'update');
+      data.append('title', formData.title);
+      data.append('type', formData.type);
+      data.append('description', formData.description);
+      data.append('key_features', formData.key_features);
+      data.append('status', formData.status);
+      
+      if (modalMode === 'edit') {
+        data.append('option_id', selectedOption.option_id);
+        data.append('existing_image', formData.image || '');
+      }
+      
+      // Add image file if selected
+      if (selectedImage) {
+        data.append('image', selectedImage);
+      }
+      
+      const response = await axios.post('http://localhost/Project-I/backend/mealOptionsAPI.php', data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
       
-      if (response.data.success && response.data.uploaded_images.length > 0) {
-        return response.data.uploaded_images[0].stored_name; // Return first uploaded image filename
+      if (response.data.success) {
+        showAlert(response.data.message, 'success');
+        closeModal();
+        fetchMealOptions();
       } else {
-        throw new Error(response.data.message || 'Failed to upload image');
+        showAlert(response.data.message, 'danger');
       }
     } catch (error) {
-      console.error('Error uploading images:', error);
-      showAlert('Failed to upload image: ' + (error.response?.data?.message || error.message), 'danger');
-      return null;
-    } finally {
-      setIsUploading(false);
+      console.error('Error saving meal option:', error);
+      showAlert('Failed to save meal option', 'danger');
     }
   };
   
@@ -191,6 +200,7 @@ const MealsOptionsDashboard = () => {
         status: 'active'
       });
       setImagePreview(null);
+      setSelectedImage(null);
     } else if (option) {
       setFormData({
         title: option.title,
@@ -206,10 +216,10 @@ const MealsOptionsDashboard = () => {
       } else {
         setImagePreview(null);
       }
+      setSelectedImage(null);
     }
     
     setFormErrors({});
-    setSelectedImages([]);
     setShowModal(true);
   };
   
@@ -217,53 +227,8 @@ const MealsOptionsDashboard = () => {
     setShowModal(false);
     setSelectedOption(null);
     setFormErrors({});
-    setSelectedImages([]);
+    setSelectedImage(null);
     setImagePreview(null);
-  };
-  
-  // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
-    
-    try {
-      let imageFilename = formData.image;
-      
-      // Upload new image if selected
-      if (selectedImages.length > 0) {
-        const uploadedImageName = await uploadImages();
-        if (uploadedImageName) {
-          imageFilename = uploadedImageName;
-        } else {
-          // If image upload failed, don't proceed
-          return;
-        }
-      }
-      
-      const payload = {
-        action: modalMode === 'add' ? 'create' : 'update',
-        ...formData,
-        image: imageFilename
-      };
-      
-      if (modalMode === 'edit') {
-        payload.option_id = selectedOption.option_id;
-      }
-      
-      const response = await axios.post('http://localhost/Project-I/backend/mealOptionsAPI.php', payload);
-      
-      if (response.data.success) {
-        showAlert(response.data.message, 'success');
-        closeModal();
-        fetchMealOptions();
-      } else {
-        showAlert(response.data.message, 'danger');
-      }
-    } catch (error) {
-      console.error('Error saving meal option:', error);
-      showAlert('Failed to save meal option', 'danger');
-    }
   };
   
   // Handle delete
@@ -834,15 +799,8 @@ const MealsOptionsDashboard = () => {
             {modalMode === 'view' ? 'Close' : 'Cancel'}
           </Button>
           {modalMode !== 'view' && (
-            <Button variant="primary" onClick={handleSubmit} disabled={isUploading}>
-              {isUploading ? (
-                <>
-                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                  Uploading...
-                </>
-              ) : (
-                modalMode === 'add' ? 'Add Meal Option' : 'Update Meal Option'
-              )}
+            <Button variant="primary" onClick={handleSubmit}>
+              {modalMode === 'add' ? 'Add Meal Option' : 'Update Meal Option'}
             </Button>
           )}
         </Modal.Footer>

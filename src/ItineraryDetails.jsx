@@ -4,7 +4,7 @@ import logo from './assets/logo.png';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-import { AuthContext } from './App';
+import { AuthContext } from './AuthContext';
 
 const API_BASE = 'http://localhost/Project-I/backend';
 

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from "react-toastify";
 import { Toaster } from 'react-hot-toast';
-import { AuthContext } from "./App";
+import { AuthContext } from "./AuthContext";
 
 const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
   const [form, setForm] = useState({ email: "", password: "" });

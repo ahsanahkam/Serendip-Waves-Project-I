@@ -17,7 +17,7 @@ import {
   FaDollarSign,
 } from "react-icons/fa";
 import logo from './assets/logo.png';
-import { AuthContext } from './App';
+import { AuthContext } from './AuthContext';
 import { useContext } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 

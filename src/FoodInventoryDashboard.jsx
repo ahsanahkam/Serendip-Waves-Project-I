@@ -2,8 +2,8 @@ import React, { useState, useMemo, useContext, useEffect } from 'react';
 import axios from 'axios';
 import './foodInventory.css';
 import { Button, Table, Badge, Modal, Form, Row, Col, InputGroup } from 'react-bootstrap';
-import { FaEdit, FaTrash, FaPlus, FaFileCsv, FaFilePdf, FaHistory, FaBoxOpen, FaExclamationTriangle, FaTimesCircle } from 'react-icons/fa';
-import { AuthContext } from './App';
+import { FaEdit, FaTrash, FaPlus, FaFileCsv, FaFilePdf, FaHistory, FaBoxOpen, FaExclamationTriangle, FaTimesCircle, FaToggleOn, FaToggleOff } from 'react-icons/fa';
+import { AuthContext } from './AuthContext';
 import logo from './assets/logo.png';
 
 // Status constants
@@ -53,8 +53,8 @@ function getStatus(item) {
   return STATUS.IN_STOCK;
 }
 
-const unitOptions = ['kg', 'liters', 'packs'];
-const categoryOptions = ['Vegetables', 'Fruits', 'Meat', 'Dairy', 'Grains', 'Beverages', 'Other'];
+const unitOptions = ['kg', 'l', 'packs'];
+const mealTypes = ['Vegetarian', 'Non-Vegetarian', 'Vegan', 'Gluten-Free', 'Continental', 'Asian', 'Local'];
 
 function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
   const { logout } = useContext(AuthContext);
@@ -65,6 +65,7 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
   const [modalMode, setModalMode] = useState('add');
   const [showDetails, setShowDetails] = useState(false);
   const [detailsItem, setDetailsItem] = useState(null);
+  const [mealTitles, setMealTitles] = useState([]);
   const [form, setForm] = useState({
     id: '',
     itemName: '',
@@ -82,10 +83,12 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
   const [statusFilter, setStatusFilter] = useState('All');
   const [supplierFilter, setSupplierFilter] = useState('All');
   const [categoryFilter, setCategoryFilter] = useState('All');
+  const [itemStatusFilter, setItemStatusFilter] = useState('All');
 
   // Fetch data from backend
   useEffect(() => {
-    axios.get('http://localhost/Project-I/backend/getInventory.php')
+    // Fetch inventory data including inactive items for toggle functionality
+    axios.get('http://localhost/Project-I/backend/getInventory.php?include_inactive=true')
       .then(res => {
         const mapped = res.data.map(item => ({
           id: item.item_id,
@@ -99,11 +102,25 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
           supplierEmail: item.supplier_email,
           unitPrice: item.unit_price,
           purchaseDate: item.purchase_date || '',
-          status: item.status,
+          status: item.status, // Stock status (In Stock, Low Stock, Expired)
+          item_status: item.item_status || 'active', // Active/Inactive status
         }));
         setData(mapped);
       })
       .catch(() => setData([]));
+
+    // Fetch meal options and types
+    axios.get('http://localhost/Project-I/backend/mealOptionsAPI.php')
+      .then(res => {
+        if (res.data.success && res.data.data) {
+          // Extract unique titles and types
+          const titles = [...new Set(res.data.data.map(option => option.title))];
+          setMealTitles(titles);
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching meal options:', err);
+      });
   }, []);
 
   // Unique suppliers for filter dropdown
@@ -116,11 +133,12 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
       if (statusFilter !== 'All' && status !== statusFilter) return false;
       if (supplierFilter !== 'All' && item.supplier !== supplierFilter) return false;
       if (categoryFilter !== 'All' && item.category !== categoryFilter) return false;
+      if (itemStatusFilter !== 'All' && item.item_status !== itemStatusFilter) return false;
       return true;
     }).sort((a, b) => {
       return new Date(a.expiryDate) - new Date(b.expiryDate);
     });
-  }, [data, statusFilter, supplierFilter, categoryFilter]);
+  }, [data, statusFilter, supplierFilter, categoryFilter, itemStatusFilter]);
 
   // Role-based access
   if (userRole !== 'Super Admin' && userRole !== 'Pantry Admin') {
@@ -153,7 +171,7 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
 
   // After add/edit, refresh and map data
   const refreshData = () => {
-    axios.get('http://localhost/Project-I/backend/getInventory.php')
+    axios.get('http://localhost/Project-I/backend/getInventory.php?include_inactive=true')
       .then(res => {
         const mapped = res.data.map(item => ({
           id: item.item_id,
@@ -167,7 +185,8 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
           supplierEmail: item.supplier_email,
           unitPrice: item.unit_price,
           purchaseDate: item.purchase_date || '',
-          status: item.status,
+          status: item.status, // Stock status (In Stock, Low Stock, Expired)
+          item_status: item.item_status || 'active', // Active/Inactive status
         }));
         setData(mapped);
       })
@@ -184,6 +203,7 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
       food_item_name: form.itemName,
       category: form.category,
       quantity_in_stock: Number(form.quantity),
+      unit: form.unit, // Add the unit field
       unit_price: Number(form.unitPrice),
       expiry_date: form.expiryDate,
       purchase_date: form.purchaseDate,
@@ -205,12 +225,24 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
   };
 
   const handleDelete = async id => {
-    if (window.confirm('Are you sure you want to delete this item?')) {
-      await axios.post('http://localhost/Project-I/backend/updateStock.php', {
-        action: 'delete',
-        item_id: id
-      });
-      refreshData();
+    const item = data.find(item => item.id === id);
+    // Check item_status instead of status (status is for stock level, item_status is for active/inactive)
+    const isActive = item.item_status !== 'inactive';
+    const confirmMessage = isActive 
+      ? 'Are you sure you want to deactivate this item?' 
+      : 'Are you sure you want to reactivate this item?';
+    
+    if (window.confirm(confirmMessage)) {
+      try {
+        await axios.post('http://localhost/Project-I/backend/updateStock.php', {
+          action: isActive ? 'delete' : 'activate',
+          item_id: id
+        });
+        refreshData();
+      } catch (error) {
+        console.error('Error updating item status:', error);
+        alert('Error updating item status. Please try again.');
+      }
     }
   };
 
@@ -298,8 +330,8 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
           {/* Filters */}
           <div className="mb-3">
             <Row className="g-3 align-items-end">
-              <Col md={3}>
-                <Form.Label>Status</Form.Label>
+              <Col md={2}>
+                <Form.Label>Stock Status</Form.Label>
                 <Form.Select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
                   <option value="All">All</option>
                   <option value={STATUS.IN_STOCK}>In Stock</option>
@@ -307,20 +339,28 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
                   <option value={STATUS.EXPIRED}>Expired</option>
                 </Form.Select>
               </Col>
-              <Col md={3}>
+              <Col md={2}>
+                <Form.Label>Item Status</Form.Label>
+                <Form.Select value={itemStatusFilter} onChange={e => setItemStatusFilter(e.target.value)}>
+                  <option value="All">All</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </Form.Select>
+              </Col>
+              <Col md={2}>
                 <Form.Label>Supplier</Form.Label>
                 <Form.Select value={supplierFilter} onChange={e => setSupplierFilter(e.target.value)}>
                   {suppliers.map(s => <option key={s} value={s}>{s}</option>)}
                 </Form.Select>
               </Col>
-              <Col md={3}>
-                <Form.Label>Food Category</Form.Label>
+              <Col md={2}>
+                <Form.Label>Meal Type</Form.Label>
                 <Form.Select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)}>
                   <option value="All">All</option>
-                  {categoryOptions.map(c => <option key={c} value={c}>{c}</option>)}
+                  {mealTypes.map(c => <option key={c} value={c}>{c}</option>)}
                 </Form.Select>
               </Col>
-              <Col md={3} className="d-flex align-items-end justify-content-end">
+              <Col md={2} className="d-flex align-items-end justify-content-end">
                 <Button variant="primary" onClick={() => handleShowModal('add')}><FaPlus className="me-2" />Add New Item</Button>
               </Col>
             </Row>
@@ -330,8 +370,8 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
             <Table striped bordered hover className="align-middle food-table luxury-table">
               <thead className="table-primary sticky-top luxury-thead">
                 <tr>
-                  <th>Food Item Name</th>
-                  <th>Category</th>
+                  <th>Meal Title</th>
+                  <th>Type</th>
                   <th>Quantity in Stock</th>
                   <th>Unit Price</th>
                   <th>Total Price</th>
@@ -339,19 +379,20 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
                   <th>Supplier Name</th>
                   <th>Supplier Contacts</th>
                   <th>Supplier Email</th>
-                  <th>Status</th>
+                  <th>Stock Status</th>
+                  <th>Item Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredData.length === 0 ? (
-                  <tr><td colSpan={10} className="text-center">No food items found.</td></tr>
+                  <tr><td colSpan={12} className="text-center">No meal items found.</td></tr>
                 ) : (
                   filteredData.map(item => {
                     const status = getStatus(item);
                     const totalPrice = Number(item.quantity) * Number(item.unitPrice || 0);
                     return (
-                      <tr key={item.id}>
+                      <tr key={item.id} className={item.item_status === 'inactive' ? 'table-secondary' : ''}>
                         <td>{item.itemName}</td>
                         <td>{item.category}</td>
                         <td>{item.quantity} {item.unit}</td>
@@ -363,8 +404,22 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
                         <td>{item.supplierEmail || '-'}</td>
                         <td>{getStatusBadge(status)}</td>
                         <td>
-                          <Button size="sm" variant="outline-primary" className="me-2" onClick={() => handleShowModal('edit', item)}><FaEdit /></Button>
-                          <Button size="sm" variant="outline-danger" onClick={() => handleDelete(item.id)}><FaTrash /></Button>
+                          <Badge bg={item.item_status === 'active' ? 'success' : 'secondary'}>
+                            {item.item_status === 'active' ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </td>
+                        <td>
+                          <Button size="sm" variant="outline-primary" className="me-2" onClick={() => handleShowModal('edit', item)}>
+                            <FaEdit />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant={item.item_status === 'active' ? 'outline-warning' : 'outline-success'} 
+                            onClick={() => handleDelete(item.id)}
+                            title={item.item_status === 'active' ? 'Deactivate Item' : 'Activate Item'}
+                          >
+                            {item.item_status === 'active' ? <FaToggleOff /> : <FaToggleOn />}
+                          </Button>
                         </td>
                       </tr>
                     );
@@ -377,15 +432,18 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
         {/* Modal */}
         <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
           <Modal.Header closeButton>
-            <Modal.Title>{modalMode === 'add' ? 'Add New Food Item' : 'Edit Food Item'}</Modal.Title>
+            <Modal.Title>{modalMode === 'add' ? 'Add New Meal Item' : 'Edit Meal Item'}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form onSubmit={handleFormSubmit}>
               <Row className="g-3">
                 <Col md={6}>
                   <Form.Group className="mb-2">
-                    <Form.Label>Food Item Name *</Form.Label>
-                    <Form.Control name="itemName" value={form.itemName} onChange={handleFormChange} isInvalid={!form.itemName && formError} />
+                    <Form.Label>Title of the Meal *</Form.Label>
+                    <Form.Select name="itemName" value={form.itemName} onChange={handleFormChange} isInvalid={!form.itemName && formError}>
+                      <option value="">Select Meal Title</option>
+                      {mealTitles.map(title => <option key={title} value={title}>{title}</option>)}
+                    </Form.Select>
                   </Form.Group>
                 </Col>
                 <Col md={6}>
@@ -437,10 +495,10 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
                 </Col>
                 <Col md={6}>
                   <Form.Group className="mb-2">
-                    <Form.Label>Food Category *</Form.Label>
+                    <Form.Label>Type *</Form.Label>
                     <Form.Select name="category" value={form.category} onChange={handleFormChange} isInvalid={!form.category && formError}>
-                      <option value="">Select Category</option>
-                      {categoryOptions.map(c => <option key={c} value={c}>{c}</option>)}
+                      <option value="">Select Type</option>
+                      {mealTypes.map(c => <option key={c} value={c}>{c}</option>)}
                     </Form.Select>
                   </Form.Group>
                 </Col>
@@ -456,13 +514,13 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
         {/* Details Modal */}
         <Modal show={showDetails} onHide={handleCloseDetails} centered>
           <Modal.Header closeButton>
-            <Modal.Title>Food Item Details</Modal.Title>
+            <Modal.Title>Meal Item Details</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {detailsItem && (
               <div>
-                <p><strong>Name:</strong> {detailsItem.itemName}</p>
-                <p><strong>Category:</strong> {detailsItem.category}</p>
+                <p><strong>Meal Title:</strong> {detailsItem.itemName}</p>
+                <p><strong>Type:</strong> {detailsItem.category}</p>
                 <p><strong>Quantity:</strong> {detailsItem.quantity} {detailsItem.unit}</p>
                 <p><strong>Unit Price:</strong> {detailsItem.unitPrice ? `Rs. ${detailsItem.unitPrice}` : '-'}</p>
                 <p><strong>Total Price:</strong> {detailsItem.unitPrice ? `Rs. ${Number(detailsItem.quantity) * Number(detailsItem.unitPrice || 0)}` : '-'}</p>
@@ -471,7 +529,12 @@ function FoodInventoryDashboard({ userRole = 'Super Admin' }) {
                 <p><strong>Supplier Contacts:</strong> {detailsItem.supplierContacts || '-'}</p>
                 <p><strong>Supplier Email:</strong> {detailsItem.supplierEmail || '-'}</p>
                 <p><strong>Purchase Date:</strong> {detailsItem.purchaseDate || '-'}</p>
-                <p><strong>Status:</strong> {getStatusBadge(getStatus(detailsItem))}</p>
+                <p><strong>Stock Status:</strong> {getStatusBadge(getStatus(detailsItem))}</p>
+                <p><strong>Item Status:</strong> 
+                  <Badge bg={detailsItem.item_status === 'active' ? 'success' : 'secondary'} className="ms-2">
+                    {detailsItem.item_status === 'active' ? 'Active' : 'Inactive'}
+                  </Badge>
+                </p>
               </div>
             )}
           </Modal.Body>
