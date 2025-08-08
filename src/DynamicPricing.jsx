@@ -49,22 +49,27 @@ const DynamicPricing = () => {
     fetchAvailableShips();
   }, [searchParams]);
 
-  // Update URL parameters when filters change
+  // Update URL parameters when filters change (with debounce to prevent rapid updates)
   useEffect(() => {
-    const params = new URLSearchParams();
+    const timeoutId = setTimeout(() => {
+      const params = new URLSearchParams();
+      
+      if (filters.shipName) params.set('ship', filters.shipName);
+      if (filters.route) params.set('route', filters.route);
+      if (filters.minPrice) params.set('minPrice', filters.minPrice);
+      if (filters.maxPrice) params.set('maxPrice', filters.maxPrice);
+      
+      // Update URL without causing a page reload
+      const newSearch = params.toString();
+      const currentSearch = searchParams.toString();
+      
+      if (newSearch !== currentSearch) {
+        // Don't use replace: true to maintain browser history for back navigation
+        setSearchParams(params);
+      }
+    }, 300); // 300ms debounce
     
-    if (filters.shipName) params.set('ship', filters.shipName);
-    if (filters.route) params.set('route', filters.route);
-    if (filters.minPrice) params.set('minPrice', filters.minPrice);
-    if (filters.maxPrice) params.set('maxPrice', filters.maxPrice);
-    
-    // Update URL without causing a page reload
-    const newSearch = params.toString();
-    const currentSearch = searchParams.toString();
-    
-    if (newSearch !== currentSearch) {
-      setSearchParams(params);
-    }
+    return () => clearTimeout(timeoutId);
   }, [filters, setSearchParams, searchParams]);
 
   const handleFilterChange = (field, value) => {
@@ -81,7 +86,7 @@ const DynamicPricing = () => {
       minPrice: '',
       maxPrice: ''
     });
-    // Clear URL parameters
+    // Clear URL parameters while maintaining browser history
     setSearchParams({});
   };
 
@@ -235,9 +240,12 @@ const DynamicPricing = () => {
   };
 
   const handleLogoutClick = () => {
-    // Use AuthContext logout function and then navigate
-    logout();
-    navigate('/');
+    // Show confirmation dialog before logout
+    if (window.confirm('Are you sure you want to logout?')) {
+      // Use AuthContext logout function and then navigate
+      logout();
+      navigate('/');
+    }
   };
 
   return (
