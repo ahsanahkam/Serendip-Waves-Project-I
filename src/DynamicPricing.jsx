@@ -1,22 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Table, Button, Modal, Form, Spinner, Alert } from 'react-bootstrap';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { AuthContext } from './AuthContext';
 import logo from './assets/logo.png';
 
 const DynamicPricing = () => {
-  const [pricing, setPricing] = useState([]);
+  const { logout } = useContext(AuthContext);
   const [filteredPricing, setFilteredPricing] = useState([]);
-  const [_itineraries, setItineraries] = useState([]);
+  const [_itineraries, _setItineraries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editItem, setEditItem] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  
+  // Initialize filters from URL parameters
   const [filters, setFilters] = useState({
-    shipName: '',
-    passengerCount: '',
-    poolCount: '',
-    deckCount: '',
-    restaurantCount: ''
+    shipName: searchParams.get('ship') || '',
+    route: searchParams.get('route') || '',
+    minPrice: searchParams.get('minPrice') || '',
+    maxPrice: searchParams.get('maxPrice') || ''
   });
+  
   const [availableShips, setAvailableShips] = useState([]);
   const [availableRoutes, setAvailableRoutes] = useState([]);
   const [form, setForm] = useState({
@@ -29,27 +35,42 @@ const DynamicPricing = () => {
   });
 
   useEffect(() => {
-    fetchPricing();
+    // Load initial data and apply any URL filters
+    const initialFilters = {
+      shipName: searchParams.get('ship') || '',
+      route: searchParams.get('route') || '',
+      minPrice: searchParams.get('minPrice') || '',
+      maxPrice: searchParams.get('maxPrice') || ''
+    };
+    
+    setFilters(initialFilters);
+    fetchPricing(initialFilters);
     fetchItineraries();
     fetchAvailableShips();
-  }, []);
+  }, [searchParams]);
 
-  // Filter functionality
+  // Update URL parameters when filters change (with debounce to prevent rapid updates)
   useEffect(() => {
-    let filtered = pricing;
-
-    if (filters.shipName) {
-      filtered = filtered.filter(item => 
-        item.ship_name.toLowerCase().includes(filters.shipName.toLowerCase())
-      );
-    }
-
-    // Note: The following filters would need corresponding data fields in the backend
-    // For now, we'll keep the ship name filter as the primary functional filter
-    // Additional filters can be implemented when the backend data structure supports them
+    const timeoutId = setTimeout(() => {
+      const params = new URLSearchParams();
+      
+      if (filters.shipName) params.set('ship', filters.shipName);
+      if (filters.route) params.set('route', filters.route);
+      if (filters.minPrice) params.set('minPrice', filters.minPrice);
+      if (filters.maxPrice) params.set('maxPrice', filters.maxPrice);
+      
+      // Update URL without causing a page reload
+      const newSearch = params.toString();
+      const currentSearch = searchParams.toString();
+      
+      if (newSearch !== currentSearch) {
+        // Don't use replace: true to maintain browser history for back navigation
+        setSearchParams(params);
+      }
+    }, 300); // 300ms debounce
     
-    setFilteredPricing(filtered);
-  }, [filters, pricing]);
+    return () => clearTimeout(timeoutId);
+  }, [filters, setSearchParams, searchParams]);
 
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({
@@ -65,13 +86,21 @@ const DynamicPricing = () => {
       minPrice: '',
       maxPrice: ''
     });
+    // Clear URL parameters while maintaining browser history
+    setSearchParams({});
+  };
+
+  const applyFilters = () => {
+    // Fetch pricing with current filters applied on backend
+    fetchPricing(filters);
+    console.log('Filters applied:', filters);
   };
 
   const fetchItineraries = async () => {
     try {
       const res = await fetch('http://localhost/Project-I/backend/getItineraries.php');
       const data = await res.json();
-      setItineraries(data);
+      _setItineraries(data);
       
       // Extract unique routes from itineraries
       if (data && Array.isArray(data)) {
@@ -79,7 +108,7 @@ const DynamicPricing = () => {
         setAvailableRoutes(routes.sort());
       }
     } catch {
-      setItineraries([]);
+      _setItineraries([]);
     }
   };
 
@@ -98,14 +127,23 @@ const DynamicPricing = () => {
     }
   };
 
-  const fetchPricing = async () => {
+  const fetchPricing = async (filterParams = {}) => {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('http://localhost/Project-I/backend/getCabinTypePricing.php');
+      // Build query parameters for API call
+      const queryParams = new URLSearchParams();
+      
+      if (filterParams.shipName) queryParams.set('ship', filterParams.shipName);
+      if (filterParams.route) queryParams.set('route', filterParams.route);
+      if (filterParams.minPrice) queryParams.set('minPrice', filterParams.minPrice);
+      if (filterParams.maxPrice) queryParams.set('maxPrice', filterParams.maxPrice);
+      
+      const apiUrl = `http://localhost/Project-I/backend/getCabinTypePricing.php${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      
+      const res = await fetch(apiUrl);
       const data = await res.json();
       if (data.success) {
-        setPricing(data.pricing);
         setFilteredPricing(data.pricing);
         
         // Merge ships from pricing with ships from ship details (avoid duplicates)
@@ -168,7 +206,7 @@ const DynamicPricing = () => {
           }
         }
         
-        fetchPricing(); // This will also refresh the options
+        fetchPricing(filters); // This will also refresh the options
         setShowModal(false);
         resetModalState();
       } else {
@@ -191,7 +229,7 @@ const DynamicPricing = () => {
         });
         const data = await res.json();
         if (data.success) {
-          fetchPricing();
+          fetchPricing(filters);
         } else {
           setError(data.message || 'Failed to delete pricing');
         }
@@ -201,10 +239,13 @@ const DynamicPricing = () => {
     }
   };
 
-  const navigate = (to) => { window.location.href = to; };
   const handleLogoutClick = () => {
-    // You can add logout logic here if needed
-    navigate('/');
+    // Show confirmation dialog before logout
+    if (window.confirm('Are you sure you want to logout?')) {
+      // Use AuthContext logout function and then navigate
+      logout();
+      navigate('/');
+    }
   };
 
   return (
@@ -230,18 +271,20 @@ const DynamicPricing = () => {
             src={logo}
             alt="Logo"
             style={{ height: '80px', width: 'auto', maxWidth: '100px', cursor: 'pointer', objectFit: 'contain' }}
-            onClick={() => navigate('/#top')}
+            onClick={() => navigate('/')}
           />
           <div style={{ fontWeight: 'bold', fontSize: '1.5rem', color: '#1a237e', letterSpacing: '1px' }}>
             Dynamic Pricing Management
           </div>
         </div>
-        <button
-          onClick={handleLogoutClick}
-          className="superadmin-logout-btn"
-        >
-          Logout
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <button
+            onClick={handleLogoutClick}
+            className="superadmin-logout-btn"
+          >
+            Logout
+          </button>
+        </div>
       </div>
       {/* End Custom Navbar */}
       <div style={{ marginTop: '110px', padding: '2rem' }}>
@@ -369,7 +412,7 @@ const DynamicPricing = () => {
                   fontWeight: '600',
                   color: 'white'
                 }}
-                onClick={() => {}}
+                onClick={applyFilters}
               >
                 Filter
               </Button>
