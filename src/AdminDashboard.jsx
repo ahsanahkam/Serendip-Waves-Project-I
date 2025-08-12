@@ -6,6 +6,7 @@ import { useContext } from "react";
 import { AuthContext } from "./AuthContext";
 import logo from './assets/logo.png';
 import { Modal, Button } from "react-bootstrap";
+// import { Modal, Button } from "react-bootstrap";
 
 const iconStyle = {
   fontSize: "2.2rem",
