@@ -36,7 +36,7 @@ function PassengerDashboard() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editPassenger, setEditPassenger] = useState(null);
   const [newPassenger, setNewPassenger] = useState({
-    booking_id: '', passenger_name: '', email: '', ship_name: '', route: '', cabin_id: '', age: '', gender: '', citizenship: ''
+    booking_id: '', passenger_name: '', email: '', ship_id: '', ship_name: '', route: '', cabin_id: '', age: '', gender: '', citizenship: ''
   });
   const [crudError, setCrudError] = useState('');
 
@@ -52,7 +52,7 @@ function PassengerDashboard() {
       .then(result => {
         if (result.success) {
           setShowAddModal(false);
-          setNewPassenger({ booking_id: '', passenger_name: '', email: '', ship_name: '', route: '', cabin_id: '', age: '', gender: '', citizenship: '' });
+          setNewPassenger({ booking_id: '', passenger_name: '', email: '', ship_id: '', ship_name: '', route: '', cabin_id: '', age: '', gender: '', citizenship: '' });
           refreshPassengers();
         } else {
           setCrudError(result.message || 'Failed to add passenger');
