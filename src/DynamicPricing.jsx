@@ -24,8 +24,10 @@ const DynamicPricing = () => {
   });
   
   const [availableShips, setAvailableShips] = useState([]);
+  const [shipDetails, setShipDetails] = useState([]); // Store full ship data with ship_id
   const [availableRoutes, setAvailableRoutes] = useState([]);
   const [form, setForm] = useState({
+    ship_id: '',
     ship_name: '',
     route: '',
     interior_price: '',
@@ -117,6 +119,7 @@ const DynamicPricing = () => {
       const res = await fetch('http://localhost/Project-I/backend/getShipDetails.php');
       const data = await res.json();
       if (Array.isArray(data)) {
+        setShipDetails(data); // Store full ship data
         const ships = [...new Set(data.map(ship => ship.ship_name))];
         setAvailableShips(ships.sort());
       }
@@ -124,7 +127,14 @@ const DynamicPricing = () => {
       console.error('Error fetching ship details:', error);
       // Fallback to ships from pricing data
       setAvailableShips([]);
+      setShipDetails([]);
     }
+  };
+
+  // Helper function to get ship_id from ship_name
+  const getShipIdFromName = (shipName) => {
+    const ship = shipDetails.find(s => s.ship_name === shipName);
+    return ship ? ship.ship_id : null;
   };
 
   const fetchPricing = async (filterParams = {}) => {
@@ -169,18 +179,31 @@ const DynamicPricing = () => {
   };
 
   const resetModalState = () => {
-    setForm({ ship_name: '', route: '', interior_price: '', ocean_view_price: '', balcony_price: '', suite_price: '' });
+    setForm({ ship_id: '', ship_name: '', route: '', interior_price: '', ocean_view_price: '', balcony_price: '', suite_price: '' });
   };
 
   const handleEdit = (item) => {
     setEditItem(item);
-    setForm({ ...item });
+    // Include ship_id if available from the item
+    const formData = { 
+      ...item,
+      ship_id: item.ship_id || getShipIdFromName(item.ship_name) || ''
+    };
+    setForm(formData);
     setShowModal(true);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    const updatedForm = { ...form, [name]: value };
+    
+    // If ship_name is being changed, also update ship_id
+    if (name === 'ship_name') {
+      const shipId = getShipIdFromName(value);
+      updatedForm.ship_id = shipId;
+    }
+    
+    setForm(updatedForm);
   };
 
   const handleSave = async () => {
