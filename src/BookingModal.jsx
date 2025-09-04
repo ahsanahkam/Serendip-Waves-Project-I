@@ -104,18 +104,27 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
     fetch('http://localhost/Project-I/backend/getCabinTypePricing.php')
       .then(res => res.json())
       .then(data => {
+        console.log('Cabin pricing data received:', data);
         if (data.success && Array.isArray(data.pricing)) {
           setCabinPricing(data.pricing);
+          console.log('Cabin pricing set successfully:', data.pricing.length, 'items');
         } else {
+          console.error('Invalid cabin pricing data:', data);
           setCabinPricing([]);
         }
       })
-      .catch(() => setCabinPricing([]));
+      .catch(error => {
+        console.error('Error fetching cabin pricing:', error);
+        setCabinPricing([]);
+      });
   }, [isOpen]);
 
-  const getShipNameForDestination = useCallback((destination) => {
+  const getShipDataForDestination = useCallback((destination) => {
     const itinerary = itineraries.find(item => item.route === destination);
-    return itinerary ? itinerary.ship_name : '';
+    return itinerary ? { 
+      ship_id: itinerary.ship_id || itinerary.ship_details_id, 
+      ship_name: itinerary.ship_name 
+    } : { ship_id: null, ship_name: '' };
   }, [itineraries]);
 
   // Fetch cabin availability when ship and destination are selected
@@ -124,13 +133,22 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
       console.log('Cabin availability fetch triggered:', { destination: form.destination });
       if (!form.destination) return;
       
-      const shipName = getShipNameForDestination(form.destination);
-      console.log('Ship name for destination:', shipName);
-      if (!shipName) return;
+      const shipData = getShipDataForDestination(form.destination);
+      console.log('Ship data for destination:', shipData);
+      if (!shipData.ship_name && !shipData.ship_id) return;
       
       try {
+        // Prefer ship_id if available, fallback to ship_name
+        const params = new URLSearchParams();
+        if (shipData.ship_id) {
+          params.append('ship_id', shipData.ship_id);
+        } else {
+          params.append('ship_name', shipData.ship_name);
+        }
+        params.append('route', form.destination);
+        
         const response = await fetch(
-          `http://localhost/Project-I/backend/getCabinAvailability.php?ship_name=${encodeURIComponent(shipName)}&route=${encodeURIComponent(form.destination)}`
+          `http://localhost/Project-I/backend/getCabinAvailability.php?${params.toString()}`
         );
         const data = await response.json();
         console.log('Cabin availability response:', data);
@@ -147,7 +165,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
     };
 
     fetchCabinAvailability();
-  }, [form.destination, itineraries, getShipNameForDestination]);
+  }, [form.destination, itineraries, getShipDataForDestination]);
 
   // Fetch itineraries and extract unique destinations
   useEffect(() => {
@@ -174,12 +192,33 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
   const getTotalPrice = () => {
     const { cabinType, adults, children, destination } = form;
     if (!cabinType || !destination) return 0;
-    // Find matching pricing for ship and route
+    
+    // Find matching pricing for ship and route with enhanced lookup
     const itinerary = itineraries.find(i => i.route === destination);
     if (!itinerary) return 0;
-    const ship_name = itinerary.ship_name;
-    const pricing = cabinPricing.find(p => p.ship_name === ship_name && p.route === destination);
+    
+    // Enhanced pricing lookup with ship_id and ship_name fallback
+    let pricing = null;
+    
+    // First try to match by ship_id if available
+    if (itinerary.ship_id || itinerary.ship_details_id) {
+      const shipId = itinerary.ship_id || itinerary.ship_details_id;
+      pricing = cabinPricing.find(p => 
+        (p.ship_id === shipId || p.ship_details_id === shipId) && 
+        p.route === destination
+      );
+    }
+    
+    // Fallback to ship_name matching if ship_id didn't work
+    if (!pricing && itinerary.ship_name) {
+      pricing = cabinPricing.find(p => 
+        p.ship_name === itinerary.ship_name && 
+        p.route === destination
+      );
+    }
+    
     if (!pricing) return 0;
+    
     let price = 0;
     if (cabinType === 'Interior') price = Number(pricing.interior_price);
     else if (cabinType === 'Ocean View') price = Number(pricing.ocean_view_price);
@@ -192,10 +231,29 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
   const getCabinUnitPrice = (cabinType) => {
     const { destination } = form;
     if (!destination) return 0;
+    
     const itinerary = itineraries.find(i => i.route === destination);
     if (!itinerary) return 0;
-    const ship_name = itinerary.ship_name;
-    const pricing = cabinPricing.find(p => p.ship_name === ship_name && p.route === destination);
+    
+    // Enhanced pricing lookup with ship_id and ship_name fallback
+    let pricing = null;
+    
+    // First try to match by ship_id if available
+    if (itinerary.ship_id || itinerary.ship_details_id) {
+      const shipId = itinerary.ship_id || itinerary.ship_details_id;
+      pricing = cabinPricing.find(p => 
+        (p.ship_id === shipId || p.ship_details_id === shipId) && 
+        p.route === destination
+      );
+    }
+    
+    // Fallback to ship_name matching if ship_id didn't work
+    if (!pricing && itinerary.ship_name) {
+      pricing = cabinPricing.find(p => 
+        p.ship_name === itinerary.ship_name && 
+        p.route === destination
+      );
+    }
     if (!pricing) return 0;
     
     if (cabinType === 'Interior') return Number(pricing.interior_price);
@@ -326,35 +384,42 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
     setLoading(true);
 
     try {
-      const shipName = getShipNameForDestination(form.destination);
+      const shipData = getShipDataForDestination(form.destination);
       const allPassengers = [
         form.primaryPassenger,
         ...form.additionalPassengers
       ];
+
+      const bookingData = {
+        full_name: form.primaryPassenger.fullName,
+        gender: form.primaryPassenger.gender,
+        email: form.primaryPassenger.email,
+        citizenship: form.primaryPassenger.citizenship,
+        age: form.primaryPassenger.age,
+        passengers: allPassengers,
+        room_type: form.cabinType,
+        adults: parseInt(form.adults),
+        children: parseInt(form.children),
+        number_of_guests: parseInt(form.adults) + parseInt(form.children),
+        card_type: form.cardType,
+        card_number: form.cardNumber,
+        card_expiry: form.expiry,
+        ship_name: shipData.ship_name,
+        destination: form.destination,
+        total_price: getTotalPrice()
+      };
+
+      // Add ship_id if available for better performance
+      if (shipData.ship_id) {
+        bookingData.ship_id = shipData.ship_id;
+      }
 
       const response = await fetch('http://localhost/Project-I/backend/addBooking.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          full_name: form.primaryPassenger.fullName,
-          gender: form.primaryPassenger.gender,
-          email: form.primaryPassenger.email,
-          citizenship: form.primaryPassenger.citizenship,
-          age: form.primaryPassenger.age,
-          passengers: allPassengers,
-          room_type: form.cabinType,
-          adults: parseInt(form.adults),
-          children: parseInt(form.children),
-          number_of_guests: parseInt(form.adults) + parseInt(form.children),
-          card_type: form.cardType,
-          card_number: form.cardNumber,
-          card_expiry: form.expiry,
-          ship_name: shipName,
-          destination: form.destination,
-          total_price: getTotalPrice()
-        })
+        body: JSON.stringify(bookingData)
       });
 
       const data = await response.json();
@@ -373,10 +438,17 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
       try {
         const passengerPayload = {
           booking_id: data.booking_id,
-          ship_name: shipName,
+          ship_name: shipData.ship_name,
           route: form.destination,
-          cabin_id: data.cabin_number || '',
-          passengerList: [
+          cabin_id: data.cabin_number || ''
+        };
+
+        // Add ship_id if available
+        if (shipData.ship_id) {
+          passengerPayload.ship_id = shipData.ship_id;
+        }
+
+        passengerPayload.passengerList = [
             {
               passenger_name: form.primaryPassenger.fullName,
                             email: form.primaryPassenger.email,
@@ -391,8 +463,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
               gender: p.gender,
               citizenship: p.citizenship
             }))
-          ]
-        };
+          ];
         const passRes = await fetch('http://localhost/Project-I/backend/addPassengers.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -424,7 +495,7 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
             departure_date: itinerary?.start_date || '',
             return_date: itinerary?.end_date || '',
             total_price: getTotalPrice(),
-            ship_name: shipName,
+            ship_name: shipData.ship_name,
             destination: form.destination,
             special_requests: form.special_requests || ''
           })
@@ -956,10 +1027,38 @@ const BookingModal = ({ isOpen, onClose, defaultCountry }) => {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 8 }}>
                     {(() => {
                       const itinerary = itineraries.find(i => i.route === form.destination);
-                      if (!itinerary) return null;
+                      if (!itinerary) {
+                        console.log('No itinerary found for destination:', form.destination);
+                        return null;
+                      }
                       
-                      const pricing = cabinPricing.find(p => p.ship_name === itinerary.ship_name && p.route === form.destination);
-                      if (!pricing) return null;
+                      // Enhanced pricing lookup with ship_id and ship_name fallback
+                      let pricing = null;
+                      
+                      // First try to match by ship_id if available
+                      if (itinerary.ship_id || itinerary.ship_details_id) {
+                        const shipId = itinerary.ship_id || itinerary.ship_details_id;
+                        pricing = cabinPricing.find(p => 
+                          (p.ship_id === shipId || p.ship_details_id === shipId) && 
+                          p.route === form.destination
+                        );
+                      }
+                      
+                      // Fallback to ship_name matching if ship_id didn't work
+                      if (!pricing && itinerary.ship_name) {
+                        pricing = cabinPricing.find(p => 
+                          p.ship_name === itinerary.ship_name && 
+                          p.route === form.destination
+                        );
+                      }
+                      
+                      if (!pricing) {
+                        console.log('No pricing found for ship:', itinerary.ship_name, 'route:', form.destination);
+                        console.log('Available pricing:', cabinPricing);
+                        return <div style={{ color: '#dc3545', fontSize: '12px' }}>
+                          Pricing not available for this destination
+                        </div>;
+                      }
                       
                       const cabinTypes = [
                         { type: 'Interior', price: pricing.interior_price },
